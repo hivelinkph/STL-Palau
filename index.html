@@ -504,13 +504,11 @@ body {
 ══════════════════════════════ */
 .hero {
   position: relative;
-  min-height: 540px;
+  min-height: 560px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: stretch;
   overflow: hidden;
   background: var(--bg2);
-  padding-right: 40px;
 }
 
 .hero-bg {
@@ -532,27 +530,16 @@ body {
   mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 40%, transparent 100%);
 }
 
-.hero-orb {
-  position: absolute;
-  right: -60px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 600px;
-  height: 600px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(69,184,229,0.15) 0%, rgba(69,184,229,0.05) 40%, transparent 70%);
-  animation: orb-pulse 4s ease-in-out infinite;
-}
-
-@keyframes orb-pulse {
-  0%, 100% { transform: translateY(-50%) scale(1); opacity: 0.8; }
-  50% { transform: translateY(-50%) scale(1.05); opacity: 1; }
-}
-
+/* Left column — text */
 .hero-content {
   position: relative;
-  padding: 60px 40px 60px;
-  max-width: 640px;
+  padding: 48px 32px 48px 40px;
+  width: 28%;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  z-index: 2;
 }
 
 .hero-badge {
@@ -562,13 +549,14 @@ body {
   background: rgba(255,214,0,0.1);
   border: 1px solid rgba(255,214,0,0.3);
   color: var(--gold);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
-  padding: 6px 16px;
+  padding: 5px 14px;
   border-radius: 20px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
+  align-self: flex-start;
 }
 
 .hero-badge::before {
@@ -586,11 +574,11 @@ body {
 
 .hero h1 {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: clamp(48px, 7vw, 80px);
+  font-size: clamp(36px, 4.5vw, 68px);
   font-weight: 900;
   line-height: 0.95;
   text-transform: uppercase;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   letter-spacing: -1px;
 }
 
@@ -605,12 +593,11 @@ body {
 }
 
 .hero-desc {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 300;
   color: var(--text-muted);
-  line-height: 1.7;
-  margin-bottom: 36px;
-  max-width: 480px;
+  line-height: 1.65;
+  margin-bottom: 24px;
 }
 
 .hero-jackpot {
@@ -619,27 +606,26 @@ body {
   gap: 8px;
   background: var(--card);
   border: 1px solid rgba(255,214,0,0.3);
-  border-radius: 12px;
-  padding: 16px 24px;
-  margin-bottom: 32px;
+  border-radius: 10px;
+  padding: 12px 20px;
+  margin-bottom: 24px;
 }
 
 .hero-jackpot .jlabel {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
   color: var(--text-muted);
 }
 
 .hero-jackpot .jamount {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 44px;
+  font-size: 36px;
   font-weight: 900;
   color: var(--gold);
   letter-spacing: -1px;
   text-shadow: 0 0 30px rgba(255,214,0,0.4);
-  animation: count-up 3s ease-out both;
 }
 
 @keyframes count-up {
@@ -648,14 +634,14 @@ body {
 }
 
 .hero-jackpot .jcurr {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
   color: var(--gold-dark);
 }
 
 .hero-actions {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
@@ -664,9 +650,9 @@ body {
   color: var(--bg);
   border: none;
   font-family: 'Barlow', sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 800;
-  padding: 14px 36px;
+  padding: 12px 28px;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.25s;
@@ -684,9 +670,9 @@ body {
   color: var(--blue);
   border: 1px solid rgba(69,184,229,0.4);
   font-family: 'Barlow', sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
-  padding: 14px 32px;
+  padding: 12px 24px;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.25s;
@@ -698,29 +684,29 @@ body {
   box-shadow: 0 6px 24px var(--blue-glow);
 }
 
-/* Hero right — Live Feed / Slideshow */
-.hero-visual {
+/* ── Center column — Slideshow / Live Feed ── */
+.hero-center {
+  flex: 1;
   position: relative;
-  width: 520px;
-  flex-shrink: 0;
   z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 12px;
 }
 
 .live-feed {
-  border-radius: 18px;
+  border-radius: 16px;
   overflow: hidden;
-  border: 1px solid rgba(69,184,229,0.3);
-  box-shadow: 0 24px 80px rgba(0,0,0,0.5), 0 0 60px rgba(69,184,229,0.08);
+  border: 1px solid rgba(69,184,229,0.25);
+  box-shadow: 0 16px 60px rgba(0,0,0,0.4), 0 0 40px rgba(69,184,229,0.06);
   position: relative;
   background: var(--bg);
-  aspect-ratio: 16/10;
+  width: 100%;
+  aspect-ratio: 16/9.5;
 }
 
-/* Slideshow */
-.feed-slides {
-  position: absolute;
-  inset: 0;
-}
+.feed-slides { position: absolute; inset: 0; }
 
 .feed-slide {
   position: absolute;
@@ -738,14 +724,13 @@ body {
   display: block;
 }
 
-/* Top bar overlay */
 .feed-top {
   position: absolute;
   top: 0; left: 0; right: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
+  padding: 10px 14px;
   background: linear-gradient(180deg, rgba(6,18,32,0.85) 0%, transparent 100%);
   z-index: 3;
 }
@@ -756,7 +741,7 @@ body {
   gap: 6px;
   background: rgba(255,68,68,0.2);
   border: 1px solid rgba(255,68,68,0.5);
-  padding: 4px 12px;
+  padding: 3px 10px;
   border-radius: 4px;
 }
 
@@ -784,16 +769,15 @@ body {
   color: rgba(255,255,255,0.6);
 }
 
-/* Bottom overlay — coming soon + progress */
 .feed-bottom {
   position: absolute;
   bottom: 0; left: 0; right: 0;
-  padding: 40px 16px 14px;
-  background: linear-gradient(0deg, rgba(6,18,32,0.92) 0%, rgba(6,18,32,0.6) 60%, transparent 100%);
+  padding: 32px 14px 12px;
+  background: linear-gradient(0deg, rgba(6,18,32,0.92) 0%, rgba(6,18,32,0.5) 60%, transparent 100%);
   z-index: 3;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .feed-coming {
@@ -806,26 +790,25 @@ body {
 .feed-coming-badge {
   background: linear-gradient(135deg, var(--gold), var(--gold-dark));
   color: var(--bg);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 900;
   letter-spacing: 2px;
   text-transform: uppercase;
-  padding: 4px 12px;
-  border-radius: 4px;
+  padding: 3px 10px;
+  border-radius: 3px;
 }
 
 .feed-coming-text {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
   color: rgba(255,255,255,0.6);
 }
 
-/* Slide progress dots */
 .feed-progress {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .feed-dot {
@@ -845,7 +828,6 @@ body {
   width: 0%;
   background: var(--gold);
   border-radius: 2px;
-  transition: width 0.1s linear;
 }
 
 .feed-dot.active .feed-dot-fill {
@@ -855,6 +837,271 @@ body {
 @keyframes dot-fill {
   0% { width: 0%; }
   100% { width: 100%; }
+}
+
+/* ── Right column — Live Draw Panel ── */
+.hero-right {
+  width: 300px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  padding: 24px 20px 24px 0;
+}
+
+.live-panel {
+  width: 100%;
+  background: rgba(10,26,46,0.8);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(69,184,229,0.2);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.lp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(69,184,229,0.05);
+}
+
+.lp-header .lp-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--blue);
+}
+
+.lp-live-dot {
+  width: 7px; height: 7px;
+  background: #FF4444;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #FF4444;
+  animation: blink 1.2s infinite;
+}
+
+.lp-tabs {
+  display: flex;
+  gap: 3px;
+}
+
+.lp-tab {
+  padding: 3px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: 'Barlow', sans-serif;
+  transition: all 0.2s;
+}
+
+.lp-tab.active {
+  background: rgba(69,184,229,0.15);
+  border-color: rgba(69,184,229,0.4);
+  color: var(--blue);
+}
+
+.lp-tab:hover { color: var(--text-muted); }
+
+.lp-machine {
+  padding: 24px 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.lp-draw-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.lp-balls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.lp-ball {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 24px;
+  font-weight: 900;
+  position: relative;
+  animation: ball-pop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+.lp-ball::before {
+  content: '';
+  position: absolute;
+  top: 8px; left: 11px;
+  width: 12px; height: 6px;
+  background: rgba(255,255,255,0.35);
+  border-radius: 50%;
+  transform: rotate(-30deg);
+}
+
+.lp-ball:nth-child(1) { animation-delay: 0.2s; }
+.lp-ball:nth-child(3) { animation-delay: 0.6s; }
+.lp-ball:nth-child(5) { animation-delay: 1.0s; }
+
+@keyframes ball-pop {
+  0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.lp-ball.blue {
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.3), transparent 60%),
+              linear-gradient(135deg, #3AA0D0, #1A6898);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(69,184,229,0.5), inset 0 -2px 4px rgba(0,0,0,0.2);
+  border: 2px solid rgba(100,200,240,0.4);
+}
+
+.lp-ball.gold {
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.3), transparent 60%),
+              linear-gradient(135deg, #E0B800, #A08000);
+  color: var(--bg);
+  box-shadow: 0 4px 16px rgba(255,214,0,0.5), inset 0 -2px 4px rgba(0,0,0,0.2);
+  border: 2px solid rgba(255,230,100,0.4);
+}
+
+.lp-ball-sep {
+  font-size: 18px;
+  color: rgba(69,184,229,0.3);
+  font-weight: 300;
+}
+
+.lp-prize {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,214,0,0.08);
+  border: 1px solid rgba(255,214,0,0.25);
+  border-radius: 16px;
+  padding: 4px 14px;
+}
+
+.lp-prize .lp-prize-text {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.lp-prize .lp-prize-val {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--gold);
+}
+
+/* Recent */
+.lp-recent {
+  border-top: 1px solid var(--border);
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lp-recent-title {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.lp-recent-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background: rgba(69,184,229,0.04);
+  border-radius: 6px;
+  border: 1px solid rgba(69,184,229,0.06);
+}
+
+.lp-recent-time {
+  font-size: 10px;
+  color: var(--text-dim);
+  font-weight: 500;
+}
+
+.lp-recent-nums {
+  display: flex;
+  gap: 4px;
+}
+
+.lp-mini-ball {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--bg4), var(--bg3));
+  border: 1px solid rgba(69,184,229,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--blue);
+}
+
+.lp-recent-prize {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+/* Footer */
+.lp-footer {
+  border-top: 1px solid var(--border);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255,214,0,0.03);
+}
+
+.lp-footer-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.lp-footer-cd {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 1px;
 }
 
 @keyframes float {
@@ -1956,9 +2203,12 @@ footer {
   .steps-grid { grid-template-columns: repeat(2, 1fr); }
   .draws-grid { grid-template-columns: repeat(2, 1fr); }
   .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
-  .hero-visual { position: static; transform: none; width: 100%; padding: 0 20px 40px; }
-  .hero { flex-direction: column; padding-right: 0; }
+  .hero { flex-direction: column; align-items: stretch; }
+  .hero-content { width: 100%; padding: 40px 20px 20px; }
+  .hero-center { padding: 0 20px 20px; }
   .live-feed { max-width: 540px; margin: 0 auto; }
+  .hero-right { width: 100%; padding: 0 20px 20px; }
+  .live-panel { max-width: 540px; margin: 0 auto; }
   .stats-bar { grid-template-columns: repeat(2, 1fr); }
   .stats-bar .stat-item:nth-child(2) { border-right: none; }
   .app-phone { display: none; }
@@ -1970,7 +2220,9 @@ footer {
   .footer-grid { grid-template-columns: 1fr; }
   .stats-bar { grid-template-columns: repeat(2, 1fr); }
   .section { padding: 40px 20px; }
-  .hero-content { padding: 48px 20px; }
+  .hero-content { padding: 32px 16px 16px; }
+  .hero-right { padding: 0 16px 16px; }
+  .live-panel { max-width: 100%; }
   .results-inner, .countdown-inner, .app-inner { padding: 40px 20px; }
   footer { padding: 40px 20px 20px; }
   .countdown-inner { flex-direction: column; align-items: flex-start; }
@@ -2063,7 +2315,6 @@ footer {
 <section class="hero">
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
-  <div class="hero-orb"></div>
   <div class="hero-content">
     <div class="hero-badge">Official Lottery of Palau</div>
     <h1>
@@ -2082,7 +2333,7 @@ footer {
       <button class="btn-hero-secondary" onclick="document.getElementById('how-to-play').scrollIntoView({behavior:'smooth'})">How to Play</button>
     </div>
   </div>
-  <div class="hero-visual">
+  <div class="hero-center">
     <div class="live-feed" id="live-feed">
       <div class="feed-top">
         <div class="feed-live-badge">
@@ -2110,6 +2361,45 @@ footer {
           <div class="feed-dot"><div class="feed-dot-fill"></div></div>
           <div class="feed-dot"><div class="feed-dot-fill"></div></div>
         </div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="live-panel">
+      <div class="lp-header">
+        <div class="lp-title"><span class="lp-live-dot"></span> LIVE RESULTS</div>
+        <div class="lp-tabs">
+          <button class="lp-tab active" onclick="switchLiveGame('d2')">D2</button>
+          <button class="lp-tab" onclick="switchLiveGame('d3')">D3</button>
+          <button class="lp-tab" onclick="switchLiveGame('pairs')">PAIRS</button>
+        </div>
+      </div>
+      <div class="lp-machine" id="lp-machine">
+        <div class="lp-draw-label">AFTERNOON DRAW — 3:00 PM</div>
+        <div class="lp-balls" id="lp-balls">
+          <div class="lp-ball blue" style="animation-delay:0.2s">7</div>
+          <div class="lp-ball-sep">—</div>
+          <div class="lp-ball gold" style="animation-delay:0.6s">4</div>
+        </div>
+        <div class="lp-prize">
+          <span class="lp-prize-text">Prize Won</span>
+          <span class="lp-prize-val">$175</span>
+        </div>
+      </div>
+      <div class="lp-recent">
+        <div class="lp-recent-title">EARLIER TODAY</div>
+        <div class="lp-recent-row">
+          <span class="lp-recent-time">10:00 AM</span>
+          <div class="lp-recent-nums">
+            <div class="lp-mini-ball">3</div>
+            <div class="lp-mini-ball">9</div>
+          </div>
+          <span class="lp-recent-prize">$70</span>
+        </div>
+      </div>
+      <div class="lp-footer">
+        <span class="lp-footer-label">NEXT DRAW</span>
+        <span class="lp-footer-cd" id="lp-cd">--:--:--</span>
       </div>
     </div>
   </div>
@@ -2841,6 +3131,50 @@ window.addEventListener('scroll', () => {
     }
   });
 });
+
+// ── LIVE PANEL — Game tabs & countdown ──
+const liveGames = {
+  d2: { label: 'DIGITS 2', balls: [{n:'7',c:'blue'},{n:'4',c:'gold'}], prize: '$175' },
+  d3: { label: 'DIGITS 3', balls: [{n:'3',c:'blue'},{n:'1',c:'gold'},{n:'8',c:'blue'}], prize: '$400' },
+  pairs: { label: 'PAIRS', balls: [{n:'12',c:'blue'},{n:'37',c:'gold'}], prize: '$400' }
+};
+
+function switchLiveGame(game) {
+  document.querySelectorAll('.lp-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.lp-tab[onclick*="${game}"]`).classList.add('active');
+  const g = liveGames[game];
+  const ballsEl = document.getElementById('lp-balls');
+  ballsEl.innerHTML = g.balls.map((b,i) =>
+    (i > 0 ? '<div class="lp-ball-sep">—</div>' : '') +
+    `<div class="lp-ball ${b.c}" style="animation-delay:${0.2+i*0.4}s">${b.n}</div>`
+  ).join('');
+  document.querySelector('.lp-prize-val').textContent = g.prize;
+}
+
+function updateLiveCountdown() {
+  const now = new Date(new Date().toLocaleString('en-US',{timeZone:'Pacific/Palau'}));
+  const draws = [10,15,20]; // 10AM, 3PM, 8PM
+  const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+  const nowMin = h*60+m;
+  let nextH = draws.find(dh => dh*60 > nowMin);
+  if (!nextH) nextH = draws[0] + 24;
+  const target = new Date(now); target.setHours(nextH % 24,0,0,0);
+  if (nextH >= 24) target.setDate(target.getDate()+1);
+  let diff = Math.max(0, Math.floor((target - now)/1000));
+  const hh = String(Math.floor(diff/3600)).padStart(2,'0');
+  const mm = String(Math.floor((diff%3600)/60)).padStart(2,'0');
+  const ss = String(diff%60).padStart(2,'0');
+  const el = document.getElementById('lp-cd');
+  if (el) el.textContent = `${hh}:${mm}:${ss}`;
+
+  // Update draw label
+  const drawNames = {10:'MORNING DRAW — 10:00 AM',15:'AFTERNOON DRAW — 3:00 PM',20:'EVENING DRAW — 8:00 PM'};
+  const lastDraw = [...draws].reverse().find(dh => dh*60 <= nowMin);
+  const labelEl = document.querySelector('.lp-draw-label');
+  if (labelEl && lastDraw !== undefined) labelEl.textContent = drawNames[lastDraw];
+}
+setInterval(updateLiveCountdown, 1000);
+updateLiveCountdown();
 </script>
 
 </body>
