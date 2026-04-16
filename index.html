@@ -43,247 +43,11 @@ body {
 ::-webkit-scrollbar-thumb { background: var(--blue-dark); border-radius: 3px; }
 
 /* ══════════════════════════════
-   TOPBAR CLOCK
-══════════════════════════════ */
-.topbar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 1001;
-  height: 44px;
-  background: linear-gradient(90deg, var(--bg) 0%, var(--bg3) 50%, var(--bg) 100%);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0;
-  padding: 0 20px;
-  overflow: hidden;
-}
-
-.topbar-left, .topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex: 1;
-}
-.topbar-right { justify-content: flex-end; }
-
-/* Palau Time Clock */
-.tb-clock {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.tb-clock-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 2px solid rgba(69,184,229,0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  flex-shrink: 0;
-}
-
-.tb-clock-icon::before {
-  content: '';
-  position: absolute;
-  width: 6px;
-  height: 2px;
-  background: var(--blue);
-  top: 50%;
-  left: 50%;
-  transform-origin: left center;
-  animation: clock-minute 3600s linear infinite;
-}
-
-.tb-clock-icon::after {
-  content: '';
-  position: absolute;
-  width: 4px;
-  height: 2px;
-  background: var(--gold);
-  top: 50%;
-  left: 50%;
-  transform-origin: left center;
-  animation: clock-hour 43200s linear infinite;
-}
-
-@keyframes clock-minute {
-  from { transform: translateY(-50%) rotate(0deg); }
-  to { transform: translateY(-50%) rotate(360deg); }
-}
-@keyframes clock-hour {
-  from { transform: translateY(-50%) rotate(0deg); }
-  to { transform: translateY(-50%) rotate(360deg); }
-}
-
-.tb-clock-dot {
-  position: absolute;
-  width: 3px;
-  height: 3px;
-  background: var(--blue);
-  border-radius: 50%;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.tb-clock-label {
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  line-height: 1;
-}
-
-.tb-clock-time {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--blue);
-  letter-spacing: 1.5px;
-  line-height: 1;
-}
-
-.tb-clock-time .tb-sec {
-  font-size: 12px;
-  font-weight: 600;
-  color: rgba(69,184,229,0.5);
-}
-
-.tb-clock-time .tb-ampm {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--text-dim);
-  margin-left: 2px;
-}
-
-.tb-clock-info {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Center separator */
-.tb-divider {
-  width: 1px;
-  height: 20px;
-  background: var(--border);
-  margin: 0 16px;
-  flex-shrink: 0;
-}
-
-/* Center draw countdown */
-.tb-center {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-shrink: 0;
-  background: rgba(255,214,0,0.06);
-  border: 1px solid rgba(255,214,0,0.15);
-  border-radius: 8px;
-  padding: 4px 16px;
-}
-
-.tb-next-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--gold);
-  animation: blink 1.2s infinite;
-  flex-shrink: 0;
-}
-
-.tb-next-label {
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  line-height: 1;
-  white-space: nowrap;
-}
-
-.tb-next-cd {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 18px;
-  font-weight: 900;
-  color: var(--gold);
-  letter-spacing: 2px;
-  line-height: 1;
-}
-
-.tb-next-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.tb-next-draw {
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--gold-dark);
-  white-space: nowrap;
-}
-
-/* Right side: draw schedule pills */
-.tb-draws {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.tb-draw-pill {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 10px;
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  background: rgba(69,184,229,0.06);
-  border: 1px solid rgba(69,184,229,0.1);
-  color: var(--text-dim);
-  white-space: nowrap;
-}
-
-.tb-draw-pill.done { text-decoration: line-through; opacity: 0.4; }
-
-.tb-draw-pill.next {
-  background: rgba(255,214,0,0.1);
-  border-color: rgba(255,214,0,0.3);
-  color: var(--gold);
-}
-
-.tb-draw-pill .pill-dot {
-  width: 4px; height: 4px;
-  border-radius: 50%;
-}
-
-.tb-draw-pill.done .pill-dot { background: var(--text-dim); }
-.tb-draw-pill.next .pill-dot { background: var(--gold); animation: blink 1.2s infinite; }
-.tb-draw-pill.upcoming .pill-dot { background: var(--text-dim); }
-
-@media (max-width: 1024px) {
-  .tb-draws { display: none; }
-  .tb-divider { display: none; }
-}
-
-@media (max-width: 640px) {
-  .topbar { gap: 0; padding: 0 12px; }
-  .tb-clock-label { display: none; }
-  .tb-center { padding: 4px 10px; }
-}
-
-/* ══════════════════════════════
    NAVBAR
 ══════════════════════════════ */
 .navbar {
   position: fixed;
-  top: 44px; left: 0; right: 0;
+  top: 0; left: 0; right: 0;
   z-index: 1000;
   background: rgba(6,18,32,0.92);
   backdrop-filter: blur(16px);
@@ -422,89 +186,12 @@ body {
 }
 
 /* ══════════════════════════════
-   TICKER
-══════════════════════════════ */
-.ticker {
-  margin-top: 108px;
-  background: var(--bg3);
-  border-bottom: 1px solid var(--border);
-  padding: 0;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-}
-
-.ticker-label {
-  background: var(--gold);
-  color: var(--bg);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  padding: 0 16px;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-
-.ticker-track {
-  flex: 1;
-  overflow: hidden;
-  position: relative;
-}
-
-.ticker-inner {
-  display: flex;
-  gap: 48px;
-  animation: scroll-left 28s linear infinite;
-  white-space: nowrap;
-}
-
-@keyframes scroll-left {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-.ticker-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-muted);
-}
-
-.ticker-item .game-tag {
-  background: rgba(69,184,229,0.15);
-  color: var(--blue);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  padding: 2px 8px;
-  border-radius: 3px;
-}
-
-.ticker-item .nums {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--gold);
-  letter-spacing: 2px;
-}
-
-.ticker-item .winner {
-  color: var(--blue);
-}
-
-/* ══════════════════════════════
    HERO
 ══════════════════════════════ */
 .hero {
+  margin-top: 64px;
   position: relative;
-  min-height: 560px;
+  min-height: calc(100vh - 64px);
   display: flex;
   align-items: stretch;
   overflow: hidden;
@@ -533,8 +220,8 @@ body {
 /* Left column — text */
 .hero-content {
   position: relative;
-  padding: 48px 32px 48px 40px;
-  width: 28%;
+  padding: 48px 24px 48px 40px;
+  width: 22%;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -2231,41 +1918,6 @@ footer {
 </head>
 <body>
 
-<!-- ══ TOPBAR CLOCK ══ -->
-<div class="topbar">
-  <div class="topbar-left">
-    <div class="tb-clock">
-      <div class="tb-clock-icon">
-        <div class="tb-clock-dot"></div>
-      </div>
-      <div class="tb-clock-info">
-        <span class="tb-clock-label">Palau Time</span>
-        <span class="tb-clock-time" id="tb-time">--:--<span class="tb-sec">:--</span> <span class="tb-ampm">--</span></span>
-      </div>
-    </div>
-  </div>
-
-  <div class="tb-center">
-    <div class="tb-next-dot"></div>
-    <div class="tb-next-info">
-      <span class="tb-next-label">Next Draw In</span>
-      <span class="tb-next-cd" id="tb-cd">--:--:--</span>
-    </div>
-    <div class="tb-next-info" style="margin-left:8px;">
-      <span class="tb-next-label">Draw</span>
-      <span class="tb-next-draw" id="tb-draw-name">--</span>
-    </div>
-  </div>
-
-  <div class="topbar-right">
-    <div class="tb-draws">
-      <div class="tb-draw-pill" id="tb-pill-am"><span class="pill-dot"></span> 10:00 AM</div>
-      <div class="tb-draw-pill" id="tb-pill-pm"><span class="pill-dot"></span> 3:00 PM</div>
-      <div class="tb-draw-pill" id="tb-pill-eve"><span class="pill-dot"></span> 8:00 PM</div>
-    </div>
-  </div>
-</div>
-
 <!-- ══ NAVBAR ══ -->
 <nav class="navbar">
   <a href="#" class="nav-logo">
@@ -2288,28 +1940,6 @@ footer {
   <button class="btn-login">Log In</button>
   <button class="btn-register">Register Now</button>
 </nav>
-
-<!-- ══ TICKER ══ -->
-<div class="ticker">
-  <div class="ticker-label">Latest Results</div>
-  <div class="ticker-track">
-    <div class="ticker-inner">
-      <div class="ticker-item"><span class="game-tag">DIGITS 2</span><span class="nums">7 — 4</span><span class="winner">Prize: $175</span></div>
-      <div class="ticker-item"><span class="game-tag">DIGITS 3</span><span class="nums">3 — 8 — 1</span><span class="winner">Prize: $1,000</span></div>
-      <div class="ticker-item"><span class="game-tag">PAIRS</span><span class="nums">22 — 39</span><span class="winner">Prize: $200</span></div>
-      <div class="ticker-item"><span class="game-tag">DIGITS 2</span><span class="nums">0 — 6</span><span class="winner">Prize: $175</span></div>
-      <div class="ticker-item"><span class="game-tag">DIGITS 3</span><span class="nums">5 — 2 — 9</span><span class="winner">Prize: $1,000</span></div>
-      <div class="ticker-item"><span class="game-tag">PAIRS</span><span class="nums">11 — 28</span><span class="winner">Prize: $200</span></div>
-      <!-- Duplicate for seamless loop -->
-      <div class="ticker-item"><span class="game-tag">DIGITS 2</span><span class="nums">7 — 4</span><span class="winner">Prize: $175</span></div>
-      <div class="ticker-item"><span class="game-tag">DIGITS 3</span><span class="nums">3 — 8 — 1</span><span class="winner">Prize: $1,000</span></div>
-      <div class="ticker-item"><span class="game-tag">PAIRS</span><span class="nums">22 — 39</span><span class="winner">Prize: $200</span></div>
-      <div class="ticker-item"><span class="game-tag">DIGITS 2</span><span class="nums">0 — 6</span><span class="winner">Prize: $175</span></div>
-      <div class="ticker-item"><span class="game-tag">DIGITS 3</span><span class="nums">5 — 2 — 9</span><span class="winner">Prize: $1,000</span></div>
-      <div class="ticker-item"><span class="game-tag">PAIRS</span><span class="nums">11 — 28</span><span class="winner">Prize: $200</span></div>
-    </div>
-  </div>
-</div>
 
 <!-- ══ HERO ══ -->
 <section class="hero">
@@ -2964,81 +2594,10 @@ footer {
 <script>
 // ── TOPBAR: Palau Clock + Draw Countdown ──
 const PALAU_TZ = 'Pacific/Palau'; // UTC+9
-const DRAW_HOURS = [10, 15, 20]; // 10am, 3pm, 8pm
-const DRAW_NAMES = ['Morning', 'Afternoon', 'Evening'];
 
 function getPalauNow() {
   return new Date(new Date().toLocaleString('en-US', { timeZone: PALAU_TZ }));
 }
-
-function updateTopbar() {
-  const now = getPalauNow();
-  const h = now.getHours();
-  const m = now.getMinutes();
-  const s = now.getSeconds();
-  const ampm = h >= 12 ? 'PM' : 'AM';
-  const h12 = h % 12 || 12;
-
-  // Clock display
-  document.getElementById('tb-time').innerHTML =
-    String(h12).padStart(2,'0') + ':' + String(m).padStart(2,'0') +
-    '<span class="tb-sec">:' + String(s).padStart(2,'0') + '</span>' +
-    ' <span class="tb-ampm">' + ampm + '</span>';
-
-  // Find next draw
-  let nextIdx = -1;
-  for (let i = 0; i < DRAW_HOURS.length; i++) {
-    if (h < DRAW_HOURS[i] || (h === DRAW_HOURS[i] && m === 0 && s === 0)) {
-      nextIdx = i; break;
-    }
-  }
-
-  // Countdown to next draw
-  let diff;
-  let drawLabel;
-  if (nextIdx >= 0) {
-    const target = new Date(now);
-    target.setHours(DRAW_HOURS[nextIdx], 0, 0, 0);
-    diff = target - now;
-    drawLabel = DRAW_NAMES[nextIdx];
-  } else {
-    // Next day morning draw
-    const target = new Date(now);
-    target.setDate(target.getDate() + 1);
-    target.setHours(DRAW_HOURS[0], 0, 0, 0);
-    diff = target - now;
-    drawLabel = DRAW_NAMES[0];
-    nextIdx = -1;
-  }
-  const cdH = Math.floor(diff / 3600000);
-  const cdM = Math.floor((diff % 3600000) / 60000);
-  const cdS = Math.floor((diff % 60000) / 1000);
-  document.getElementById('tb-cd').textContent =
-    String(cdH).padStart(2,'0') + ':' + String(cdM).padStart(2,'0') + ':' + String(cdS).padStart(2,'0');
-  document.getElementById('tb-draw-name').textContent = drawLabel + ' Draw';
-
-  // Draw schedule pills
-  const pills = [
-    document.getElementById('tb-pill-am'),
-    document.getElementById('tb-pill-pm'),
-    document.getElementById('tb-pill-eve')
-  ];
-  pills.forEach((pill, i) => {
-    pill.className = 'tb-draw-pill';
-    if (nextIdx >= 0 && i < nextIdx) {
-      pill.classList.add('done');
-    } else if (i === nextIdx) {
-      pill.classList.add('next');
-    } else if (nextIdx < 0) {
-      pill.classList.add('done'); // all draws done for today
-    } else {
-      pill.classList.add('upcoming');
-    }
-  });
-}
-
-setInterval(updateTopbar, 1000);
-updateTopbar();
 
 // ── COUNTDOWN TIMER ──
 function updateCountdown() {
