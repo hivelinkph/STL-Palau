@@ -1,0 +1,2324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STL Palau — Small Town Lottery</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,700&family=Barlow+Condensed:wght@400;600;700;800;900&display=swap');
+
+:root {
+  --blue:       #45B8E5;
+  --blue-dark:  #2A8FBA;
+  --blue-glow:  rgba(69,184,229,0.35);
+  --gold:       #FFD600;
+  --gold-dark:  #E0B800;
+  --gold-glow:  rgba(255,214,0,0.35);
+  --bg:         #061220;
+  --bg2:        #0A1A2E;
+  --bg3:        #0F2244;
+  --bg4:        #132B54;
+  --card:       #0D1F3C;
+  --card2:      #112548;
+  --border:     rgba(69,184,229,0.18);
+  --text:       #E8F4FD;
+  --text-muted: #7BA8C4;
+  --text-dim:   #4A7A9B;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Barlow', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--blue-dark); border-radius: 3px; }
+
+/* ══════════════════════════════
+   NAVBAR
+══════════════════════════════ */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: rgba(6,18,32,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  height: 64px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 0;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.nav-logo-flag {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.nav-logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.nav-logo-text .top {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.nav-logo-text .bottom {
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--blue);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 40px;
+  list-style: none;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 6px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  color: var(--blue);
+  background: rgba(69,184,229,0.1);
+}
+
+.nav-spacer { flex: 1; }
+
+.nav-live {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gold);
+  background: rgba(255,214,0,0.1);
+  border: 1px solid rgba(255,214,0,0.3);
+  padding: 6px 14px;
+  border-radius: 20px;
+  margin-right: 16px;
+  cursor: pointer;
+  animation: pulse-gold 2s infinite;
+}
+
+@keyframes pulse-gold {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,214,0,0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(255,214,0,0); }
+}
+
+.nav-live::before {
+  content: '';
+  width: 7px; height: 7px;
+  background: var(--gold);
+  border-radius: 50%;
+}
+
+.btn-login {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-family: 'Barlow', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-right: 8px;
+}
+
+.btn-login:hover { border-color: var(--blue); color: var(--blue); }
+
+.btn-register {
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  border: none;
+  color: var(--bg);
+  font-family: 'Barlow', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 8px 22px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+}
+
+.btn-register:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px var(--gold-glow);
+}
+
+/* ══════════════════════════════
+   TICKER
+══════════════════════════════ */
+.ticker {
+  margin-top: 64px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  padding: 0;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.ticker-label {
+  background: var(--gold);
+  color: var(--bg);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 0 16px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.ticker-track {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.ticker-inner {
+  display: flex;
+  gap: 48px;
+  animation: scroll-left 28s linear infinite;
+  white-space: nowrap;
+}
+
+@keyframes scroll-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.ticker-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.ticker-item .game-tag {
+  background: rgba(69,184,229,0.15);
+  color: var(--blue);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 2px 8px;
+  border-radius: 3px;
+}
+
+.ticker-item .nums {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 2px;
+}
+
+.ticker-item .winner {
+  color: var(--blue);
+}
+
+/* ══════════════════════════════
+   HERO
+══════════════════════════════ */
+.hero {
+  position: relative;
+  min-height: 540px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: var(--bg2);
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 80% at 80% 50%, rgba(69,184,229,0.12) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 60% at 10% 80%, rgba(255,214,0,0.06) 0%, transparent 60%),
+    linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%);
+}
+
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(69,184,229,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(69,184,229,0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 40%, transparent 100%);
+}
+
+.hero-orb {
+  position: absolute;
+  right: -60px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(69,184,229,0.15) 0%, rgba(69,184,229,0.05) 40%, transparent 70%);
+  animation: orb-pulse 4s ease-in-out infinite;
+}
+
+@keyframes orb-pulse {
+  0%, 100% { transform: translateY(-50%) scale(1); opacity: 0.8; }
+  50% { transform: translateY(-50%) scale(1.05); opacity: 1; }
+}
+
+.hero-content {
+  position: relative;
+  padding: 60px 40px 60px;
+  max-width: 640px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,214,0,0.1);
+  border: 1px solid rgba(255,214,0,0.3);
+  color: var(--gold);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 6px 16px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+}
+
+.hero-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--gold);
+  border-radius: 50%;
+  animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.hero h1 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(48px, 7vw, 80px);
+  font-weight: 900;
+  line-height: 0.95;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  letter-spacing: -1px;
+}
+
+.hero h1 .line1 { color: #fff; }
+.hero h1 .line2 {
+  color: var(--blue);
+  -webkit-text-stroke: 1px var(--blue);
+}
+.hero h1 .line3 {
+  color: var(--gold);
+  font-style: italic;
+}
+
+.hero-desc {
+  font-size: 16px;
+  font-weight: 300;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin-bottom: 36px;
+  max-width: 480px;
+}
+
+.hero-jackpot {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  background: var(--card);
+  border: 1px solid rgba(255,214,0,0.3);
+  border-radius: 12px;
+  padding: 16px 24px;
+  margin-bottom: 32px;
+}
+
+.hero-jackpot .jlabel {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.hero-jackpot .jamount {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 44px;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: -1px;
+  text-shadow: 0 0 30px rgba(255,214,0,0.4);
+  animation: count-up 3s ease-out both;
+}
+
+@keyframes count-up {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.hero-jackpot .jcurr {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--gold-dark);
+}
+
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-hero-primary {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+  color: var(--bg);
+  border: none;
+  font-family: 'Barlow', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  padding: 14px 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.25s;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.btn-hero-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 40px rgba(255,214,0,0.4);
+}
+
+.btn-hero-secondary {
+  background: rgba(69,184,229,0.12);
+  color: var(--blue);
+  border: 1px solid rgba(69,184,229,0.4);
+  font-family: 'Barlow', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 14px 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.25s;
+  text-transform: uppercase;
+}
+
+.btn-hero-secondary:hover {
+  background: rgba(69,184,229,0.2);
+  box-shadow: 0 6px 24px var(--blue-glow);
+}
+
+/* Hero right visual */
+.hero-visual {
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.draw-ball {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.25), transparent 60%),
+              linear-gradient(135deg, var(--blue-dark), var(--bg3));
+  border: 2px solid rgba(69,184,229,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 28px;
+  font-weight: 900;
+  color: #fff;
+  box-shadow: 0 8px 32px rgba(69,184,229,0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+  animation: float 3s ease-in-out infinite;
+}
+
+.draw-ball:nth-child(2) { animation-delay: 0.4s; }
+.draw-ball:nth-child(3) { animation-delay: 0.8s; }
+.draw-ball.gold-ball {
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.25), transparent 60%),
+              linear-gradient(135deg, var(--gold-dark), #B8900A);
+  border-color: rgba(255,214,0,0.6);
+  box-shadow: 0 8px 32px rgba(255,214,0,0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+  color: var(--bg);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* ══════════════════════════════
+   STATS BAR
+══════════════════════════════ */
+.stats-bar {
+  background: var(--bg3);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 40px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 0 20px;
+  border-right: 1px solid var(--border);
+}
+
+.stat-item:last-child { border-right: none; }
+
+.stat-value {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--gold);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/* ══════════════════════════════
+   SECTION LAYOUT
+══════════════════════════════ */
+.section {
+  padding: 56px 40px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.section-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.section-title span { color: var(--blue); }
+
+.section-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-weight: 300;
+}
+
+.view-all {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue);
+  text-decoration: none;
+  letter-spacing: 0.5px;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.view-all:hover { opacity: 1; }
+
+/* ══════════════════════════════
+   GAME CARDS
+══════════════════════════════ */
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.game-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  group: true;
+}
+
+.game-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--blue);
+  box-shadow: 0 16px 48px rgba(69,184,229,0.2);
+}
+
+.game-card-header {
+  padding: 28px 28px 20px;
+  position: relative;
+  overflow: hidden;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.game-card-bg {
+  position: absolute;
+  inset: 0;
+}
+
+.card-d2 .game-card-bg {
+  background: linear-gradient(135deg, #0A2040 0%, #0D3060 50%, #0A1A30 100%);
+}
+.card-d3 .game-card-bg {
+  background: linear-gradient(135deg, #1A1A00 0%, #2A2800 50%, #1A1800 100%);
+}
+.card-pairs .game-card-bg {
+  background: linear-gradient(135deg, #001A20 0%, #002A30 50%, #001820 100%);
+}
+
+.card-d2 .game-card-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 80% 20%, rgba(69,184,229,0.25) 0%, transparent 60%);
+}
+.card-d3 .game-card-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 80% 20%, rgba(255,214,0,0.25) 0%, transparent 60%);
+}
+.card-pairs .game-card-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 80% 20%, rgba(69,229,180,0.2) 0%, transparent 60%);
+}
+
+.game-tag {
+  position: relative;
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 4px;
+  align-self: flex-start;
+}
+
+.card-d2 .game-tag { background: rgba(69,184,229,0.2); color: var(--blue); border: 1px solid rgba(69,184,229,0.4); }
+.card-d3 .game-tag { background: rgba(255,214,0,0.15); color: var(--gold); border: 1px solid rgba(255,214,0,0.4); }
+.card-pairs .game-tag { background: rgba(69,229,180,0.15); color: #45E5B4; border: 1px solid rgba(69,229,180,0.4); }
+
+.game-card-balls {
+  position: relative;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.mini-ball {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  position: relative;
+}
+
+.mini-ball::before {
+  content: '';
+  position: absolute;
+  top: 8px; left: 12px;
+  width: 12px; height: 6px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 50%;
+  transform: rotate(-30deg);
+}
+
+.card-d2 .mini-ball { background: linear-gradient(135deg, #2A8FBA, #1A6090); color: #fff; box-shadow: 0 4px 16px rgba(69,184,229,0.4); }
+.card-d3 .mini-ball { background: linear-gradient(135deg, #C09000, #906800); color: #fff; box-shadow: 0 4px 16px rgba(255,214,0,0.4); }
+.card-pairs .mini-ball { background: linear-gradient(135deg, #20A080, #107060); color: #fff; box-shadow: 0 4px 16px rgba(69,229,180,0.4); }
+
+.mini-ball.question { font-size: 28px; opacity: 0.4; }
+
+.separator {
+  font-size: 20px;
+  color: rgba(255,255,255,0.2);
+  font-weight: 300;
+}
+
+.game-card-body {
+  padding: 20px 28px 24px;
+  border-top: 1px solid var(--border);
+}
+
+.game-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 26px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.card-d2 .game-name { color: var(--blue); }
+.card-d3 .game-name { color: var(--gold); }
+.card-pairs .game-name { color: #45E5B4; }
+
+.game-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 300;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.game-meta {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.game-meta-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.game-meta-item .meta-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 2px;
+}
+
+.game-meta-item .meta-val {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.card-d2 .meta-val { color: var(--blue); }
+.card-d3 .meta-val { color: var(--gold); }
+.card-pairs .meta-val { color: #45E5B4; }
+
+.btn-play {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.card-d2 .btn-play { background: linear-gradient(135deg, var(--blue-dark), #1A6090); color: #fff; }
+.card-d3 .btn-play { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: var(--bg); }
+.card-pairs .btn-play { background: linear-gradient(135deg, #20A080, #107060); color: #fff; }
+
+.btn-play:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+/* ══════════════════════════════
+   LIVE RESULTS
+══════════════════════════════ */
+.results-section {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 0;
+}
+
+.results-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 48px 40px;
+}
+
+.draw-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0;
+}
+
+.draw-tab {
+  padding: 10px 24px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  margin-bottom: -1px;
+}
+
+.draw-tab.active {
+  color: var(--blue);
+  border-bottom-color: var(--blue);
+}
+
+.draw-tab:hover { color: var(--text-muted); }
+
+.draws-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.draw-result-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  transition: border-color 0.2s;
+}
+
+.draw-result-card:hover { border-color: var(--blue); }
+
+.draw-result-card .draw-time {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.draw-result-card .draw-time::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--text-dim);
+}
+
+.draw-result-card.latest .draw-time {
+  color: var(--gold);
+}
+
+.draw-result-card.latest .draw-time::before {
+  background: var(--gold);
+  box-shadow: 0 0 6px var(--gold);
+  animation: blink 1.5s infinite;
+}
+
+.draw-result-card .draw-game {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  letter-spacing: 0.5px;
+}
+
+.draw-result-card .draw-numbers {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.result-ball {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.2), transparent 60%),
+              linear-gradient(135deg, var(--bg4), var(--bg3));
+  border: 2px solid rgba(69,184,229,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--blue);
+}
+
+.result-dash { color: var(--text-dim); font-size: 18px; }
+
+/* ══════════════════════════════
+   COUNTDOWN
+══════════════════════════════ */
+.countdown-section {
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+}
+
+.countdown-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.countdown-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+.countdown-label span { color: var(--gold); }
+
+.countdown-timer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cd-unit {
+  text-align: center;
+}
+
+.cd-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 48px;
+  font-weight: 900;
+  color: var(--gold);
+  line-height: 1;
+  background: var(--card);
+  border: 1px solid rgba(255,214,0,0.3);
+  border-radius: 8px;
+  width: 72px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cd-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+
+.cd-sep {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--text-dim);
+  padding-bottom: 16px;
+}
+
+.countdown-draw {
+  text-align: right;
+}
+
+.countdown-draw .draw-name {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.countdown-draw .draw-info {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--blue);
+}
+
+/* ══════════════════════════════
+   HOW TO PLAY
+══════════════════════════════ */
+.how-section {
+  background: var(--bg);
+}
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.step-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px 24px;
+  position: relative;
+  transition: all 0.3s;
+}
+
+.step-card:hover {
+  border-color: var(--blue);
+  transform: translateY(-4px);
+}
+
+.step-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 64px;
+  font-weight: 900;
+  color: rgba(69,184,229,0.08);
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  line-height: 1;
+}
+
+.step-icon {
+  font-size: 36px;
+  margin-bottom: 16px;
+}
+
+.step-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 10px;
+  letter-spacing: 0.5px;
+}
+
+.step-desc {
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* ══════════════════════════════
+   PRIZE TABLE
+══════════════════════════════ */
+.prizes-section {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.prize-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.prize-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.prize-card-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.prize-game-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 24px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.prize-game-name.blue { color: var(--blue); }
+.prize-game-name.gold { color: var(--gold); }
+.prize-game-name.teal { color: #45E5B4; }
+
+.prize-card-sub {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.prize-table {
+  width: 100%;
+}
+
+.prize-table tr {
+  border-bottom: 1px solid rgba(69,184,229,0.07);
+}
+
+.prize-table tr:last-child { border-bottom: none; }
+
+.prize-table td {
+  padding: 14px 24px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.prize-table td:last-child {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: right;
+  color: var(--gold);
+}
+
+.prize-table td:first-child {
+  color: var(--text-dim);
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+/* ══════════════════════════════
+   PROMOTIONS
+══════════════════════════════ */
+.promo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.promo-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.promo-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--blue);
+  box-shadow: 0 16px 48px rgba(69,184,229,0.15);
+}
+
+.promo-card-img {
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  position: relative;
+  overflow: hidden;
+}
+
+.promo-1 { background: linear-gradient(135deg, #0A2A60, #0A1A40); }
+.promo-2 { background: linear-gradient(135deg, #1A1A00, #0A1000); }
+.promo-3 { background: linear-gradient(135deg, #001A20, #000A10); }
+
+.promo-card-body {
+  padding: 20px;
+}
+
+.promo-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 4px;
+  background: rgba(255,214,0,0.1);
+  color: var(--gold);
+  border: 1px solid rgba(255,214,0,0.3);
+  margin-bottom: 10px;
+}
+
+.promo-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.promo-desc {
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* ══════════════════════════════
+   APP DOWNLOAD
+══════════════════════════════ */
+.app-section {
+  background: linear-gradient(135deg, var(--bg2) 0%, var(--bg3) 100%);
+  border-top: 1px solid var(--border);
+}
+
+.app-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 64px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 60px;
+}
+
+.app-content { max-width: 500px; }
+
+.app-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(69,184,229,0.1);
+  border: 1px solid rgba(69,184,229,0.3);
+  color: var(--blue);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+
+.app-content h2 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 48px;
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 0.95;
+  margin-bottom: 16px;
+}
+
+.app-content h2 span { color: var(--gold); font-style: italic; }
+
+.app-content p {
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin-bottom: 32px;
+}
+
+.app-btns {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.app-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--card);
+  border: 1px solid rgba(69,184,229,0.3);
+  padding: 12px 24px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s;
+  text-decoration: none;
+}
+
+.app-btn:hover {
+  border-color: var(--blue);
+  background: var(--card2);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px var(--blue-glow);
+}
+
+.app-btn-icon { font-size: 28px; }
+
+.app-btn-text { text-align: left; }
+
+.app-btn-sub {
+  font-size: 10px;
+  color: var(--text-dim);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.app-btn-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.app-phone {
+  width: 240px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.phone-frame {
+  background: var(--card2);
+  border: 2px solid rgba(69,184,229,0.3);
+  border-radius: 40px;
+  padding: 16px;
+  box-shadow: 0 24px 80px rgba(69,184,229,0.2);
+  position: relative;
+}
+
+.phone-frame::before {
+  content: '';
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 6px;
+  background: rgba(69,184,229,0.3);
+  border-radius: 3px;
+}
+
+.phone-screen {
+  background: var(--bg);
+  border-radius: 28px;
+  padding: 40px 16px 20px;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.phone-logo {
+  text-align: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.phone-mini-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.phone-mini-card .p-label {
+  font-size: 9px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.phone-mini-card .p-balls {
+  display: flex;
+  gap: 6px;
+}
+
+.p-ball {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue-dark), #1A6090);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 900;
+  color: #fff;
+  font-family: 'Barlow Condensed', sans-serif;
+}
+
+.phone-mini-prize {
+  background: linear-gradient(135deg, rgba(255,214,0,0.1), rgba(255,214,0,0.05));
+  border: 1px solid rgba(255,214,0,0.3);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+}
+
+.phone-mini-prize .prize-val {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--gold);
+}
+
+.phone-mini-prize .prize-label {
+  font-size: 9px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ══════════════════════════════
+   MARQUEE
+══════════════════════════════ */
+.marquee-section {
+  background: var(--gold);
+  padding: 10px 0;
+  overflow: hidden;
+}
+
+.marquee-track {
+  display: flex;
+  gap: 64px;
+  animation: scroll-left 20s linear infinite;
+  white-space: nowrap;
+}
+
+.marquee-item {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--bg);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.marquee-item::before {
+  content: '🇵🇼';
+  font-size: 16px;
+}
+
+/* ══════════════════════════════
+   FOOTER
+══════════════════════════════ */
+footer {
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  padding: 48px 40px 24px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 40px;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.footer-logo .flag { font-size: 28px; }
+.footer-logo .wordmark {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.footer-logo .wordmark small {
+  display: block;
+  font-size: 9px;
+  color: var(--blue);
+  letter-spacing: 3px;
+  font-weight: 500;
+}
+
+.footer-desc {
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--text-dim);
+  line-height: 1.7;
+  margin-bottom: 20px;
+  max-width: 300px;
+}
+
+.footer-social {
+  display: flex;
+  gap: 10px;
+}
+
+.social-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.social-btn:hover { border-color: var(--blue); background: var(--card2); }
+
+.footer-col-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.footer-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-links a {
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover { color: var(--blue); }
+
+.footer-bottom {
+  border-top: 1px solid var(--border);
+  padding-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.footer-legal {
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.7;
+  max-width: 600px;
+}
+
+.footer-age {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.footer-age .age-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--text-dim);
+  line-height: 1;
+}
+
+.footer-age .age-label {
+  font-size: 9px;
+  color: var(--text-dim);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+/* ══════════════════════════════
+   RESPONSIVE
+══════════════════════════════ */
+@media (max-width: 1024px) {
+  .games-grid, .prize-grid, .promo-grid { grid-template-columns: repeat(2, 1fr); }
+  .steps-grid { grid-template-columns: repeat(2, 1fr); }
+  .draws-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .hero-visual { display: none; }
+  .stats-bar { grid-template-columns: repeat(2, 1fr); }
+  .stats-bar .stat-item:nth-child(2) { border-right: none; }
+  .app-phone { display: none; }
+  .nav-links { display: none; }
+}
+
+@media (max-width: 640px) {
+  .games-grid, .prize-grid, .promo-grid, .steps-grid, .draws-grid { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .stats-bar { grid-template-columns: repeat(2, 1fr); }
+  .section { padding: 40px 20px; }
+  .hero-content { padding: 48px 20px; }
+  .results-inner, .countdown-inner, .app-inner { padding: 40px 20px; }
+  footer { padding: 40px 20px 20px; }
+  .countdown-inner { flex-direction: column; align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ NAVBAR ══ -->
+<nav class="navbar">
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-flag">🇵🇼</div>
+    <div class="nav-logo-text">
+      <span class="top">STL Palau</span>
+      <span class="bottom">Official Lottery</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#" class="active">Home</a></li>
+    <li><a href="#games">Games</a></li>
+    <li><a href="#results">Results</a></li>
+    <li><a href="#how-to-play">How to Play</a></li>
+    <li><a href="#prizes">Prizes</a></li>
+    <li><a href="#promos">Promotions</a></li>
+  </ul>
+  <div class="nav-spacer"></div>
+  <div class="nav-live">DRAW LIVE — 7:00 PM</div>
+  <button class="btn-login">Log In</button>
+  <button class="btn-register">Register Now</button>
+</nav>
+
+<!-- ══ TICKER ══ -->
+<div class="ticker">
+  <div class="ticker-label">Latest Results</div>
+  <div class="ticker-track">
+    <div class="ticker-inner">
+      <div class="ticker-item"><span class="game-tag">DIGITS 2</span><span class="nums">7 — 4</span><span class="winner">Prize: $175</span></div>
+      <div class="ticker-item"><span class="game-tag">DIGITS 3</span><span class="nums">3 — 8 — 1</span><span class="winner">Prize: $1,000</span></div>
+      <div class="ticker-item"><span class="game-tag">PAIRS</span><span class="nums">22 — 39</span><span class="winner">Prize: $200</span></div>
+      <div class="ticker-item"><span class="game-tag">DIGITS 2</span><span class="nums">0 — 6</span><span class="winner">Prize: $175</span></div>
+      <div class="ticker-item"><span class="game-tag">DIGITS 3</span><span class="nums">5 — 2 — 9</span><span class="winner">Prize: $1,000</span></div>
+      <div class="ticker-item"><span class="game-tag">PAIRS</span><span class="nums">11 — 28</span><span class="winner">Prize: $200</span></div>
+      <!-- Duplicate for seamless loop -->
+      <div class="ticker-item"><span class="game-tag">DIGITS 2</span><span class="nums">7 — 4</span><span class="winner">Prize: $175</span></div>
+      <div class="ticker-item"><span class="game-tag">DIGITS 3</span><span class="nums">3 — 8 — 1</span><span class="winner">Prize: $1,000</span></div>
+      <div class="ticker-item"><span class="game-tag">PAIRS</span><span class="nums">22 — 39</span><span class="winner">Prize: $200</span></div>
+      <div class="ticker-item"><span class="game-tag">DIGITS 2</span><span class="nums">0 — 6</span><span class="winner">Prize: $175</span></div>
+      <div class="ticker-item"><span class="game-tag">DIGITS 3</span><span class="nums">5 — 2 — 9</span><span class="winner">Prize: $1,000</span></div>
+      <div class="ticker-item"><span class="game-tag">PAIRS</span><span class="nums">11 — 28</span><span class="winner">Prize: $200</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-orb"></div>
+  <div class="hero-content">
+    <div class="hero-badge">Official Lottery of Palau</div>
+    <h1>
+      <div class="line1">Win Big</div>
+      <div class="line2">Play STL</div>
+      <div class="line3">Every Day</div>
+    </h1>
+    <p class="hero-desc">Palau's official Small Town Lottery — three draws daily, three ways to win. Bet from just $0.25 and watch the results live from anywhere in the world.</p>
+    <div class="hero-jackpot">
+      <span class="jlabel">Today's Top Prize</span>
+      <span class="jcurr">$</span>
+      <span class="jamount" id="jackpot-amount">50,000</span>
+    </div>
+    <div class="hero-actions">
+      <button class="btn-hero-primary" onclick="document.getElementById('games').scrollIntoView({behavior:'smooth'})">Play Now</button>
+      <button class="btn-hero-secondary" onclick="document.getElementById('how-to-play').scrollIntoView({behavior:'smooth'})">How to Play</button>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="draw-ball">7</div>
+    <div class="draw-ball gold-ball">3</div>
+    <div class="draw-ball">9</div>
+    <div class="draw-ball gold-ball">1</div>
+    <div class="draw-ball">5</div>
+  </div>
+</section>
+
+<!-- ══ STATS BAR ══ -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-value">3×</div>
+    <div class="stat-label">Daily Draws</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-value">$0.25</div>
+    <div class="stat-label">Minimum Bet</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-value">400×</div>
+    <div class="stat-label">Max Multiplier</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-value">24/7</div>
+    <div class="stat-label">Online Access</div>
+  </div>
+</div>
+
+<!-- ══ COUNTDOWN ══ -->
+<div class="countdown-section">
+  <div class="countdown-inner">
+    <div class="countdown-label">Next Draw: <span>Evening Draw</span></div>
+    <div class="countdown-timer">
+      <div class="cd-unit">
+        <div class="cd-num" id="cd-h">02</div>
+        <div class="cd-label">Hours</div>
+      </div>
+      <div class="cd-sep">:</div>
+      <div class="cd-unit">
+        <div class="cd-num" id="cd-m">34</div>
+        <div class="cd-label">Mins</div>
+      </div>
+      <div class="cd-sep">:</div>
+      <div class="cd-unit">
+        <div class="cd-num" id="cd-s">17</div>
+        <div class="cd-label">Secs</div>
+      </div>
+    </div>
+    <div class="countdown-draw">
+      <div class="draw-name">Draw Schedule</div>
+      <div class="draw-info">10:00 AM · 3:00 PM · 8:00 PM</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ GAMES ══ -->
+<div id="games">
+  <div class="section">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Our <span>Games</span></div>
+        <div class="section-sub">Pick your game — draws happen 3 times every day</div>
+      </div>
+    </div>
+    <div class="games-grid">
+
+      <!-- DIGITS 2 -->
+      <div class="game-card card-d2">
+        <div class="game-card-header">
+          <div class="game-card-bg"></div>
+          <span class="game-tag">Most Popular</span>
+          <div class="game-card-balls">
+            <div class="mini-ball">7</div>
+            <div class="separator">—</div>
+            <div class="mini-ball question">?</div>
+          </div>
+        </div>
+        <div class="game-card-body">
+          <div class="game-name">Palau Digits 2</div>
+          <div class="game-desc">Pick 2 digits from 0–9 in the exact winning order. Simple, fast, and exciting.</div>
+          <div class="game-meta">
+            <div class="game-meta-item">
+              <span class="meta-label">Min. Bet</span>
+              <span class="meta-val">$0.25</span>
+            </div>
+            <div class="game-meta-item">
+              <span class="meta-label">Multiplier</span>
+              <span class="meta-val">70×</span>
+            </div>
+            <div class="game-meta-item">
+              <span class="meta-label">Max Prize</span>
+              <span class="meta-val">$3,500</span>
+            </div>
+          </div>
+          <button class="btn-play">Play Digits 2</button>
+        </div>
+      </div>
+
+      <!-- DIGITS 3 -->
+      <div class="game-card card-d3">
+        <div class="game-card-header">
+          <div class="game-card-bg"></div>
+          <span class="game-tag">Biggest Prize</span>
+          <div class="game-card-balls">
+            <div class="mini-ball">4</div>
+            <div class="separator">—</div>
+            <div class="mini-ball">8</div>
+            <div class="separator">—</div>
+            <div class="mini-ball question">?</div>
+          </div>
+        </div>
+        <div class="game-card-body">
+          <div class="game-name">Palau Digits 3</div>
+          <div class="game-desc">Match 3 digits in exact order. Higher odds, massive payouts — up to 400 times your bet.</div>
+          <div class="game-meta">
+            <div class="game-meta-item">
+              <span class="meta-label">Min. Bet</span>
+              <span class="meta-val">$0.25</span>
+            </div>
+            <div class="game-meta-item">
+              <span class="meta-label">Multiplier</span>
+              <span class="meta-val">400×</span>
+            </div>
+            <div class="game-meta-item">
+              <span class="meta-label">Max Prize</span>
+              <span class="meta-val">$20,000</span>
+            </div>
+          </div>
+          <button class="btn-play">Play Digits 3</button>
+        </div>
+      </div>
+
+      <!-- PAIRS -->
+      <div class="game-card card-pairs">
+        <div class="game-card-header">
+          <div class="game-card-bg"></div>
+          <span class="game-tag">Classic Pick</span>
+          <div class="game-card-balls">
+            <div class="mini-ball">22</div>
+            <div class="separator">—</div>
+            <div class="mini-ball question">?</div>
+          </div>
+        </div>
+        <div class="game-card-body">
+          <div class="game-name">Palau Pairs</div>
+          <div class="game-desc">Choose 2 numbers from 1–40 in exact order. A wider range means every draw feels fresh.</div>
+          <div class="game-meta">
+            <div class="game-meta-item">
+              <span class="meta-label">Min. Bet</span>
+              <span class="meta-val">$0.50</span>
+            </div>
+            <div class="game-meta-item">
+              <span class="meta-label">Multiplier</span>
+              <span class="meta-val">400×</span>
+            </div>
+            <div class="game-meta-item">
+              <span class="meta-label">Max Prize</span>
+              <span class="meta-val">$20,000</span>
+            </div>
+          </div>
+          <button class="btn-play">Play Pairs</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ LIVE RESULTS ══ -->
+<div id="results" class="results-section">
+  <div class="results-inner">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Live <span>Results</span></div>
+        <div class="section-sub">Today's winning numbers — April 16, 2026</div>
+      </div>
+      <a href="#" class="view-all">Full History →</a>
+    </div>
+
+    <div class="draw-tabs">
+      <div class="draw-tab active" onclick="switchTab(this,'digits2')">Digits 2</div>
+      <div class="draw-tab" onclick="switchTab(this,'digits3')">Digits 3</div>
+      <div class="draw-tab" onclick="switchTab(this,'pairs')">Pairs</div>
+    </div>
+
+    <div id="results-digits2" class="draws-grid">
+      <div class="draw-result-card latest">
+        <div class="draw-time">8:00 PM — Latest Draw</div>
+        <div class="draw-game">Palau Digits 2</div>
+        <div class="draw-numbers">
+          <div class="result-ball">7</div>
+          <div class="result-dash">—</div>
+          <div class="result-ball">4</div>
+        </div>
+      </div>
+      <div class="draw-result-card">
+        <div class="draw-time">3:00 PM Draw</div>
+        <div class="draw-game">Palau Digits 2</div>
+        <div class="draw-numbers">
+          <div class="result-ball">0</div>
+          <div class="result-dash">—</div>
+          <div class="result-ball">6</div>
+        </div>
+      </div>
+      <div class="draw-result-card">
+        <div class="draw-time">10:00 AM Draw</div>
+        <div class="draw-game">Palau Digits 2</div>
+        <div class="draw-numbers">
+          <div class="result-ball">3</div>
+          <div class="result-dash">—</div>
+          <div class="result-ball">1</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="results-digits3" class="draws-grid" style="display:none;">
+      <div class="draw-result-card latest">
+        <div class="draw-time">8:00 PM — Latest Draw</div>
+        <div class="draw-game">Palau Digits 3</div>
+        <div class="draw-numbers">
+          <div class="result-ball">3</div>
+          <div class="result-dash">—</div>
+          <div class="result-ball">8</div>
+          <div class="result-dash">—</div>
+          <div class="result-ball">1</div>
+        </div>
+      </div>
+      <div class="draw-result-card">
+        <div class="draw-time">3:00 PM Draw</div>
+        <div class="draw-game">Palau Digits 3</div>
+        <div class="draw-numbers">
+          <div class="result-ball">5</div>
+          <div class="result-dash">—</div>
+          <div class="result-ball">2</div>
+          <div class="result-dash">—</div>
+          <div class="result-ball">9</div>
+        </div>
+      </div>
+      <div class="draw-result-card">
+        <div class="draw-time">10:00 AM Draw</div>
+        <div class="draw-game">Palau Digits 3</div>
+        <div class="draw-numbers">
+          <div class="result-ball">7</div>
+          <div class="result-dash">—</div>
+          <div class="result-ball">0</div>
+          <div class="result-dash">—</div>
+          <div class="result-ball">4</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="results-pairs" class="draws-grid" style="display:none;">
+      <div class="draw-result-card latest">
+        <div class="draw-time">8:00 PM — Latest Draw</div>
+        <div class="draw-game">Palau Pairs</div>
+        <div class="draw-numbers">
+          <div class="result-ball">22</div>
+          <div class="result-dash">—</div>
+          <div class="result-ball">39</div>
+        </div>
+      </div>
+      <div class="draw-result-card">
+        <div class="draw-time">3:00 PM Draw</div>
+        <div class="draw-game">Palau Pairs</div>
+        <div class="draw-numbers">
+          <div class="result-ball">11</div>
+          <div class="result-dash">—</div>
+          <div class="result-ball">28</div>
+        </div>
+      </div>
+      <div class="draw-result-card">
+        <div class="draw-time">10:00 AM Draw</div>
+        <div class="draw-game">Palau Pairs</div>
+        <div class="draw-numbers">
+          <div class="result-ball">5</div>
+          <div class="result-dash">—</div>
+          <div class="result-ball">17</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ HOW TO PLAY ══ -->
+<div id="how-to-play" class="how-section">
+  <div class="section">
+    <div class="section-header">
+      <div>
+        <div class="section-title">How to <span>Play</span></div>
+        <div class="section-sub">Get started in 4 simple steps</div>
+      </div>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="step-icon">📝</div>
+        <div class="step-title">Register</div>
+        <div class="step-desc">Create your free account in under 2 minutes. Valid for Palau residents and international players 18 and over.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="step-icon">🎯</div>
+        <div class="step-title">Pick Your Game</div>
+        <div class="step-desc">Choose Digits 2, Digits 3, or Pairs. Select your numbers and your bet amount — as low as $0.25.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-icon">📺</div>
+        <div class="step-title">Watch the Draw</div>
+        <div class="step-desc">Draws are broadcast live at 10:00 AM, 3:00 PM, and 8:00 PM ChST. Watch on the app or website.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">04</div>
+        <div class="step-icon">🏆</div>
+        <div class="step-title">Claim Your Prize</div>
+        <div class="step-desc">Winnings are instantly credited to your account. Withdraw anytime via mobile wallet, bank transfer, or agent.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MARQUEE ══ -->
+<div class="marquee-section">
+  <div class="marquee-track">
+    <div class="marquee-item">STL Palau</div>
+    <div class="marquee-item">Play &amp; Win Daily</div>
+    <div class="marquee-item">Official Lottery</div>
+    <div class="marquee-item">3 Draws Every Day</div>
+    <div class="marquee-item">Palau's Own Game</div>
+    <div class="marquee-item">STL Palau</div>
+    <div class="marquee-item">Play &amp; Win Daily</div>
+    <div class="marquee-item">Official Lottery</div>
+    <div class="marquee-item">3 Draws Every Day</div>
+    <div class="marquee-item">Palau's Own Game</div>
+  </div>
+</div>
+
+<!-- ══ PRIZES ══ -->
+<div id="prizes" class="prizes-section">
+  <div class="section">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Prize <span>Structure</span></div>
+        <div class="section-sub">What you can win on a $1.00 bet</div>
+      </div>
+    </div>
+    <div class="prize-grid">
+
+      <div class="prize-card">
+        <div class="prize-card-header">
+          <div class="prize-game-name blue">Palau Digits 2</div>
+          <div class="prize-card-sub">Pick 2 digits (0–9) in exact order</div>
+        </div>
+        <table class="prize-table">
+          <tr><td>$0.25 bet</td><td>$17.50</td></tr>
+          <tr><td>$0.50 bet</td><td>$35.00</td></tr>
+          <tr><td>$1.00 bet</td><td>$70.00</td></tr>
+          <tr><td>$5.00 bet</td><td>$350.00</td></tr>
+          <tr><td>$10.00 bet</td><td>$700.00</td></tr>
+          <tr><td>$50.00 bet</td><td>$3,500.00</td></tr>
+        </table>
+      </div>
+
+      <div class="prize-card">
+        <div class="prize-card-header">
+          <div class="prize-game-name gold">Palau Digits 3</div>
+          <div class="prize-card-sub">Pick 3 digits (0–9) in exact order</div>
+        </div>
+        <table class="prize-table">
+          <tr><td>$0.25 bet</td><td>$100.00</td></tr>
+          <tr><td>$0.50 bet</td><td>$200.00</td></tr>
+          <tr><td>$1.00 bet</td><td>$400.00</td></tr>
+          <tr><td>$5.00 bet</td><td>$2,000.00</td></tr>
+          <tr><td>$10.00 bet</td><td>$4,000.00</td></tr>
+          <tr><td>$50.00 bet</td><td>$20,000.00</td></tr>
+        </table>
+      </div>
+
+      <div class="prize-card">
+        <div class="prize-card-header">
+          <div class="prize-game-name teal">Palau Pairs</div>
+          <div class="prize-card-sub">Pick 2 numbers (1–40) in exact order</div>
+        </div>
+        <table class="prize-table">
+          <tr><td>$0.50 bet</td><td>$200.00</td></tr>
+          <tr><td>$1.00 bet</td><td>$400.00</td></tr>
+          <tr><td>$5.00 bet</td><td>$2,000.00</td></tr>
+          <tr><td>$10.00 bet</td><td>$4,000.00</td></tr>
+          <tr><td>$25.00 bet</td><td>$10,000.00</td></tr>
+          <tr><td>$50.00 bet</td><td>$20,000.00</td></tr>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ PROMOTIONS ══ -->
+<div id="promos">
+  <div class="section">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Current <span>Promotions</span></div>
+        <div class="section-sub">Special offers for new and returning players</div>
+      </div>
+      <a href="#" class="view-all">View All →</a>
+    </div>
+    <div class="promo-grid">
+
+      <div class="promo-card">
+        <div class="promo-card-img promo-1">🎁</div>
+        <div class="promo-card-body">
+          <div class="promo-tag">New Player</div>
+          <div class="promo-title">Welcome Bonus — First Bet on Us</div>
+          <div class="promo-desc">Register today and get a $1.00 free bet on any game. No deposit required. Valid for 24 hours.</div>
+        </div>
+      </div>
+
+      <div class="promo-card">
+        <div class="promo-card-img promo-2">🔄</div>
+        <div class="promo-card-body">
+          <div class="promo-tag">Daily Reward</div>
+          <div class="promo-title">Play All 3 Draws — Get 10% Back</div>
+          <div class="promo-desc">Bet on all three daily draws in any game and receive 10% cashback credited to your wallet every night.</div>
+        </div>
+      </div>
+
+      <div class="promo-card">
+        <div class="promo-card-img promo-3">🤝</div>
+        <div class="promo-card-body">
+          <div class="promo-tag">Referral</div>
+          <div class="promo-title">Invite a Friend — Earn $2.00</div>
+          <div class="promo-desc">Share your unique referral code. You earn $2.00 when your friend places their first real bet.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ APP DOWNLOAD ══ -->
+<div class="app-section">
+  <div class="app-inner">
+    <div class="app-content">
+      <div class="app-badge">Available Now</div>
+      <h2>Play on Your<br><span>Phone</span> Anywhere</h2>
+      <p>Get the STL Palau app for the best lottery experience. Watch live draws, check results instantly, and manage your winnings — all from your pocket.</p>
+      <div class="app-btns">
+        <a href="#" class="app-btn">
+          <div class="app-btn-icon">🍎</div>
+          <div class="app-btn-text">
+            <div class="app-btn-sub">Download on the</div>
+            <div class="app-btn-name">App Store</div>
+          </div>
+        </a>
+        <a href="#" class="app-btn">
+          <div class="app-btn-icon">▶</div>
+          <div class="app-btn-text">
+            <div class="app-btn-sub">Get it on</div>
+            <div class="app-btn-name">Google Play</div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="app-phone">
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="phone-logo">STL PALAU 🇵🇼</div>
+          <div class="phone-mini-card">
+            <div class="p-label">Digits 3 — 8:00 PM</div>
+            <div class="p-balls">
+              <div class="p-ball">3</div>
+              <div class="p-ball">8</div>
+              <div class="p-ball">1</div>
+            </div>
+          </div>
+          <div class="phone-mini-prize">
+            <div class="prize-label">Top Prize Today</div>
+            <div class="prize-val">$20,000</div>
+          </div>
+          <div class="phone-mini-card">
+            <div class="p-label">Digits 2 — 3:00 PM</div>
+            <div class="p-balls">
+              <div class="p-ball">0</div>
+              <div class="p-ball">6</div>
+            </div>
+          </div>
+          <div class="phone-mini-card">
+            <div class="p-label">Pairs — 10:00 AM</div>
+            <div class="p-balls">
+              <div class="p-ball" style="width:36px;font-size:11px;">05</div>
+              <div class="p-ball" style="width:36px;font-size:11px;">17</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">
+        <div class="flag">🇵🇼</div>
+        <div class="wordmark">
+          STL Palau
+          <small>Official Lottery</small>
+        </div>
+      </div>
+      <p class="footer-desc">Palau's official Small Town Lottery platform. Licensed under the Republic of Palau Ministry of Finance. Play responsibly.</p>
+      <div class="footer-social">
+        <a href="#" class="social-btn">📘</a>
+        <a href="#" class="social-btn">📸</a>
+        <a href="#" class="social-btn">🐦</a>
+        <a href="#" class="social-btn">▶</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Games</div>
+      <ul class="footer-links">
+        <li><a href="#">Palau Digits 2</a></li>
+        <li><a href="#">Palau Digits 3</a></li>
+        <li><a href="#">Palau Pairs</a></li>
+        <li><a href="#">Draw Schedule</a></li>
+        <li><a href="#">Results Archive</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Account</div>
+      <ul class="footer-links">
+        <li><a href="#">Register</a></li>
+        <li><a href="#">Log In</a></li>
+        <li><a href="#">My Bets</a></li>
+        <li><a href="#">Deposit</a></li>
+        <li><a href="#">Withdraw</a></li>
+        <li><a href="#">Refer a Friend</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Support</div>
+      <ul class="footer-links">
+        <li><a href="#">Help Center</a></li>
+        <li><a href="#">Contact Us</a></li>
+        <li><a href="#">Responsible Gaming</a></li>
+        <li><a href="#">Terms &amp; Conditions</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">About STL Palau</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-legal">
+      STL Palau is operated under license from the Republic of Palau Ministry of Finance. Players must be 18 years or older. Gambling can be addictive — please play responsibly. If you or someone you know has a gambling problem, call the Palau Ministry of Health helpline. Odds of winning vary by game. Terms and conditions apply.
+    </div>
+    <div class="footer-age">
+      <div class="age-num">18+</div>
+      <div class="age-label">Only</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── COUNTDOWN TIMER ──
+function updateCountdown() {
+  const now = new Date();
+  const draws = [10, 15, 20]; // 10am, 3pm, 8pm
+  let next = null;
+  for (const h of draws) {
+    const t = new Date(now);
+    t.setHours(h, 0, 0, 0);
+    if (t > now) { next = t; break; }
+  }
+  if (!next) {
+    next = new Date(now);
+    next.setDate(next.getDate() + 1);
+    next.setHours(10, 0, 0, 0);
+  }
+  const diff = next - now;
+  const h = Math.floor(diff / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  document.getElementById('cd-h').textContent = String(h).padStart(2,'0');
+  document.getElementById('cd-m').textContent = String(m).padStart(2,'0');
+  document.getElementById('cd-s').textContent = String(s).padStart(2,'0');
+}
+setInterval(updateCountdown, 1000);
+updateCountdown();
+
+// ── RESULTS TABS ──
+function switchTab(tab, id) {
+  document.querySelectorAll('.draw-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  ['digits2','digits3','pairs'].forEach(g => {
+    const el = document.getElementById('results-' + g);
+    if (el) el.style.display = g === id ? 'grid' : 'none';
+  });
+}
+
+// ── JACKPOT COUNTER ANIMATION ──
+(function() {
+  const el = document.getElementById('jackpot-amount');
+  const target = 50000;
+  let start = 0;
+  const step = Math.ceil(target / 80);
+  const interval = setInterval(() => {
+    start = Math.min(start + step, target);
+    el.textContent = start.toLocaleString();
+    if (start >= target) clearInterval(interval);
+  }, 20);
+})();
+
+// ── ACTIVE NAV on scroll ──
+const sections = ['games','results','how-to-play','prizes','promos'];
+window.addEventListener('scroll', () => {
+  const y = window.scrollY + 100;
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const link = document.querySelector(`.nav-links a[href="#${id}"]`);
+    if (!link) return;
+    if (el.offsetTop <= y && el.offsetTop + el.offsetHeight > y) {
+      document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+      link.classList.add('active');
+    }
+  });
+});
+</script>
+
+</body>
+</html>
