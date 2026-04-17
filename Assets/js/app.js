@@ -683,5 +683,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   await refreshUser();
 });
 
+function gameClick(gameId) {
+  if (!currentProfile) { openAuth('login'); return; }
+  window.location.href = 'play.html';
+}
+
 // Expose for inline handlers if needed
-window.STL = { openAuth, openWallet, openBet, openHistory };
+window.STL = { openAuth, openWallet, openBet, openHistory, gameClick };
