@@ -1226,6 +1226,80 @@ body {
 
 .result-dash { color: var(--text-dim); font-size: 18px; }
 
+.result-container {
+  position: relative;
+  width: 100%;
+  line-height: 0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.result-container img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.rc-num {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  color: #FFD600;
+  -webkit-text-stroke: 1px #E60000;
+  text-stroke: 1px #E60000;
+  paint-order: stroke fill;
+  text-shadow: 0 0 18px rgba(255,214,0,0.85), 0 2px 6px rgba(0,0,0,0.55);
+  font-size: clamp(32px, 6vw, 64px);
+  line-height: 1;
+}
+.draw-result-card.latest .rc-num {
+  text-shadow: 0 0 22px rgba(255,214,0,1), 0 2px 6px rgba(0,0,0,0.6);
+}
+
+.draw-result-card.bleed {
+  padding: 0;
+  overflow: hidden;
+  background: transparent;
+}
+.draw-result-card.bleed .result-container {
+  border-radius: 11px;
+  aspect-ratio: 4 / 3;
+}
+.draw-result-card.bleed .result-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.draw-result-card.bleed.latest {
+  border-color: rgba(255,214,0,0.5);
+  box-shadow: 0 0 0 1px rgba(255,214,0,0.3), 0 12px 32px rgba(0,0,0,0.4);
+}
+
+.rc-time-overlay {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 2;
+  padding: 7px 14px;
+  background: rgba(0,0,0,0.55);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 8px;
+  color: #fff;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.rc-time-overlay span {
+  color: var(--gold);
+  margin-left: 8px;
+  text-shadow: 0 0 8px rgba(255,214,0,0.5);
+}
+
 /* ══════════════════════════════
    COUNTDOWN
 ══════════════════════════════ */
@@ -1766,8 +1840,15 @@ body {
 .marquee-track {
   display: flex;
   gap: 64px;
-  animation: scroll-left 20s linear infinite;
+  animation: scroll-left 30s linear infinite;
   white-space: nowrap;
+  width: max-content;
+  padding-right: 64px;
+}
+
+@keyframes scroll-left {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
 }
 
 .marquee-item {
@@ -1988,7 +2069,6 @@ footer {
     <li><a href="#" class="active">Home</a></li>
     <li><a href="#games">Games</a></li>
     <li><a href="#results">Results</a></li>
-    <li><a href="#how-to-play">How to Play</a></li>
     <li><a href="#prizes">Prizes</a></li>
     <li><a href="#promos">Promotions</a></li>
   </ul>
@@ -2195,7 +2275,6 @@ footer {
     </div>
     <div class="hero-actions">
       <button class="btn-hero-primary" onclick="document.getElementById('games').scrollIntoView({behavior:'smooth'})">Play Now</button>
-      <button class="btn-hero-secondary" onclick="document.getElementById('how-to-play').scrollIntoView({behavior:'smooth'})">How to Play</button>
     </div>
   </div>
   <div class="hero-center">
@@ -2352,97 +2431,85 @@ footer {
     </div>
 
     <div id="results-digits2" class="draws-grid">
-      <div class="draw-result-card latest">
-        <div class="draw-time">8:00 PM — Latest Draw</div>
-        <div class="draw-game">Palau Digits 2</div>
-        <div class="draw-numbers">
-          <div class="result-ball">7</div>
-          <div class="result-dash">—</div>
-          <div class="result-ball">4</div>
+      <div class="draw-result-card bleed latest">
+        <div class="result-container c2">
+          <img src="Assets/Icons/container/2C_night.png" alt="">
+          <div class="rc-time-overlay">10:00 PM <span>Latest</span></div>
+          <span class="rc-num" style="left:36%">7</span>
+          <span class="rc-num" style="left:64%">4</span>
         </div>
       </div>
-      <div class="draw-result-card">
-        <div class="draw-time">3:00 PM Draw</div>
-        <div class="draw-game">Palau Digits 2</div>
-        <div class="draw-numbers">
-          <div class="result-ball">0</div>
-          <div class="result-dash">—</div>
-          <div class="result-ball">6</div>
+      <div class="draw-result-card bleed">
+        <div class="result-container c2">
+          <img src="Assets/Icons/container/2C_afternoon.png" alt="">
+          <div class="rc-time-overlay">3:00 PM Draw</div>
+          <span class="rc-num" style="left:42%">0</span>
+          <span class="rc-num" style="left:66%">6</span>
         </div>
       </div>
-      <div class="draw-result-card">
-        <div class="draw-time">10:00 AM Draw</div>
-        <div class="draw-game">Palau Digits 2</div>
-        <div class="draw-numbers">
-          <div class="result-ball">3</div>
-          <div class="result-dash">—</div>
-          <div class="result-ball">1</div>
+      <div class="draw-result-card bleed">
+        <div class="result-container c2">
+          <img src="Assets/Icons/container/2C_morning.png" alt="">
+          <div class="rc-time-overlay">10:00 AM Draw</div>
+          <span class="rc-num" style="left:36%">3</span>
+          <span class="rc-num" style="left:64%">1</span>
         </div>
       </div>
     </div>
 
     <div id="results-digits3" class="draws-grid" style="display:none;">
-      <div class="draw-result-card latest">
-        <div class="draw-time">8:00 PM — Latest Draw</div>
-        <div class="draw-game">Palau Digits 3</div>
-        <div class="draw-numbers">
-          <div class="result-ball">3</div>
-          <div class="result-dash">—</div>
-          <div class="result-ball">8</div>
-          <div class="result-dash">—</div>
-          <div class="result-ball">1</div>
+      <div class="draw-result-card bleed latest">
+        <div class="result-container c3">
+          <img src="Assets/Icons/container/3C_night.png" alt="">
+          <div class="rc-time-overlay">8:00 PM <span>Latest</span></div>
+          <span class="rc-num" style="left:28%">3</span>
+          <span class="rc-num" style="left:50%">8</span>
+          <span class="rc-num" style="left:72%">1</span>
         </div>
       </div>
-      <div class="draw-result-card">
-        <div class="draw-time">3:00 PM Draw</div>
-        <div class="draw-game">Palau Digits 3</div>
-        <div class="draw-numbers">
-          <div class="result-ball">5</div>
-          <div class="result-dash">—</div>
-          <div class="result-ball">2</div>
-          <div class="result-dash">—</div>
-          <div class="result-ball">9</div>
+      <div class="draw-result-card bleed">
+        <div class="result-container c3">
+          <img src="Assets/Icons/container/3C_afternoon.png" alt="">
+          <div class="rc-time-overlay">3:00 PM Draw</div>
+          <span class="rc-num" style="left:28%">5</span>
+          <span class="rc-num" style="left:50%">2</span>
+          <span class="rc-num" style="left:72%">9</span>
         </div>
       </div>
-      <div class="draw-result-card">
-        <div class="draw-time">10:00 AM Draw</div>
-        <div class="draw-game">Palau Digits 3</div>
-        <div class="draw-numbers">
-          <div class="result-ball">7</div>
-          <div class="result-dash">—</div>
-          <div class="result-ball">0</div>
-          <div class="result-dash">—</div>
-          <div class="result-ball">4</div>
+      <div class="draw-result-card bleed">
+        <div class="result-container c3">
+          <img src="Assets/Icons/container/3C_morning.png" alt="">
+          <div class="rc-time-overlay">10:00 AM Draw</div>
+          <span class="rc-num" style="left:28%">7</span>
+          <span class="rc-num" style="left:50%">0</span>
+          <span class="rc-num" style="left:72%">4</span>
         </div>
       </div>
     </div>
 
     <div id="results-pairs" class="draws-grid" style="display:none;">
-      <div class="draw-result-card latest">
-        <div class="draw-time">8:00 PM — Latest Draw</div>
-        <div class="draw-game">Palau Pairs</div>
-        <div class="draw-numbers">
-          <div class="result-ball">22</div>
-          <div class="result-dash">—</div>
-          <div class="result-ball">39</div>
+      <div class="draw-result-card bleed latest">
+        <div class="result-container c2">
+          <img src="Assets/Icons/container/2C_night.png" alt="">
+          <div class="rc-time-overlay">10:00 PM <span>Latest</span></div>
+          <span class="rc-num" style="left:36%">22</span>
+          <span class="rc-num" style="left:64%">39</span>
         </div>
       </div>
-      <div class="draw-result-card">
-        <div class="draw-time">3:00 PM Draw</div>
-        <div class="draw-game">Palau Pairs</div>
-        <div class="draw-numbers">
-          <div class="result-ball">11</div>
-          <div class="result-dash">—</div>
-          <div class="result-ball">28</div>
+      <div class="draw-result-card bleed">
+        <div class="result-container c2">
+          <img src="Assets/Icons/container/2C_afternoon.png" alt="">
+          <div class="rc-time-overlay">3:00 PM Draw</div>
+          <span class="rc-num" style="left:42%">11</span>
+          <span class="rc-num" style="left:66%">28</span>
         </div>
       </div>
-      <div class="draw-result-card">
-        <div class="draw-time">10:00 AM Draw</div>
-        <div class="draw-game">Palau Pairs</div>
-        <div class="draw-numbers">
-          <div class="result-ball">5</div>
-          <div class="result-dash">—</div>
-          <div class="result-ball">17</div>
+      <div class="draw-result-card bleed">
+        <div class="result-container c2">
+          <img src="Assets/Icons/container/2C_morning.png" alt="">
+          <div class="rc-time-overlay">10:00 AM Draw</div>
+          <span class="rc-num" style="left:36%">5</span>
+          <span class="rc-num" style="left:64%">17</span>
         </div>
       </div>
     </div>
@@ -2451,43 +2518,6 @@ footer {
 </div>
 
 <!-- ══ HOW TO PLAY ══ -->
-<div id="how-to-play" class="how-section">
-  <div class="section">
-    <div class="section-header">
-      <div>
-        <div class="section-title">How to <span>Play</span></div>
-        <div class="section-sub">Get started in 4 simple steps</div>
-      </div>
-    </div>
-    <div class="steps-grid">
-      <div class="step-card">
-        <div class="step-num">01</div>
-        <div class="step-icon">📝</div>
-        <div class="step-title">Register</div>
-        <div class="step-desc">Create your free account in under 2 minutes. Valid for Palau residents and international players 18 and over.</div>
-      </div>
-      <div class="step-card">
-        <div class="step-num">02</div>
-        <div class="step-icon">🎯</div>
-        <div class="step-title">Pick Your Game</div>
-        <div class="step-desc">Choose Digits 2, Digits 3, or Pairs. Select your numbers and your bet amount — as low as $0.25.</div>
-      </div>
-      <div class="step-card">
-        <div class="step-num">03</div>
-        <div class="step-icon">📺</div>
-        <div class="step-title">Watch the Draw</div>
-        <div class="step-desc">Draws are broadcast live at 10:00 AM, 3:00 PM, and 8:00 PM ChST. Watch on the app or website.</div>
-      </div>
-      <div class="step-card">
-        <div class="step-num">04</div>
-        <div class="step-icon">🏆</div>
-        <div class="step-title">Claim Your Prize</div>
-        <div class="step-desc">Winnings are instantly credited to your account. Withdraw anytime via mobile wallet, bank transfer, or agent.</div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- ══ MARQUEE ══ -->
 <div class="marquee-section">
   <div class="marquee-track">
@@ -2760,7 +2790,7 @@ function switchTab(tab, id) {
 })();
 
 // ── ACTIVE NAV on scroll ──
-const sections = ['games','results','how-to-play','prizes','promos'];
+const sections = ['games','results','prizes','promos'];
 window.addEventListener('scroll', () => {
   const y = window.scrollY + 100;
   sections.forEach(id => {

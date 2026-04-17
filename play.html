@@ -38,7 +38,6 @@ body {
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--blue-dark); border-radius: 3px; }
 
-/* ── ambient bg ── */
 body::before {
   content:''; position: fixed; inset: 0; z-index: -1;
   background:
@@ -68,14 +67,6 @@ body::before {
   font-size:9px; font-weight:500; color: var(--blue);
   letter-spacing:3px; text-transform:uppercase;
 }
-.nav-links { display:flex; align-items:center; gap:4px; margin-left:40px; list-style:none; }
-.nav-links a {
-  text-decoration:none; color: var(--text-muted);
-  font-size:14px; font-weight:500;
-  padding:8px 14px; border-radius:6px;
-  transition:all .2s; white-space:nowrap;
-}
-.nav-links a:hover, .nav-links a.active { color: var(--blue); background: rgba(69,184,229,0.1); }
 .nav-spacer { flex: 1; }
 .nav-live {
   display:flex; align-items:center; gap:6px;
@@ -92,14 +83,133 @@ body::before {
 }
 @keyframes pulse-dot { 0%,100% { opacity:1; } 50% { opacity:.4; } }
 
-/* ══ MAIN ══ */
+/* ── hamburger ── */
+.hamburger {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--text);
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: none;
+  align-items: center; justify-content: center;
+  cursor: pointer;
+  margin-right: 16px;
+  transition: all .2s;
+}
+.hamburger:hover { background: rgba(69,184,229,0.08); border-color: var(--blue); }
+.hamburger span {
+  display: block; width: 18px; height: 2px;
+  background: var(--text); border-radius: 2px;
+  position: relative;
+}
+.hamburger span::before, .hamburger span::after {
+  content:''; position: absolute; left: 0; width: 18px; height: 2px;
+  background: var(--text); border-radius: 2px;
+  transition: transform .25s;
+}
+.hamburger span::before { top: -6px; }
+.hamburger span::after  { top:  6px; }
+body.sidebar-open .hamburger span { background: transparent; }
+body.sidebar-open .hamburger span::before { transform: translateY(6px) rotate(45deg); }
+body.sidebar-open .hamburger span::after  { transform: translateY(-6px) rotate(-45deg); }
+
+/* show hamburger only when logged in */
+body.is-logged-in .hamburger { display: inline-flex; }
+
+/* ══ SIDEBAR ══ */
+.sidebar-backdrop {
+  position: fixed; inset: 0; z-index: 1400;
+  background: rgba(6,18,32,0.7);
+  backdrop-filter: blur(4px);
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s;
+}
+body.sidebar-open .sidebar-backdrop { opacity: 1; pointer-events: auto; }
+
+.sidebar {
+  position: fixed; top: 0; left: 0; bottom: 0;
+  width: 280px; max-width: 85vw;
+  z-index: 1500;
+  background: linear-gradient(180deg, var(--bg2), var(--card));
+  border-right: 1px solid var(--border);
+  transform: translateX(-100%);
+  transition: transform .3s cubic-bezier(.2,1.2,.4,1);
+  display: flex; flex-direction: column;
+  padding-top: 64px;
+}
+body.sidebar-open .sidebar { transform: translateX(0); }
+
+.sidebar-head {
+  padding: 22px 24px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-head .sh-name {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size: 18px; font-weight: 900; color: #fff; letter-spacing: 0.5px;
+}
+.sidebar-head .sh-email { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.sidebar-head .sh-wallet {
+  margin-top: 12px;
+  background: rgba(255,214,0,0.08);
+  border: 1px solid rgba(255,214,0,0.25);
+  border-radius: 10px;
+  padding: 10px 14px;
+  display: flex; align-items: baseline; justify-content: space-between;
+}
+.sidebar-head .sh-wallet .lbl {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size: 10px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase;
+  color: var(--gold-dark);
+}
+.sidebar-head .sh-wallet .val {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size: 22px; font-weight: 900; color: var(--gold);
+}
+
+.sidebar-nav { flex: 1; padding: 12px 12px; display: flex; flex-direction: column; gap: 2px; }
+.sb-item {
+  background: transparent; border: none; cursor: pointer;
+  text-align: left;
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  color: var(--text-muted);
+  font-family:'Barlow',sans-serif;
+  font-size: 14px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  transition: all .15s;
+}
+.sb-item .icon { font-size: 18px; opacity: 0.85; }
+.sb-item:hover { background: rgba(69,184,229,0.08); color: var(--blue); }
+.sb-item.active {
+  background: linear-gradient(90deg, rgba(69,184,229,0.18), rgba(69,184,229,0.02));
+  color: var(--blue);
+  box-shadow: inset 3px 0 0 var(--blue);
+}
+
+.sidebar-foot { padding: 16px 14px; border-top: 1px solid var(--border); }
+.sb-signout {
+  width: 100%;
+  background: transparent;
+  border: 1px solid rgba(255,107,107,0.4);
+  color: #ff8b8b;
+  font-family:'Barlow',sans-serif;
+  font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;
+  padding: 10px; border-radius: 8px; cursor: pointer;
+  transition: all .15s;
+}
+.sb-signout:hover { background: rgba(255,107,107,0.1); }
+
+/* ══ SHELL ══ */
 .play-shell {
   max-width: 1400px;
   margin: 0 auto;
   padding: 96px 24px 48px;
 }
 
-/* ── welcome strip ── */
+.view { display: none; }
+.view.active { display: block; }
+
+/* welcome strip */
 .welcome-strip {
   display: grid;
   grid-template-columns: 1.4fr 1fr 1fr;
@@ -124,10 +234,8 @@ body::before {
   font-size: 32px; font-weight: 900; line-height: 1.1;
 }
 .ws-card .ws-sub { font-size: 12px; color: var(--text-dim); }
-
 .ws-welcome .ws-value { color: #fff; }
 .ws-welcome .ws-value span { color: var(--gold); }
-
 .ws-wallet { border-color: rgba(255,214,0,0.35); }
 .ws-wallet .ws-value { color: var(--gold); text-shadow: 0 0 18px rgba(255,214,0,0.35); }
 .ws-wallet .ws-actions { display:flex; gap:8px; margin-top:4px; }
@@ -147,10 +255,9 @@ body::before {
   border: 1px solid rgba(255,214,0,0.5);
 }
 .ws-wallet .ws-btn:hover { transform: translateY(-1px); }
-
 .ws-countdown .ws-value { color: var(--blue); font-variant-numeric: tabular-nums; }
 
-/* ── section title ── */
+/* section title */
 .section-title {
   font-family:'Barlow Condensed',sans-serif;
   font-size: 28px; font-weight: 900;
@@ -168,14 +275,13 @@ body::before {
   margin-top: 4px;
 }
 
-/* ── games grid ── */
+/* games grid */
 .play-games {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
   margin-bottom: 44px;
 }
-
 .play-game {
   background: linear-gradient(180deg, var(--card2), var(--card));
   border: 1px solid var(--border);
@@ -220,7 +326,6 @@ body::before {
 .pg-d2 .pg-name    { color: var(--blue); }
 .pg-d3 .pg-name    { color: var(--gold); }
 .pg-pairs .pg-name { color: var(--green); }
-
 .pg-sub { font-size: 13px; color: var(--text-muted); line-height: 1.5; position: relative; z-index: 1; }
 
 .pg-balls { display:flex; align-items:center; gap:8px; margin-top: 4px; position: relative; z-index: 1; }
@@ -228,8 +333,7 @@ body::before {
   width: 44px; height: 44px; border-radius: 50%;
   display:flex; align-items:center; justify-content:center;
   font-family:'Barlow Condensed',sans-serif;
-  font-size: 20px; font-weight: 900;
-  color: #fff;
+  font-size: 20px; font-weight: 900; color: #fff;
 }
 .pg-d2 .pg-ball    { background: linear-gradient(135deg, #2A8FBA, #1A6090); box-shadow: 0 6px 20px rgba(69,184,229,0.4); }
 .pg-d3 .pg-ball    { background: linear-gradient(135deg, #C09000, #906800); box-shadow: 0 6px 20px rgba(255,214,0,0.4); }
@@ -272,8 +376,7 @@ body::before {
 .pg-pairs .pg-cta { background: linear-gradient(135deg, var(--green), #20A080); color: var(--bg); }
 .pg-cta:hover { transform: translateY(-2px); }
 
-/* ── recent bets ── */
-.play-recent { margin-bottom: 40px; }
+/* tables */
 .pr-table-wrap {
   background: var(--card);
   border: 1px solid var(--border);
@@ -326,14 +429,241 @@ body::before {
 }
 .pr-footer a:hover { color: var(--gold); }
 
-/* ── responsive ── */
+/* ══ LIVE DRAW VIEW ══ */
+.ld-wrap {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 20px;
+}
+.ld-main, .ld-side {
+  background: linear-gradient(180deg, var(--card2), var(--card));
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+}
+.ld-stage {
+  aspect-ratio: 16/9;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,214,0,0.15), transparent 55%),
+    radial-gradient(circle at 70% 70%, rgba(69,184,229,0.15), transparent 55%),
+    #000;
+  border-radius: 12px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; color: #fff;
+}
+.ld-stage .live-pill {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size: 11px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;
+  padding: 4px 12px; border-radius: 999px;
+  background: #d73e3e; color: #fff;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.ld-stage .live-pill::before { content:''; width:7px; height:7px; border-radius:50%; background:#fff; animation: pulse-dot 1.4s infinite; }
+.ld-stage h3 { font-family:'Barlow Condensed',sans-serif; font-size: 32px; font-weight: 900; letter-spacing: 1.5px; }
+.ld-stage p { color: rgba(255,255,255,0.6); font-size: 14px; }
+.ld-countdown-big {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size: 56px; font-weight: 900; color: var(--gold);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 24px rgba(255,214,0,0.4);
+}
+.ld-sched { margin-top: 18px; display: flex; flex-direction: column; gap: 10px; }
+.ld-sched-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 14px;
+  background: rgba(0,0,0,0.25);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.ld-sched-row.next { border-color: var(--gold); background: rgba(255,214,0,0.06); }
+.ld-sched-time {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size: 18px; font-weight: 800; color: var(--text);
+}
+.ld-sched-status {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size: 11px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase;
+  color: var(--text-dim);
+}
+.ld-sched-row.next .ld-sched-status { color: var(--gold); }
+
+.ld-side h3 {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size: 20px; font-weight: 900;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: #fff; margin-bottom: 12px;
+}
+.ld-result-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.ld-result-row:last-child { border-bottom: none; }
+.ld-result-label { font-size: 12px; color: var(--text-muted); }
+.ld-result-label strong { display:block; font-size: 13px; color: var(--text); font-weight: 700; }
+.ld-result-nums { display: flex; gap: 6px; }
+.ld-result-nums .n {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: var(--bg);
+  font-family:'Barlow Condensed',sans-serif;
+  font-size: 14px; font-weight: 900;
+}
+
+/* ══ HISTORY VIEW (inline; mirrors modal layout) ══ */
+.view-tabs {
+  display: inline-flex; gap: 4px; padding: 4px;
+  background: rgba(0,0,0,0.25);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 18px;
+}
+.view-tab {
+  background: transparent; border: none; cursor: pointer;
+  font-family:'Barlow',sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 8px 16px; border-radius: 8px;
+  transition: all .15s;
+}
+.view-tab.active { background: var(--blue); color: #fff; }
+.amt-credit { color: var(--green); font-weight: 700; }
+.amt-debit { color: #ff8b6b; font-weight: 700; }
+
+/* ══ AUTOMATION VIEW ══ */
+.auto-grid {
+  display: grid; grid-template-columns: 1.1fr 1.4fr; gap: 20px;
+}
+.auto-card {
+  background: linear-gradient(180deg, var(--card2), var(--card));
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px 24px;
+}
+.auto-card h3 {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size: 20px; font-weight: 900;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: #fff; margin-bottom: 16px;
+}
+.auto-form { display: flex; flex-direction: column; gap: 14px; }
+.auto-form label {
+  display: flex; flex-direction: column; gap: 6px;
+  font-family:'Barlow',sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--text-muted);
+}
+.auto-form input, .auto-form select {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family:'Barlow',sans-serif; font-size: 15px; font-weight: 500;
+  padding: 12px 14px; border-radius: 8px;
+}
+.auto-form input:focus, .auto-form select:focus {
+  outline: none; border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(69,184,229,0.15);
+}
+.auto-form .hint { font-size: 11px; color: var(--text-dim); font-weight: 400; text-transform: none; letter-spacing: 0; }
+
+.auto-times { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.auto-time {
+  display: flex; align-items: center; gap: 6px;
+  padding: 12px; border-radius: 10px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-family:'Barlow',sans-serif;
+  font-size: 13px; font-weight: 700;
+  color: var(--text-muted);
+  transition: all .15s;
+  user-select: none;
+}
+.auto-time input { display:none; }
+.auto-time:hover { border-color: var(--blue); color: var(--blue); }
+.auto-time.on {
+  background: rgba(69,184,229,0.15);
+  border-color: var(--blue);
+  color: #fff;
+  box-shadow: inset 0 0 0 1px var(--blue);
+}
+
+.auto-list { display: flex; flex-direction: column; gap: 10px; max-height: 600px; overflow-y: auto; }
+.auto-list-empty {
+  text-align: center; color: var(--text-dim);
+  padding: 32px 16px; font-size: 13px;
+}
+.auto-item {
+  background: rgba(0,0,0,0.25);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: grid; grid-template-columns: 1fr auto; gap: 10px;
+  align-items: center;
+}
+.auto-item.paused { opacity: 0.55; }
+.auto-item .ai-top {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 4px;
+}
+.auto-item .ai-game {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.auto-item .ai-nums {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size: 15px; font-weight: 900; color: var(--gold); letter-spacing: 1.5px;
+}
+.auto-item .ai-sub {
+  font-size: 12px; color: var(--text-muted);
+}
+.auto-item .ai-stake { color: var(--green); font-weight: 700; }
+.auto-item .ai-actions { display:flex; gap:6px; }
+.auto-item .ai-btn {
+  border: 1px solid var(--border);
+  background: transparent; color: var(--text-muted);
+  font-family:'Barlow',sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase;
+  padding: 6px 10px; border-radius: 6px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.auto-item .ai-btn:hover { color: var(--blue); border-color: var(--blue); }
+.auto-item .ai-btn.del:hover { color: #ff8b8b; border-color: rgba(255,107,107,0.4); }
+
+.auto-note {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: rgba(69,184,229,0.06);
+  border: 1px solid rgba(69,184,229,0.2);
+  border-radius: 8px;
+  font-size: 12px; color: var(--text-muted); line-height: 1.5;
+}
+
+.btn-submit-full {
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: var(--bg);
+  border: none; cursor: pointer;
+  font-family:'Barlow',sans-serif;
+  font-size: 13px; font-weight: 800;
+  letter-spacing: 0.8px; text-transform: uppercase;
+  padding: 13px; border-radius: 8px;
+  transition: all .15s;
+}
+.btn-submit-full:hover { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(255,214,0,0.35); }
+.btn-submit-full:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.auto-err { color: #ff6b6b; font-size: 12px; font-weight: 600; min-height: 16px; }
+
+/* responsive */
 @media (max-width: 1000px) {
   .welcome-strip { grid-template-columns: 1fr; }
   .play-games { grid-template-columns: 1fr; }
-  .nav-links { display: none; }
+  .ld-wrap { grid-template-columns: 1fr; }
+  .auto-grid { grid-template-columns: 1fr; }
 }
 
-/* ─── Logged-out guard screen ─── */
+/* guard */
 .play-guard {
   position: fixed; inset: 64px 0 0 0;
   display: none;
@@ -374,9 +704,7 @@ body::before {
 }
 .play-guard .gc button:hover { transform: translateY(-1px); }
 
-/* toast styles live in Assets/css/app.css */
-
-/* reuse navbar logged-in/out states from app.css */
+/* logged-in nav bits */
 #nav-loggedout { display: none; align-items: center; }
 .btn-login, .btn-register {
   border: none; cursor: pointer;
@@ -399,6 +727,7 @@ body::before {
 
 <!-- ══ NAVBAR ══ -->
 <nav class="navbar">
+  <button class="hamburger" id="btn-hamburger" aria-label="Open menu"><span></span></button>
   <a href="index.html" class="nav-logo">
     <div class="nav-logo-flag">🇵🇼</div>
     <div class="nav-logo-text">
@@ -406,12 +735,6 @@ body::before {
       <span class="bottom">Official Lottery</span>
     </div>
   </a>
-  <ul class="nav-links">
-    <li><a href="index.html">Home</a></li>
-    <li><a href="play.html" class="active">Play</a></li>
-    <li><a href="index.html#results">Results</a></li>
-    <li><a href="index.html#how-to-play">How to Play</a></li>
-  </ul>
   <div class="nav-spacer"></div>
   <div class="nav-live">DRAW LIVE — 7:00 PM</div>
   <span class="mode-badge" id="stl-mode-badge">DEMO MODE</span>
@@ -422,8 +745,10 @@ body::before {
     <button class="btn-register" id="btn-register">Register Now</button>
   </div>
 
-  <!-- Logged-in state -->
-  <div id="nav-loggedin">
+  <!-- Logged-in nav block — hidden to favor sidebar, but kept so
+       shared app.js bindings (btn-topup, btn-withdraw, btn-history,
+       btn-logout, wallet-amount, user-email, user-avatar) still exist. -->
+  <div id="nav-loggedin" style="display:none;">
     <div class="wallet-pill">
       <div>
         <div class="w-label">Wallet</div>
@@ -443,7 +768,37 @@ body::before {
   </div>
 </nav>
 
-<!-- ══ AUTH GUARD (shown if not logged in) ══ -->
+<!-- ══ SIDEBAR ══ -->
+<div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-head">
+    <div class="sh-name" id="sb-name">Player</div>
+    <div class="sh-email" id="sb-email">user@example.com</div>
+    <div class="sh-wallet">
+      <span class="lbl">Wallet</span>
+      <span class="val" id="sb-wallet">$0.00</span>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <button class="sb-item active" data-view="play">
+      <span class="icon">🎯</span> Play
+    </button>
+    <button class="sb-item" data-view="live">
+      <span class="icon">📺</span> Live Draw
+    </button>
+    <button class="sb-item" data-view="history">
+      <span class="icon">🧾</span> History
+    </button>
+    <button class="sb-item" data-view="automation">
+      <span class="icon">⚙️</span> Automation
+    </button>
+  </nav>
+  <div class="sidebar-foot">
+    <button class="sb-signout" id="sb-signout">Sign Out</button>
+  </div>
+</aside>
+
+<!-- ══ AUTH GUARD ══ -->
 <div class="play-guard" id="play-guard">
   <div class="gc">
     <h2>Sign in to <span>play</span></h2>
@@ -455,33 +810,32 @@ body::before {
   </div>
 </div>
 
-<!-- ══ PLAY DASHBOARD ══ -->
+<!-- ══ SHELL ══ -->
 <main class="play-shell" id="play-shell" style="display:none;">
 
-  <!-- welcome strip -->
-  <section class="welcome-strip">
-    <div class="ws-card ws-welcome">
-      <span class="ws-label">Welcome back</span>
-      <div class="ws-value" id="welcome-name">Player</div>
-      <span class="ws-sub" id="welcome-email">user@example.com</span>
-    </div>
-    <div class="ws-card ws-wallet">
-      <span class="ws-label">Wallet Balance</span>
-      <div class="ws-value" id="welcome-balance">$0.00</div>
-      <div class="ws-actions">
-        <button class="ws-btn topup" onclick="STL.openWallet('topup')">+ Top Up</button>
-        <button class="ws-btn wd" onclick="STL.openWallet('withdraw')">Withdraw</button>
+  <!-- ── PLAY VIEW ── -->
+  <section class="view active" data-view="play">
+    <section class="welcome-strip">
+      <div class="ws-card ws-welcome">
+        <span class="ws-label">Welcome back</span>
+        <div class="ws-value" id="welcome-name">Player</div>
+        <span class="ws-sub" id="welcome-email">user@example.com</span>
       </div>
-    </div>
-    <div class="ws-card ws-countdown">
-      <span class="ws-label">Next Draw In</span>
-      <div class="ws-value" id="welcome-countdown">--:--:--</div>
-      <span class="ws-sub" id="welcome-nextdraw">Digits 2 · 10:00 AM PWT</span>
-    </div>
-  </section>
+      <div class="ws-card ws-wallet">
+        <span class="ws-label">Wallet Balance</span>
+        <div class="ws-value" id="welcome-balance">$0.00</div>
+        <div class="ws-actions">
+          <button class="ws-btn topup" onclick="STL.openWallet('topup')">+ Top Up</button>
+          <button class="ws-btn wd" onclick="STL.openWallet('withdraw')">Withdraw</button>
+        </div>
+      </div>
+      <div class="ws-card ws-countdown">
+        <span class="ws-label">Next Draw In</span>
+        <div class="ws-value" id="welcome-countdown">--:--:--</div>
+        <span class="ws-sub" id="welcome-nextdraw">Next draw · 10:00 AM PWT</span>
+      </div>
+    </section>
 
-  <!-- games -->
-  <section>
     <h2 class="section-title">Choose a <span>Game</span>
       <span class="sub">Tap a game to pick your numbers and place a bet</span>
     </h2>
@@ -492,9 +846,7 @@ body::before {
         <div class="pg-name">Palau Digits 2</div>
         <div class="pg-sub">Pick 2 digits from 0–9 in exact order. Fast, simple, win up to 70×.</div>
         <div class="pg-balls">
-          <div class="pg-ball">7</div>
-          <div class="pg-dash">—</div>
-          <div class="pg-ball q">?</div>
+          <div class="pg-ball">7</div><div class="pg-dash">—</div><div class="pg-ball q">?</div>
         </div>
         <div class="pg-meta">
           <div class="pg-meta-cell"><span class="pg-meta-lbl">Min Bet</span><span class="pg-meta-val">$0.25</span></div>
@@ -509,11 +861,7 @@ body::before {
         <div class="pg-name">Palau Digits 3</div>
         <div class="pg-sub">Match 3 digits in exact order for massive 400× payouts.</div>
         <div class="pg-balls">
-          <div class="pg-ball">4</div>
-          <div class="pg-dash">—</div>
-          <div class="pg-ball">8</div>
-          <div class="pg-dash">—</div>
-          <div class="pg-ball q">?</div>
+          <div class="pg-ball">4</div><div class="pg-dash">—</div><div class="pg-ball">8</div><div class="pg-dash">—</div><div class="pg-ball q">?</div>
         </div>
         <div class="pg-meta">
           <div class="pg-meta-cell"><span class="pg-meta-lbl">Min Bet</span><span class="pg-meta-val">$0.25</span></div>
@@ -528,9 +876,7 @@ body::before {
         <div class="pg-name">Palau Pairs</div>
         <div class="pg-sub">Choose 2 numbers from 1–40 in exact order. Every draw feels fresh.</div>
         <div class="pg-balls">
-          <div class="pg-ball">22</div>
-          <div class="pg-dash">—</div>
-          <div class="pg-ball q">?</div>
+          <div class="pg-ball">22</div><div class="pg-dash">—</div><div class="pg-ball q">?</div>
         </div>
         <div class="pg-meta">
           <div class="pg-meta-cell"><span class="pg-meta-lbl">Min Bet</span><span class="pg-meta-val">$0.50</span></div>
@@ -539,22 +885,14 @@ body::before {
         </div>
         <button class="pg-cta">Play Pairs</button>
       </div>
-
     </div>
-  </section>
 
-  <!-- recent bets -->
-  <section class="play-recent">
     <h2 class="section-title">Your Recent <span>Bets</span></h2>
     <div class="pr-table-wrap">
       <table class="pr-table">
         <thead>
           <tr>
-            <th>Date</th>
-            <th>Game</th>
-            <th>Numbers</th>
-            <th>Stake</th>
-            <th>Status</th>
+            <th>Date</th><th>Game</th><th>Numbers</th><th>Stake</th><th>Status</th>
           </tr>
         </thead>
         <tbody id="recent-bets-body">
@@ -565,9 +903,136 @@ body::before {
     </div>
   </section>
 
+  <!-- ── LIVE DRAW VIEW ── -->
+  <section class="view" data-view="live">
+    <h2 class="section-title">Live <span>Draw</span>
+      <span class="sub">Watch the daily draws live — 10:00 AM, 3:00 PM, 8:00 PM PWT</span>
+    </h2>
+    <div class="ld-wrap">
+      <div class="ld-main">
+        <div class="ld-stage">
+          <span class="live-pill">Offline</span>
+          <h3>Live stream coming soon</h3>
+          <p>Next draw in</p>
+          <div class="ld-countdown-big" id="ld-countdown">--:--:--</div>
+        </div>
+        <div class="ld-sched" id="ld-sched"></div>
+      </div>
+      <div class="ld-side">
+        <h3>Latest Results</h3>
+        <div class="ld-result-row">
+          <div class="ld-result-label">8:00 PM — Yesterday<strong>Palau Digits 2</strong></div>
+          <div class="ld-result-nums"><div class="n">7</div><div class="n">4</div></div>
+        </div>
+        <div class="ld-result-row">
+          <div class="ld-result-label">3:00 PM — Yesterday<strong>Palau Digits 2</strong></div>
+          <div class="ld-result-nums"><div class="n">0</div><div class="n">6</div></div>
+        </div>
+        <div class="ld-result-row">
+          <div class="ld-result-label">10:00 AM — Yesterday<strong>Palau Digits 2</strong></div>
+          <div class="ld-result-nums"><div class="n">3</div><div class="n">1</div></div>
+        </div>
+        <div class="ld-result-row">
+          <div class="ld-result-label">8:00 PM — Yesterday<strong>Palau Digits 3</strong></div>
+          <div class="ld-result-nums"><div class="n">3</div><div class="n">8</div><div class="n">1</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── HISTORY VIEW ── -->
+  <section class="view" data-view="history">
+    <h2 class="section-title">Account <span>History</span>
+      <span class="sub">Every bet and every wallet movement</span>
+    </h2>
+    <div class="view-tabs">
+      <button class="view-tab active" data-htab="bets">Bets</button>
+      <button class="view-tab" data-htab="wallet">Wallet Transactions</button>
+    </div>
+
+    <div id="view-hist-bets">
+      <div class="pr-table-wrap">
+        <table class="pr-table">
+          <thead>
+            <tr>
+              <th>Date</th><th>Game</th><th>Numbers</th><th>Stake</th>
+              <th>Winning</th><th>Payout</th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="view-hist-bets-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="view-hist-wallet" style="display:none;">
+      <div class="pr-table-wrap">
+        <table class="pr-table">
+          <thead>
+            <tr><th>Date</th><th>Description</th><th>Amount</th><th>Balance After</th></tr>
+          </thead>
+          <tbody id="view-hist-wallet-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── AUTOMATION VIEW ── -->
+  <section class="view" data-view="automation">
+    <h2 class="section-title">Bet <span>Automation</span>
+      <span class="sub">Schedule recurring daily bets — we place them for you at each draw</span>
+    </h2>
+
+    <div class="auto-grid">
+      <!-- Create -->
+      <div class="auto-card">
+        <h3>New Automation</h3>
+        <form class="auto-form" id="auto-form">
+          <label>Game
+            <select id="auto-game" required>
+              <option value="digits2">Palau Digits 2 · pick 2 (0–9) · 70×</option>
+              <option value="digits3">Palau Digits 3 · pick 3 (0–9) · 400×</option>
+              <option value="pairs">Palau Pairs · pick 2 (1–40) · 400×</option>
+            </select>
+          </label>
+
+          <label>Numbers
+            <input type="text" id="auto-numbers" placeholder="e.g. 7-4 or 3-8-1" required>
+            <span class="hint">Separate with dashes (—). Must match the game's digit count.</span>
+          </label>
+
+          <label>Stake per draw (USD)
+            <input type="number" id="auto-stake" min="0.25" step="0.25" placeholder="0.25" required>
+            <span class="hint">Deducted from your wallet at each scheduled draw.</span>
+          </label>
+
+          <label>Daily draw times</label>
+          <div class="auto-times">
+            <label class="auto-time"><input type="checkbox" value="10:00" checked>10:00 AM</label>
+            <label class="auto-time on"><input type="checkbox" value="15:00" checked>3:00 PM</label>
+            <label class="auto-time"><input type="checkbox" value="20:00">8:00 PM</label>
+          </div>
+
+          <div class="auto-err" id="auto-err"></div>
+          <button type="submit" class="btn-submit-full" id="auto-submit">Create Automation</button>
+          <div class="auto-note">
+            <strong>How it works:</strong> we save your rule and place a bet at each checked draw time automatically, as long as your wallet has enough balance. You can pause or delete any rule below.
+          </div>
+        </form>
+      </div>
+
+      <!-- List -->
+      <div class="auto-card">
+        <h3>Your Automations</h3>
+        <div class="auto-list" id="auto-list">
+          <div class="auto-list-empty">Loading…</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
 </main>
 
-<!-- ═══ AUTH MODAL ═══ -->
+<!-- ═══ MODALS (unchanged) ═══ -->
 <div class="stl-modal" id="auth-modal">
   <div class="stl-modal-card">
     <div class="modal-head">
@@ -579,14 +1044,12 @@ body::before {
         <button class="auth-tab active" data-tab="login">Log In</button>
         <button class="auth-tab" data-tab="signup">Sign Up</button>
       </div>
-
       <form class="stl-form" id="auth-login-form" style="display:flex;">
         <label>Email <input type="email" id="li-email" required autocomplete="email"></label>
         <label>Password <input type="password" id="li-password" required autocomplete="current-password"></label>
         <div class="stl-error" id="auth-error"></div>
         <button type="submit" class="btn-primary-full" id="li-submit">Log In</button>
       </form>
-
       <form class="stl-form" id="auth-signup-form" style="display:none;">
         <label>Full Name <input type="text" id="su-name" required autocomplete="name"></label>
         <label>Email <input type="email" id="su-email" required autocomplete="email"></label>
@@ -600,7 +1063,6 @@ body::before {
   </div>
 </div>
 
-<!-- ═══ WALLET MODAL ═══ -->
 <div class="stl-modal" id="wallet-modal">
   <div class="stl-modal-card">
     <div class="modal-head">
@@ -612,21 +1074,13 @@ body::before {
         <div class="lbl">Current Balance</div>
         <div class="val" id="wallet-current">$0.00</div>
       </div>
-
       <form class="stl-form" id="wallet-form">
         <label>Payment Method</label>
         <div class="method-grid">
-          <button type="button" class="method-btn active" data-method="debit">
-            <span class="m-icon">💳</span>Debit Card
-          </button>
-          <button type="button" class="method-btn" data-method="credit">
-            <span class="m-icon">💰</span>Credit Card
-          </button>
-          <button type="button" class="method-btn" data-method="pw_cash">
-            <span class="m-icon">🏝️</span>PW Cash
-          </button>
+          <button type="button" class="method-btn active" data-method="debit"><span class="m-icon">💳</span>Debit Card</button>
+          <button type="button" class="method-btn" data-method="credit"><span class="m-icon">💰</span>Credit Card</button>
+          <button type="button" class="method-btn" data-method="pw_cash"><span class="m-icon">🏝️</span>PW Cash</button>
         </div>
-
         <label>Amount (USD)
           <input type="number" id="wallet-amount-input" min="1" step="0.01" placeholder="0.00" required>
           <div class="quick-row">
@@ -637,7 +1091,6 @@ body::before {
             <button type="button" class="quick-amt" data-v="500">$500</button>
           </div>
         </label>
-
         <div class="stl-error" id="wallet-error"></div>
         <button type="submit" class="btn-primary-full" id="wallet-submit">Top Up Now</button>
       </form>
@@ -645,7 +1098,6 @@ body::before {
   </div>
 </div>
 
-<!-- ═══ BET MODAL ═══ -->
 <div class="stl-modal" id="bet-modal">
   <div class="stl-modal-card betcard">
     <div class="modal-head">
@@ -654,10 +1106,8 @@ body::before {
     </div>
     <div class="modal-body">
       <div class="bet-meta-row" id="bet-meta"></div>
-
       <div class="bet-picks-display" id="bet-picks"></div>
       <div class="bet-picker" id="bet-picker"></div>
-
       <form class="stl-form" id="bet-form">
         <div class="bet-info-grid">
           <label style="margin:0;">Stake (USD)
@@ -668,7 +1118,6 @@ body::before {
             <div class="v" id="bet-payout">$0.00</div>
           </div>
         </div>
-
         <div class="stl-error" id="bet-error"></div>
         <div class="bet-actions-row">
           <button type="button" class="btn-secondary" id="bet-clear">Clear</button>
@@ -679,7 +1128,7 @@ body::before {
   </div>
 </div>
 
-<!-- ═══ HISTORY MODAL ═══ -->
+<!-- legacy history modal still present but the in-page History view takes over -->
 <div class="stl-modal" id="history-modal">
   <div class="stl-modal-card wide">
     <div class="modal-head">
@@ -691,27 +1140,18 @@ body::before {
         <button class="hist-tab active" data-tab="bets">Bet History</button>
         <button class="hist-tab" data-tab="wallet">Wallet Transactions</button>
       </div>
-
       <div id="hist-bets">
         <div class="hist-table-wrap">
           <table class="hist-table">
-            <thead>
-              <tr>
-                <th>Date</th><th>Game</th><th>Numbers</th><th>Stake</th>
-                <th>Winning</th><th>Payout</th><th>Status</th>
-              </tr>
-            </thead>
+            <thead><tr><th>Date</th><th>Game</th><th>Numbers</th><th>Stake</th><th>Winning</th><th>Payout</th><th>Status</th></tr></thead>
             <tbody id="hist-bets-body"></tbody>
           </table>
         </div>
       </div>
-
       <div id="hist-wallet" style="display:none;">
         <div class="hist-table-wrap">
           <table class="hist-table">
-            <thead>
-              <tr><th>Date</th><th>Description</th><th>Amount</th><th>Balance After</th></tr>
-            </thead>
+            <thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Balance After</th></tr></thead>
             <tbody id="hist-wallet-body"></tbody>
           </table>
         </div>
