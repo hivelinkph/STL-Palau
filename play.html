@@ -374,20 +374,7 @@ body::before {
 }
 .play-guard .gc button:hover { transform: translateY(-1px); }
 
-/* ─── TOASTS ─── */
-.stl-toast {
-  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
-  background: var(--card2); border: 1px solid var(--border);
-  color: var(--text);
-  font-family:'Barlow',sans-serif; font-size: 14px; font-weight: 600;
-  padding: 12px 20px; border-radius: 10px;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
-  opacity: 0; transition: opacity .25s, transform .25s;
-  z-index: 3000;
-}
-.stl-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-.stl-toast-success { border-color: rgba(69,229,180,0.5); color: var(--green); }
-.stl-toast-error { border-color: rgba(255,107,107,0.5); color: #ff6b6b; }
+/* toast styles live in Assets/css/app.css */
 
 /* reuse navbar logged-in/out states from app.css */
 #nav-loggedout { display: none; align-items: center; }
