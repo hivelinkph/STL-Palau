@@ -639,12 +639,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   // History tabs
   $$('.hist-tab').forEach(t => t.onclick = () => showHistoryTab(t.dataset.tab));
 
-  // Close buttons + backdrop
-  $$('.stl-modal').forEach(m => {
-    m.addEventListener('click', e => { if (e.target === m) closeAllModals(); });
-  });
+  // Close only via the × button — backdrop clicks and Escape are intentionally ignored
   $$('[data-close]').forEach(b => b.onclick = () => closeModal(b.dataset.close));
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllModals(); });
 
   // Wire game cards "Play ..." buttons (index.html)
   document.querySelectorAll('.game-card').forEach(card => {
