@@ -1606,21 +1606,20 @@ body {
 }
 
 .app-phone {
-  width: 240px;
+  width: 300px;
   flex-shrink: 0;
   position: relative;
 }
 
-.phone-frame {
-  background: var(--card2);
-  border: 2px solid rgba(69,184,229,0.3);
-  border-radius: 40px;
-  padding: 16px;
-  box-shadow: 0 24px 80px rgba(69,184,229,0.2);
-  position: relative;
+.app-phone-img {
+  width: 100%;
+  height: auto;
+  border-radius: 20px;
+  box-shadow: 0 24px 80px rgba(69,184,229,0.25);
+  display: block;
 }
 
-.phone-frame::before {
+.phone-frame--unused::before {
   content: '';
   position: absolute;
   top: 16px;
@@ -1915,6 +1914,7 @@ footer {
   .countdown-inner { flex-direction: column; align-items: flex-start; }
 }
 </style>
+<link rel="stylesheet" href="Assets/css/app.css">
 </head>
 <body>
 
@@ -1937,9 +1937,187 @@ footer {
   </ul>
   <div class="nav-spacer"></div>
   <div class="nav-live">DRAW LIVE — 7:00 PM</div>
-  <button class="btn-login">Log In</button>
-  <button class="btn-register">Register Now</button>
+  <span class="mode-badge" id="stl-mode-badge">DEMO MODE</span>
+
+  <!-- Logged-out state -->
+  <div id="nav-loggedout" style="display:flex; align-items:center;">
+    <button class="btn-login" id="btn-login">Log In</button>
+    <button class="btn-register" id="btn-register">Register Now</button>
+  </div>
+
+  <!-- Logged-in state -->
+  <div id="nav-loggedin">
+    <div class="wallet-pill">
+      <div>
+        <div class="w-label">Wallet</div>
+        <div class="w-amt" id="wallet-amount">$0.00</div>
+      </div>
+      <button class="w-btn topup" id="btn-topup">+ Top Up</button>
+      <button class="w-btn wd" id="btn-withdraw">Withdraw</button>
+    </div>
+    <div class="user-chip">
+      <div class="user-avatar" id="user-avatar">U</div>
+      <span class="user-email" id="user-email">user@example.com</span>
+      <div class="u-menu">
+        <button id="btn-history">Bet &amp; Wallet History</button>
+        <button id="btn-logout">Sign Out</button>
+      </div>
+    </div>
+  </div>
 </nav>
+
+<!-- ═══ AUTH MODAL ═══ -->
+<div class="stl-modal" id="auth-modal">
+  <div class="stl-modal-card">
+    <div class="modal-head">
+      <div class="modal-title">Welcome to <span>STL Palau</span></div>
+      <button class="modal-close" data-close="auth-modal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Log In</button>
+        <button class="auth-tab" data-tab="signup">Sign Up</button>
+      </div>
+
+      <form class="stl-form" id="auth-login-form" style="display:flex;">
+        <label>Email <input type="email" id="li-email" required autocomplete="email"></label>
+        <label>Password <input type="password" id="li-password" required autocomplete="current-password"></label>
+        <div class="stl-error" id="auth-error"></div>
+        <button type="submit" class="btn-primary-full" id="li-submit">Log In</button>
+      </form>
+
+      <form class="stl-form" id="auth-signup-form" style="display:none;">
+        <label>Full Name <input type="text" id="su-name" required autocomplete="name"></label>
+        <label>Email <input type="email" id="su-email" required autocomplete="email"></label>
+        <label>Password
+          <input type="password" id="su-password" required autocomplete="new-password" minlength="6">
+          <span class="hint">At least 6 characters</span>
+        </label>
+        <button type="submit" class="btn-primary-full" id="su-submit">Create Account</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ WALLET MODAL (TopUp / Withdraw) ═══ -->
+<div class="stl-modal" id="wallet-modal">
+  <div class="stl-modal-card">
+    <div class="modal-head">
+      <div class="modal-title" id="wallet-title">Top Up Wallet</div>
+      <button class="modal-close" data-close="wallet-modal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="wallet-current">
+        <div class="lbl">Current Balance</div>
+        <div class="val" id="wallet-current">$0.00</div>
+      </div>
+
+      <form class="stl-form" id="wallet-form">
+        <label>Payment Method</label>
+        <div class="method-grid">
+          <button type="button" class="method-btn active" data-method="debit">
+            <span class="m-icon">💳</span>Debit Card
+          </button>
+          <button type="button" class="method-btn" data-method="credit">
+            <span class="m-icon">💰</span>Credit Card
+          </button>
+          <button type="button" class="method-btn" data-method="pw_cash">
+            <span class="m-icon">🏝️</span>PW Cash
+          </button>
+        </div>
+
+        <label>Amount (USD)
+          <input type="number" id="wallet-amount-input" min="1" step="0.01" placeholder="0.00" required>
+          <div class="quick-row">
+            <button type="button" class="quick-amt" data-v="10">$10</button>
+            <button type="button" class="quick-amt" data-v="25">$25</button>
+            <button type="button" class="quick-amt" data-v="50">$50</button>
+            <button type="button" class="quick-amt" data-v="100">$100</button>
+            <button type="button" class="quick-amt" data-v="500">$500</button>
+          </div>
+        </label>
+
+        <div class="stl-error" id="wallet-error"></div>
+        <button type="submit" class="btn-primary-full" id="wallet-submit">Top Up Now</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ BET MODAL ═══ -->
+<div class="stl-modal" id="bet-modal">
+  <div class="stl-modal-card betcard">
+    <div class="modal-head">
+      <div class="modal-title" id="bet-title">Place Bet</div>
+      <button class="modal-close" data-close="bet-modal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="bet-meta-row" id="bet-meta"></div>
+
+      <div class="bet-picks-display" id="bet-picks"></div>
+      <div class="bet-picker" id="bet-picker"></div>
+
+      <form class="stl-form" id="bet-form">
+        <div class="bet-info-grid">
+          <label style="margin:0;">Stake (USD)
+            <input type="number" id="bet-stake" min="0.25" step="0.25" required>
+          </label>
+          <div class="bet-info-cell">
+            <div class="k">Potential Win</div>
+            <div class="v" id="bet-payout">$0.00</div>
+          </div>
+        </div>
+
+        <div class="stl-error" id="bet-error"></div>
+        <div class="bet-actions-row">
+          <button type="button" class="btn-secondary" id="bet-clear">Clear</button>
+          <button type="submit" class="btn-primary-full" id="bet-submit" disabled>Place Bet</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ HISTORY MODAL ═══ -->
+<div class="stl-modal" id="history-modal">
+  <div class="stl-modal-card wide">
+    <div class="modal-head">
+      <div class="modal-title">Account <span>History</span></div>
+      <button class="modal-close" data-close="history-modal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="hist-tabs">
+        <button class="hist-tab active" data-tab="bets">Bet History</button>
+        <button class="hist-tab" data-tab="wallet">Wallet Transactions</button>
+      </div>
+
+      <div id="hist-bets">
+        <div class="hist-table-wrap">
+          <table class="hist-table">
+            <thead>
+              <tr>
+                <th>Date</th><th>Game</th><th>Numbers</th><th>Stake</th>
+                <th>Winning</th><th>Payout</th><th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="hist-bets-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="hist-wallet" style="display:none;">
+        <div class="hist-table-wrap">
+          <table class="hist-table">
+            <thead>
+              <tr><th>Date</th><th>Description</th><th>Amount</th><th>Balance After</th></tr>
+            </thead>
+            <tbody id="hist-wallet-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ══ HERO ══ -->
 <section class="hero">
@@ -2493,37 +2671,7 @@ footer {
       </div>
     </div>
     <div class="app-phone">
-      <div class="phone-frame">
-        <div class="phone-screen">
-          <div class="phone-logo">STL PALAU 🇵🇼</div>
-          <div class="phone-mini-card">
-            <div class="p-label">Digits 3 — 8:00 PM</div>
-            <div class="p-balls">
-              <div class="p-ball">3</div>
-              <div class="p-ball">8</div>
-              <div class="p-ball">1</div>
-            </div>
-          </div>
-          <div class="phone-mini-prize">
-            <div class="prize-label">Top Prize Today</div>
-            <div class="prize-val">$20,000</div>
-          </div>
-          <div class="phone-mini-card">
-            <div class="p-label">Digits 2 — 3:00 PM</div>
-            <div class="p-balls">
-              <div class="p-ball">0</div>
-              <div class="p-ball">6</div>
-            </div>
-          </div>
-          <div class="phone-mini-card">
-            <div class="p-label">Pairs — 10:00 AM</div>
-            <div class="p-balls">
-              <div class="p-ball" style="width:36px;font-size:11px;">05</div>
-              <div class="p-ball" style="width:36px;font-size:11px;">17</div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <img src="Assets/Icons/iphone.png" alt="STL Palau App on iPhone" class="app-phone-img">
     </div>
   </div>
 </div>
@@ -2735,6 +2883,16 @@ function updateLiveCountdown() {
 setInterval(updateLiveCountdown, 1000);
 updateLiveCountdown();
 </script>
+
+<!-- ═══ SUPABASE + APP ═══ -->
+<script>
+  // Paste your Supabase credentials to go live.
+  // Leave empty to run in demo / localStorage mode.
+  window.STL_SUPABASE_URL = '';
+  window.STL_SUPABASE_ANON_KEY = '';
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="Assets/js/app.js"></script>
 
 </body>
 </html>
