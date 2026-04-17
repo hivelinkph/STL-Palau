@@ -1567,20 +1567,49 @@ body {
   flex-wrap: wrap;
 }
 
-.app-btn-img-link {
-  display: inline-block;
-  transition: transform 0.3s, filter 0.3s;
+.app-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #000;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  padding: 12px 28px 12px 20px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: none;
 }
 
-.app-btn-img-link:hover {
+.app-btn:hover {
+  border-color: rgba(255,255,255,0.5);
   transform: translateY(-3px);
-  filter: brightness(1.15);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  background: #111;
 }
 
-.app-btn-img {
-  height: 60px;
-  width: auto;
-  display: block;
+.app-btn svg {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  fill: #fff;
+}
+
+.app-btn-text { text-align: left; }
+
+.app-btn-sub {
+  font-size: 10px;
+  color: rgba(255,255,255,0.7);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+}
+
+.app-btn-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
 }
 
 .app-phone {
@@ -2632,11 +2661,19 @@ footer {
       <h2>Play on Your<br><span>Phone</span> Anywhere</h2>
       <p>Get the STL Palau app for the best lottery experience. Watch live draws, check results instantly, and manage your winnings — all from your pocket.</p>
       <div class="app-btns">
-        <a href="#" class="app-btn-img-link">
-          <img src="Assets/Icons/apple_download.png" alt="Download on the App Store" class="app-btn-img">
+        <a href="#" class="app-btn">
+          <svg viewBox="0 0 384 512" xmlns="http://www.w3.org/2000/svg"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-27.1-46.9-42.4-83.7-46-35.3-3.4-73.8 20.7-88 20.7-15 0-49.4-19.7-74.3-19.7C60.2 140.2 0 185.6 0 273.5c0 27.4 5 55.7 15.1 84.9 13.4 38.5 61.7 132.7 111.9 131.1 25.8-.6 44-17.5 75.6-17.5 30.5 0 47.3 17.5 75.6 17.5 50.7-.8 94.4-86.1 107.7-124.7-68.6-32.6-67.2-95.5-67.2-96.1zm-64.3-154c28.5-34.5 25.4-66.1 24.5-77.7-24.7 1.5-53.3 17-70.1 36.8-18.5 21.5-29.3 48-26.9 77.4 26.8 2.1 51.5-12.3 72.5-36.5z"/></svg>
+          <div class="app-btn-text">
+            <div class="app-btn-sub">Download on the</div>
+            <div class="app-btn-name">App Store</div>
+          </div>
         </a>
-        <a href="#" class="app-btn-img-link">
-          <img src="Assets/Icons/google_download.png" alt="Get it on Google Play" class="app-btn-img">
+        <a href="#" class="app-btn">
+          <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z" fill="#fff"/></svg>
+          <div class="app-btn-text">
+            <div class="app-btn-sub">Get it on</div>
+            <div class="app-btn-name">Google Play</div>
+          </div>
         </a>
       </div>
     </div>
