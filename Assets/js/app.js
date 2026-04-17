@@ -39,11 +39,11 @@ function supabaseBackend() {
     },
     async signOut() { await sb.auth.signOut(); },
     async getUser() {
-      const { data } = await sb.auth.getUser();
-      return data?.user || null;
+      const { data } = await sb.auth.getSession();
+      return data?.session?.user || null;
     },
-    async getProfile() {
-      const user = await this.getUser();
+    async getProfile(userArg) {
+      const user = userArg || await this.getUser();
       if (!user) return null;
       const { data, error } = await sb.from('profiles').select('*').eq('id', user.id).single();
       if (error) throw error;
@@ -78,7 +78,10 @@ function supabaseBackend() {
       return data;
     },
     onAuthChange(cb) {
-      sb.auth.onAuthStateChange((_evt, sess) => cb(sess?.user || null));
+      sb.auth.onAuthStateChange((_evt, sess) => {
+        // Queue to a microtask so we never re-enter the auth lock held by the SDK
+        Promise.resolve().then(() => cb(sess?.user || null));
+      });
     },
   };
 }
@@ -129,8 +132,8 @@ function localBackend() {
     async getUser() {
       return read(K.session, null);
     },
-    async getProfile() {
-      const s = read(K.session, null);
+    async getProfile(userArg) {
+      const s = userArg || read(K.session, null);
       if (!s) return null;
       return getProfiles()[s.id] || null;
     },
@@ -304,10 +307,15 @@ async function handleLogout() {
 // ═══ SESSION STATE ═════════════════════════════════════════
 let currentProfile = null;
 
-async function refreshUser() {
-  const user = await backend.getUser();
+async function refreshUser(userArg) {
+  // userArg may be passed by onAuthChange to skip a second session fetch
+  const user = userArg !== undefined ? userArg : await backend.getUser();
   if (user) {
-    currentProfile = await backend.getProfile();
+    try {
+      currentProfile = await backend.getProfile(user);
+    } catch (_) {
+      currentProfile = null;
+    }
   } else {
     currentProfile = null;
   }
