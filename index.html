@@ -1567,42 +1567,20 @@ body {
   flex-wrap: wrap;
 }
 
-.app-btn {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: var(--card);
-  border: 1px solid rgba(69,184,229,0.3);
-  padding: 12px 24px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.25s;
-  text-decoration: none;
+.app-btn-img-link {
+  display: inline-block;
+  transition: transform 0.3s, filter 0.3s;
 }
 
-.app-btn:hover {
-  border-color: var(--blue);
-  background: var(--card2);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px var(--blue-glow);
+.app-btn-img-link:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.15);
 }
 
-.app-btn-icon { font-size: 28px; }
-
-.app-btn-text { text-align: left; }
-
-.app-btn-sub {
-  font-size: 10px;
-  color: var(--text-dim);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.app-btn-name {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text);
+.app-btn-img {
+  height: 60px;
+  width: auto;
+  display: block;
 }
 
 .app-phone {
@@ -2654,19 +2632,11 @@ footer {
       <h2>Play on Your<br><span>Phone</span> Anywhere</h2>
       <p>Get the STL Palau app for the best lottery experience. Watch live draws, check results instantly, and manage your winnings — all from your pocket.</p>
       <div class="app-btns">
-        <a href="#" class="app-btn">
-          <div class="app-btn-icon">🍎</div>
-          <div class="app-btn-text">
-            <div class="app-btn-sub">Download on the</div>
-            <div class="app-btn-name">App Store</div>
-          </div>
+        <a href="#" class="app-btn-img-link">
+          <img src="Assets/Icons/apple_download.png" alt="Download on the App Store" class="app-btn-img">
         </a>
-        <a href="#" class="app-btn">
-          <div class="app-btn-icon">▶</div>
-          <div class="app-btn-text">
-            <div class="app-btn-sub">Get it on</div>
-            <div class="app-btn-name">Google Play</div>
-          </div>
+        <a href="#" class="app-btn-img-link">
+          <img src="Assets/Icons/google_download.png" alt="Get it on Google Play" class="app-btn-img">
         </a>
       </div>
     </div>
