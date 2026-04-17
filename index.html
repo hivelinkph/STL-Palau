@@ -896,7 +896,7 @@ body {
   border: 1px solid var(--border);
   background: var(--card);
   transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 9 / 16;
 }
 .game-photo-card img {
   width: 100%;
@@ -1461,6 +1461,25 @@ body {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
+}
+
+.promo-photo-card {
+  display: block;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--card);
+  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+.promo-photo-card img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.promo-photo-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--blue);
+  box-shadow: 0 16px 48px rgba(69,184,229,0.2);
 }
 
 .promo-card {
@@ -2556,34 +2575,9 @@ footer {
       <a href="#" class="view-all">View All →</a>
     </div>
     <div class="promo-grid">
-
-      <div class="promo-card">
-        <div class="promo-card-img promo-1">🎁</div>
-        <div class="promo-card-body">
-          <div class="promo-tag">New Player</div>
-          <div class="promo-title">Welcome Bonus — First Bet on Us</div>
-          <div class="promo-desc">Register today and get a $1.00 free bet on any game. No deposit required. Valid for 24 hours.</div>
-        </div>
-      </div>
-
-      <div class="promo-card">
-        <div class="promo-card-img promo-2">🔄</div>
-        <div class="promo-card-body">
-          <div class="promo-tag">Daily Reward</div>
-          <div class="promo-title">Play All 3 Draws — Get 10% Back</div>
-          <div class="promo-desc">Bet on all three daily draws in any game and receive 10% cashback credited to your wallet every night.</div>
-        </div>
-      </div>
-
-      <div class="promo-card">
-        <div class="promo-card-img promo-3">🤝</div>
-        <div class="promo-card-body">
-          <div class="promo-tag">Referral</div>
-          <div class="promo-title">Invite a Friend — Earn $2.00</div>
-          <div class="promo-desc">Share your unique referral code. You earn $2.00 when your friend places their first real bet.</div>
-        </div>
-      </div>
-
+      <a href="#" class="promo-photo-card"><img src="Assets/Icons/promotions/FreeBet.png" alt="Free Bet"></a>
+      <a href="#" class="promo-photo-card"><img src="Assets/Icons/promotions/10Cashback_2K.png" alt="10% Cashback up to $2K"></a>
+      <a href="#" class="promo-photo-card"><img src="Assets/Icons/promotions/2DollarsReferral.png" alt="$2 Referral Bonus"></a>
     </div>
   </div>
 </div>
