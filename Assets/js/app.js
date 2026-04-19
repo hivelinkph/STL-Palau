@@ -494,11 +494,15 @@ function methodLabel(m) {
 // ═══ BETTING ═══════════════════════════════════════════════
 let betGame = 'digits2';
 let betPicks = [];
+let betDates = new Set();     // 'YYYY-MM-DD' (Palau local dates)
+let betCalY = 0, betCalM = 0; // month currently displayed (1-12)
+const BET_CAL_MAX_DAYS = 60;
 
 function openBet(gameId) {
   if (!currentProfile) { openAuth('login'); return; }
   betGame = gameId;
   betPicks = [];
+  betDates = new Set();
   const g = GAMES[gameId];
   $('#bet-title').textContent = g.name;
   $('#bet-meta').textContent = `Min ${fmtMoney(g.min)} · ${g.mult}× multiplier · pick ${g.digits} from ${g.range[0]}–${g.range[1]}`;
@@ -506,65 +510,130 @@ function openBet(gameId) {
   $('#bet-error').textContent = '';
   renderPicker();
   renderPicks();
+  initBetCalendar();
   updatePayout();
-  initBetDrawControls();
   openModal('bet-modal');
 }
 
-function initBetDrawControls() {
-  const dateEl = $('#bet-draw-date');
-  const slotEl = $('#bet-draw-slot');
-  if (!dateEl || !slotEl) return;
+function initBetCalendar() {
   const { ymd, hour, minute } = palauNowParts();
-  // Min date = today (Palau). Max = today + 30 days.
-  dateEl.min = ymd;
   const [y, m, d] = ymd.split('-').map(Number);
-  const maxIso = new Date(Date.UTC(y, m - 1, d + 30)).toISOString().slice(0, 10);
-  dateEl.max = maxIso;
-
-  // Pre-select next open slot
+  betCalY = y; betCalM = m;
+  // Pre-select the next open draw date
   const nowMin = hour * 60 + minute;
-  const nextH = DRAW_SLOTS.find(h => h * 60 > nowMin);
-  if (nextH) {
-    dateEl.value = ymd;
-    slotEl.value = String(nextH);
+  const anyOpenToday = DRAW_SLOTS.some(h => h * 60 > nowMin);
+  if (anyOpenToday) {
+    betDates.add(ymd);
   } else {
-    // All of today gone — jump to tomorrow's first slot
-    dateEl.value = new Date(Date.UTC(y, m - 1, d + 1)).toISOString().slice(0, 10);
-    slotEl.value = String(DRAW_SLOTS[0]);
+    const tmr = new Date(Date.UTC(y, m - 1, d + 1)).toISOString().slice(0, 10);
+    betDates.add(tmr);
   }
-  applyBetSlotAvailability();
-  dateEl.onchange = applyBetSlotAvailability;
+  // Pre-select next open slot
+  const slotEl = $('#bet-draw-slot');
+  if (slotEl) {
+    const nextH = DRAW_SLOTS.find(h => h * 60 > nowMin) || DRAW_SLOTS[0];
+    slotEl.value = String(nextH);
+    slotEl.onchange = () => { renderBetCalendar(); updatePayout(); };
+  }
+  renderBetCalendar();
 }
 
-function applyBetSlotAvailability() {
-  const dateEl = $('#bet-draw-date');
-  const slotEl = $('#bet-draw-slot');
-  if (!dateEl || !slotEl) return;
-  const { ymd, hour, minute } = palauNowParts();
-  const chosen = dateEl.value;
+function palauTodayYmd() { return palauNowParts().ymd; }
+function ymdAddDays(ymd, n) {
+  const [y, m, d] = ymd.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10);
+}
+function ymdCompare(a, b) { return a < b ? -1 : a > b ? 1 : 0; }
+
+function renderBetCalendar() {
+  const host = $('#bet-cal');
+  if (!host) return;
+  const today = palauTodayYmd();
+  const maxYmd = ymdAddDays(today, BET_CAL_MAX_DAYS);
+  const chosenSlot = parseInt($('#bet-draw-slot')?.value || '0', 10);
+  const { hour, minute } = palauNowParts();
   const nowMin = hour * 60 + minute;
-  const isToday = chosen === ymd;
-  // Clear + repopulate options
-  slotEl.innerHTML = '';
-  const available = [];
-  DRAW_SLOTS.forEach(h => {
-    const passed = isToday && h * 60 <= nowMin;
-    const opt = document.createElement('option');
-    opt.value = String(h);
-    opt.textContent = SLOT_LABELS[h] + (passed ? ' (closed)' : '');
-    opt.disabled = passed;
-    slotEl.appendChild(opt);
-    if (!passed) available.push(h);
+  const todayClosed = chosenSlot > 0 && chosenSlot * 60 <= nowMin;
+  // Drop any now-invalid selections (past dates, or today when slot closed)
+  betDates.forEach(ymd => {
+    const past = ymdCompare(ymd, today) < 0;
+    const tooFar = ymdCompare(ymd, maxYmd) > 0;
+    const closedToday = ymd === today && todayClosed;
+    if (past || tooFar || closedToday) betDates.delete(ymd);
   });
-  if (available.length === 0) {
-    // Roll to tomorrow
-    const [y, m, d] = ymd.split('-').map(Number);
-    dateEl.value = new Date(Date.UTC(y, m - 1, d + 1)).toISOString().slice(0, 10);
-    applyBetSlotAvailability();
-    return;
+
+  const monthStart = new Date(Date.UTC(betCalY, betCalM - 1, 1));
+  const daysInMonth = new Date(Date.UTC(betCalY, betCalM, 0)).getUTCDate();
+  const firstDow = monthStart.getUTCDay(); // 0=Sun
+  const monthLabel = monthStart.toLocaleString('en-US', { timeZone: 'UTC', month: 'long', year: 'numeric' });
+
+  const [minY, minM] = today.split('-').map(Number).slice(0, 2);
+  const [maxY, maxM] = maxYmd.split('-').map(Number).slice(0, 2);
+  const canPrev = (betCalY > minY) || (betCalY === minY && betCalM > minM);
+  const canNext = (betCalY < maxY) || (betCalY === maxY && betCalM < maxM);
+
+  const dowRow = ['S','M','T','W','T','F','S']
+    .map(l => `<div class="bet-cal-dow">${l}</div>`).join('');
+  const cells = [];
+  for (let i = 0; i < firstDow; i++) cells.push('<div></div>');
+  for (let day = 1; day <= daysInMonth; day++) {
+    const ymd = `${betCalY}-${String(betCalM).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const isPast = ymdCompare(ymd, today) < 0;
+    const isTooFar = ymdCompare(ymd, maxYmd) > 0;
+    const isToday = ymd === today;
+    const selected = betDates.has(ymd);
+    const disabled = isPast || isTooFar || (isToday && todayClosed);
+    const cls = ['bet-cal-day'];
+    if (isToday) cls.push('today');
+    if (selected) cls.push('selected');
+    cells.push(`<button type="button" class="${cls.join(' ')}" data-ymd="${ymd}"${disabled ? ' disabled' : ''}>${day}</button>`);
   }
-  if (slotEl.selectedOptions[0]?.disabled) slotEl.value = String(available[0]);
+
+  host.innerHTML = `
+    <div class="bet-cal-head">
+      <button type="button" class="bet-cal-nav" data-nav="-1"${canPrev ? '' : ' disabled'} aria-label="Previous month">‹</button>
+      <div class="bet-cal-title">${monthLabel}</div>
+      <button type="button" class="bet-cal-nav" data-nav="1"${canNext ? '' : ' disabled'} aria-label="Next month">›</button>
+    </div>
+    <div class="bet-cal-grid">${dowRow}${cells.join('')}</div>
+  `;
+  host.querySelectorAll('.bet-cal-day').forEach(b => {
+    b.onclick = () => toggleBetDate(b.dataset.ymd);
+  });
+  host.querySelectorAll('.bet-cal-nav').forEach(b => {
+    b.onclick = () => shiftBetCalMonth(parseInt(b.dataset.nav, 10));
+  });
+  updateCalSummary();
+}
+
+function shiftBetCalMonth(delta) {
+  betCalM += delta;
+  if (betCalM < 1) { betCalM = 12; betCalY--; }
+  else if (betCalM > 12) { betCalM = 1; betCalY++; }
+  renderBetCalendar();
+}
+
+function toggleBetDate(ymd) {
+  if (!ymd) return;
+  if (betDates.has(ymd)) betDates.delete(ymd);
+  else betDates.add(ymd);
+  renderBetCalendar();
+  updatePayout();
+}
+
+function updateCalSummary() {
+  const el = $('#bet-cal-summary');
+  if (!el) return;
+  const count = betDates.size;
+  if (count === 0) { el.innerHTML = 'Tap one or more dates above.'; return; }
+  const sorted = [...betDates].sort();
+  const preview = sorted.slice(0, 4).map(fmtYmd).join(', ') + (sorted.length > 4 ? ` +${sorted.length - 4} more` : '');
+  el.innerHTML = `<strong>${count}</strong> draw${count === 1 ? '' : 's'} selected · ${preview}`;
+}
+
+function fmtYmd(ymd) {
+  const [y, m, d] = ymd.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d)).toLocaleString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric' });
 }
 
 function renderPicker() {
@@ -603,7 +672,7 @@ function renderPicks() {
   $$('.pick-ball').forEach(b => {
     b.classList.toggle('picked', betPicks.includes(Number(b.dataset.n)));
   });
-  $('#bet-submit').disabled = betPicks.length !== g.digits;
+  refreshBetSubmitState();
 }
 
 function clearPicks() { betPicks = []; renderPicks(); }
@@ -613,6 +682,19 @@ function updatePayout() {
   const g = GAMES[betGame];
   const payout = Math.min(stake * g.mult, g.max);
   $('#bet-payout').textContent = fmtMoney(payout);
+  const totalEl = $('#bet-total');
+  if (totalEl) totalEl.textContent = fmtMoney(stake * betDates.size);
+  refreshBetSubmitState();
+}
+
+function refreshBetSubmitState() {
+  const g = GAMES[betGame];
+  const btn = $('#bet-submit');
+  if (!btn) return;
+  const stake = Number($('#bet-stake').value) || 0;
+  const ok = betPicks.length === g.digits && betDates.size > 0 && stake >= g.min;
+  btn.disabled = !ok;
+  btn.textContent = betDates.size > 1 ? `Place ${betDates.size} Bets` : 'Place Bet';
 }
 
 async function handleBetSubmit(e) {
@@ -623,29 +705,56 @@ async function handleBetSubmit(e) {
   err.textContent = '';
   if (betPicks.length !== g.digits) { err.textContent = `Pick ${g.digits} numbers`; return; }
   if (stake < g.min) { err.textContent = `Minimum stake is ${fmtMoney(g.min)}`; return; }
-  if (stake > currentProfile.wallet_balance) { err.textContent = 'Insufficient wallet balance — top up first'; return; }
-  const drawDate = $('#bet-draw-date')?.value;
+  if (betDates.size === 0) { err.textContent = 'Tap at least one draw date'; return; }
   const drawSlot = parseInt($('#bet-draw-slot')?.value || '0', 10);
-  if (!drawDate || !drawSlot) { err.textContent = 'Choose a draw date and slot'; return; }
-  const drawISO = drawTimeFromParts(drawDate, drawSlot);
-  if (new Date(drawISO).getTime() <= Date.now()) {
-    err.textContent = 'That draw has already closed — pick a future slot';
+  if (!drawSlot) { err.textContent = 'Choose a draw slot'; return; }
+
+  // Build + validate all draw times up front (drop any already-closed)
+  const now = Date.now();
+  const plan = [...betDates].sort().map(ymd => ({ ymd, iso: drawTimeFromParts(ymd, drawSlot) }));
+  const valid = plan.filter(p => new Date(p.iso).getTime() > now);
+  const skipped = plan.length - valid.length;
+  if (valid.length === 0) {
+    err.textContent = 'All chosen draws have already closed — pick a later slot or later date.';
     return;
   }
+  const total = stake * valid.length;
+  if (total > currentProfile.wallet_balance) {
+    err.textContent = `Need ${fmtMoney(total)} for ${valid.length} draws — wallet has ${fmtMoney(currentProfile.wallet_balance)}.`;
+    return;
+  }
+
   const numbers = betPicks.map(n => g.digits === 2 && g.range[1] <= 9 ? n : String(n).padStart(2,'0')).join('-');
+  $('#bet-submit').disabled = true;
+  let placed = 0;
+  let lastError = null;
   try {
-    $('#bet-submit').disabled = true;
-    await backend.placeBet(betGame, numbers, 'straight', stake, drawISO);
-    currentProfile.wallet_balance = Number(currentProfile.wallet_balance) - stake;
-    renderAuthUI();
-    toast(`Bet placed: ${numbers} for ${fmtMoney(stake)} · ${fmtDrawSlot(drawISO)}`, 'success');
-    closeModal('bet-modal');
-    renderHistory();
-    renderRecentBets();
-  } catch (ex) {
-    err.textContent = ex.message || 'Could not place bet';
+    for (const p of valid) {
+      try {
+        await backend.placeBet(betGame, numbers, 'straight', stake, p.iso);
+        currentProfile.wallet_balance = Number(currentProfile.wallet_balance) - stake;
+        placed++;
+      } catch (ex) {
+        lastError = ex;
+        break;
+      }
+    }
   } finally {
-    $('#bet-submit').disabled = false;
+    renderAuthUI();
+    if (placed > 0) {
+      const parts = [
+        `Placed ${placed} bet${placed === 1 ? '' : 's'}: ${numbers} @ ${SLOT_LABELS[drawSlot]}`,
+      ];
+      if (skipped) parts.push(`${skipped} skipped (closed)`);
+      if (lastError) parts.push(`stopped: ${lastError.message}`);
+      toast(parts.join(' · '), lastError ? 'error' : 'success');
+      closeModal('bet-modal');
+      renderHistory();
+      renderRecentBets();
+    } else {
+      err.textContent = lastError ? (lastError.message || 'Could not place bet') : 'No bets placed';
+    }
+    refreshBetSubmitState();
   }
 }
 

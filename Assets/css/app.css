@@ -310,6 +310,59 @@
 
 .bet-actions-row { display:flex; gap: 10px; }
 .bet-actions-row .btn-primary-full { flex: 2; }
+
+/* Multi-select draw-date calendar */
+.bet-cal-wrap { margin-bottom: 14px; }
+.bet-cal-label { display: block; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+.bet-cal-hint { color: var(--gold); font-weight: 700; text-transform: none; letter-spacing: 0; font-size: 10px; margin-left: 6px; }
+.bet-cal {
+  background: rgba(0,0,0,0.25);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+}
+.bet-cal-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.bet-cal-title { font-weight: 800; font-size: 14px; color: var(--text); letter-spacing: 1px; }
+.bet-cal-nav {
+  background: transparent; border: 1px solid var(--border); color: var(--text);
+  width: 28px; height: 28px; border-radius: 6px; cursor: pointer;
+  font-family: inherit; font-weight: 800; display:flex; align-items:center; justify-content:center;
+  transition: border-color 0.15s, color 0.15s;
+}
+.bet-cal-nav:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
+.bet-cal-nav:disabled { opacity: 0.3; cursor: not-allowed; }
+.bet-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.bet-cal-dow {
+  text-align: center; font-size: 10px; font-weight: 700;
+  color: var(--text-muted); letter-spacing: 1px; padding: 4px 0;
+}
+.bet-cal-day {
+  aspect-ratio: 1 / 1;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent; border: 1px solid transparent;
+  color: var(--text); font-family: inherit; font-weight: 600; font-size: 13px;
+  border-radius: 6px; cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.bet-cal-day:hover:not(:disabled) { background: rgba(255,214,0,0.12); }
+.bet-cal-day.muted { color: var(--text-dim); }
+.bet-cal-day.today { border-color: var(--blue); }
+.bet-cal-day.selected {
+  background: var(--gold); color: #1a1200;
+  box-shadow: 0 2px 10px rgba(255,214,0,0.35);
+}
+.bet-cal-day:disabled { opacity: 0.25; cursor: not-allowed; }
+.bet-cal-summary {
+  margin-top: 10px; padding: 8px 10px;
+  background: rgba(255,214,0,0.08);
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  font-size: 12px; color: var(--text-muted);
+}
+.bet-cal-summary strong { color: var(--gold); }
 .btn-secondary {
   flex: 1;
   background: transparent;

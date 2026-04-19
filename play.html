@@ -1109,9 +1109,14 @@ body.sidebar-open .sidebar { transform: translateX(0); }
       <div class="bet-picks-display" id="bet-picks"></div>
       <div class="bet-picker" id="bet-picker"></div>
       <form class="stl-form" id="bet-form">
+        <div class="bet-cal-wrap">
+          <span class="bet-cal-label">Draw dates<span class="bet-cal-hint">tap multiple to repeat the bet</span></span>
+          <div class="bet-cal" id="bet-cal"></div>
+          <div class="bet-cal-summary" id="bet-cal-summary">Tap one or more dates above.</div>
+        </div>
         <div class="bet-info-grid">
-          <label style="margin:0;">Draw date
-            <input type="date" id="bet-draw-date" required>
+          <label style="margin:0;">Stake (USD / draw)
+            <input type="number" id="bet-stake" min="0.25" step="0.25" required>
           </label>
           <label style="margin:0;">Draw slot
             <select id="bet-draw-slot" required>
@@ -1122,12 +1127,13 @@ body.sidebar-open .sidebar { transform: translateX(0); }
           </label>
         </div>
         <div class="bet-info-grid">
-          <label style="margin:0;">Stake (USD)
-            <input type="number" id="bet-stake" min="0.25" step="0.25" required>
-          </label>
           <div class="bet-info-cell">
-            <div class="k">Potential Win</div>
+            <div class="k">Potential Win / Draw</div>
             <div class="v" id="bet-payout">$0.00</div>
+          </div>
+          <div class="bet-info-cell">
+            <div class="k">Total Stake</div>
+            <div class="v" id="bet-total">$0.00</div>
           </div>
         </div>
         <div class="stl-error" id="bet-error"></div>
