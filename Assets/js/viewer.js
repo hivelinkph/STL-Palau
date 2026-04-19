@@ -358,7 +358,8 @@
 
   sb.channel('stl-graphics')
     .on('broadcast', { event: 'graphic-show' }, ({ payload }) => {
-      if (payload?.dataUrl) showGraphic(payload.dataUrl, payload.duration);
+      const src = payload?.url || payload?.dataUrl;
+      if (src) showGraphic(src, payload.duration);
     })
     .subscribe();
 })();

@@ -170,34 +170,51 @@
 
   // ── music mixer ──
   function loadMusicLib() {
-    const verKey = 'stl_admin_music_ver';
-    const savedVer = parseInt(localStorage.getItem(verKey) || '0', 10);
-    try {
-      const raw = localStorage.getItem(MUSIC_KEY);
-      let customs = [];
-      if (raw) {
-        try {
-          const prev = JSON.parse(raw);
-          customs = prev.filter(t => !String(t.id).startsWith('p'));
-        } catch (_) {}
-      }
-      if (!raw || savedVer < DEFAULT_TRACKS_VERSION) {
-        tracks = DEFAULT_TRACKS.slice().concat(customs);
-        saveMusicLib();
-        localStorage.setItem(verKey, String(DEFAULT_TRACKS_VERSION));
-      } else {
-        tracks = JSON.parse(raw);
-      }
-    } catch { tracks = DEFAULT_TRACKS.slice(); }
+    // Volume/mix prefs stay local (per-browser)
     const mv = parseFloat(localStorage.getItem(MUSIC_VOL_KEY));
     if (!isNaN(mv)) musicVolume = mv;
     const miv = parseFloat(localStorage.getItem(MIC_VOL_KEY));
     if (!isNaN(miv)) micVolume = miv;
     mixMusicToBroadcast = localStorage.getItem(MIX_KEY) === '1';
     adminMusicMuted = localStorage.getItem(MUS_MUTE_KEY) === '1';
+    // Cached tracks for instant render before Supabase fetch completes
+    try {
+      const raw = localStorage.getItem(MUSIC_KEY);
+      if (raw) {
+        const prev = JSON.parse(raw);
+        if (Array.isArray(prev) && prev.length) tracks = prev;
+      }
+    } catch (_) {}
+    if (!tracks.length) tracks = DEFAULT_TRACKS.slice();
+    // Async: pull authoritative list from Supabase, seed presets if empty
+    fetchTracksFromSupabase().catch(e => log('Music sync failed: ' + e.message));
   }
   function saveMusicLib() {
-    localStorage.setItem(MUSIC_KEY, JSON.stringify(tracks));
+    try { localStorage.setItem(MUSIC_KEY, JSON.stringify(tracks)); } catch (_) {}
+  }
+
+  async function fetchTracksFromSupabase() {
+    const client = getClient();
+    if (!client) return;
+    const { data, error } = await client.from('music_tracks')
+      .select('id,name,vibe,url,is_preset,sort_order')
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: true });
+    if (error) throw error;
+    if (!data || data.length === 0) {
+      const toSeed = DEFAULT_TRACKS.map((t, i) => ({
+        name: t.name, vibe: t.vibe, url: t.url, is_preset: true, sort_order: i,
+      }));
+      const { data: seeded, error: seedErr } = await client
+        .from('music_tracks').insert(toSeed).select();
+      if (seedErr) throw seedErr;
+      tracks = (seeded || []).slice();
+      log('Music presets seeded to Supabase');
+    } else {
+      tracks = data.slice();
+    }
+    saveMusicLib();
+    renderMusicList();
   }
 
   function ensureAudioGraph() {
@@ -252,7 +269,7 @@
       const cls = 'music-item' + (playing ? ' playing' : '');
       const btnCls = 'music-btn' + (playing ? ' playing' : '');
       const btnText = playing ? '■ Stop' : '▶ Play';
-      const custom = !DEFAULT_TRACKS.some(p => p.id === t.id);
+      const custom = t.is_preset === false || (t.is_preset == null && !DEFAULT_TRACKS.some(p => p.url === t.url));
       const remove = custom
         ? `<button class="cam-remove" data-music-remove="${t.id}" title="Remove track">✕</button>`
         : '';
@@ -455,25 +472,43 @@
     updateBroadcastAudioTrack();
   }
 
-  function removeTrack(id) {
+  async function removeTrack(id) {
     if (id === currentTrackId) stopMusic();
+    const client = getClient();
+    if (client) {
+      const { error } = await client.from('music_tracks').delete().eq('id', id);
+      if (error) { log('Remove track failed: ' + error.message); return; }
+    }
     tracks = tracks.filter(t => t.id !== id);
     saveMusicLib();
     renderMusicList();
   }
 
-  function addTrack(name, url) {
-    const id = 't_' + Math.random().toString(36).slice(2, 10);
-    tracks.push({ id, name, vibe: 'Custom', url });
+  async function addTrack(name, url) {
+    const client = getClient();
+    if (!client) { log('Add track: Supabase not ready'); return null; }
+    const { data, error } = await client.from('music_tracks')
+      .insert({ name, vibe: 'Custom', url, is_preset: false, sort_order: tracks.length })
+      .select().single();
+    if (error) { log('Add track failed: ' + error.message); return null; }
+    tracks.push(data);
     saveMusicLib();
     renderMusicList();
-    return id;
+    return data.id;
   }
 
-  function restoreTrackPresets() {
-    // keep user-added customs, re-prepend missing defaults
-    const customs = tracks.filter(t => !DEFAULT_TRACKS.some(p => p.id === t.id));
-    tracks = DEFAULT_TRACKS.slice().concat(customs);
+  async function restoreTrackPresets() {
+    const client = getClient();
+    if (!client) return;
+    const existingUrls = new Set(tracks.map(t => t.url));
+    const missing = DEFAULT_TRACKS.filter(t => !existingUrls.has(t.url));
+    if (!missing.length) { log('All presets already present'); return; }
+    const toInsert = missing.map((t, i) => ({
+      name: t.name, vibe: t.vibe, url: t.url, is_preset: true, sort_order: tracks.length + i,
+    }));
+    const { data, error } = await client.from('music_tracks').insert(toInsert).select();
+    if (error) { log('Restore presets failed: ' + error.message); return; }
+    tracks = tracks.concat(data || []);
     saveMusicLib();
     renderMusicList();
   }
@@ -1306,10 +1341,10 @@ Rules:
   }
 
   // ═══════════════════════════════════════════════════════════
-  // Graphics overlay — upload images, flash on the live feed
+  // Graphics overlay — upload images to Supabase Storage, flash on live feed
   // ═══════════════════════════════════════════════════════════
-  const GFX_KEY = 'stl_admin_graphics';
   const GFX_CHANNEL = 'stl-graphics';
+  const GFX_BUCKET = 'graphics';
   const GFX_MAX_DIM = 1024;
   const GFX_DURATION_MS = 3000;
 
@@ -1320,19 +1355,7 @@ Rules:
     { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]
   ));
 
-  function loadGraphicsFromStorage() {
-    try {
-      const raw = JSON.parse(localStorage.getItem(GFX_KEY) || '[]');
-      graphics = Array.isArray(raw) ? raw : [];
-    } catch (_) { graphics = []; }
-  }
-
-  function saveGraphicsToStorage() {
-    try { localStorage.setItem(GFX_KEY, JSON.stringify(graphics)); }
-    catch (e) { log('Graphics storage full: ' + e.message); }
-  }
-
-  function resizeImageFile(file) {
+  function resizeImageToBlob(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onerror = () => reject(new Error('read failed'));
@@ -1347,7 +1370,7 @@ Rules:
           c.width = w; c.height = h;
           c.getContext('2d').drawImage(img, 0, 0, w, h);
           const mime = file.type === 'image/jpeg' ? 'image/jpeg' : 'image/png';
-          resolve(c.toDataURL(mime, 0.9));
+          c.toBlob(b => b ? resolve(b) : reject(new Error('blob failed')), mime, 0.9);
         };
         img.src = reader.result;
       };
@@ -1364,7 +1387,7 @@ Rules:
     }
     list.innerHTML = graphics.map(g => `
       <div class="gfx-item" data-id="${g.id}">
-        <div class="gfx-thumb" style="background-image:url('${g.dataUrl}')"></div>
+        <div class="gfx-thumb" style="background-image:url('${g.url}')"></div>
         <div class="gfx-name" title="${escapeHtml(g.name)}">${escapeHtml(g.name)}</div>
         <div class="gfx-actions">
           <button type="button" class="gfx-run" data-id="${g.id}">RUN</button>
@@ -1376,25 +1399,56 @@ Rules:
     list.querySelectorAll('.gfx-del').forEach(b => { b.onclick = () => deleteGraphic(b.dataset.id); });
   }
 
-  function deleteGraphic(id) {
-    graphics = graphics.filter(g => g.id !== id);
-    saveGraphicsToStorage();
+  async function loadGraphicsFromSupabase() {
+    const client = getClient();
+    if (!client) return;
+    const { data, error } = await client.from('graphics')
+      .select('id,name,url,storage_path,sort_order')
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: true });
+    if (error) { log('Graphics load failed: ' + error.message); return; }
+    graphics = data || [];
+    renderGraphicsList();
+  }
+
+  async function deleteGraphic(id) {
+    const g = graphics.find(x => x.id === id);
+    if (!g) return;
+    const client = getClient();
+    if (!client) { log('Graphics: Supabase not ready'); return; }
+    if (g.storage_path) {
+      const { error: sErr } = await client.storage.from(GFX_BUCKET).remove([g.storage_path]);
+      if (sErr) log('Storage delete warning: ' + sErr.message);
+    }
+    const { error } = await client.from('graphics').delete().eq('id', id);
+    if (error) { log('Graphic delete failed: ' + error.message); return; }
+    graphics = graphics.filter(x => x.id !== id);
     renderGraphicsList();
   }
 
   async function handleGraphicFiles(files) {
+    const client = getClient();
+    if (!client) { log('Graphics: Supabase not ready'); return; }
     for (const file of Array.from(files || [])) {
       if (!file.type.startsWith('image/')) continue;
       try {
-        const dataUrl = await resizeImageFile(file);
-        graphics.push({
-          id: 'g_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36),
-          name: file.name.replace(/\.[^.]+$/, '') || 'Graphic',
-          dataUrl,
+        const blob = await resizeImageToBlob(file);
+        const ext = blob.type === 'image/jpeg' ? 'jpg' : 'png';
+        const path = `g_${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`;
+        const { error: upErr } = await client.storage.from(GFX_BUCKET).upload(path, blob, {
+          contentType: blob.type, upsert: false,
         });
-        saveGraphicsToStorage();
+        if (upErr) throw upErr;
+        const { data: pub } = client.storage.from(GFX_BUCKET).getPublicUrl(path);
+        const publicUrl = pub.publicUrl;
+        const name = file.name.replace(/\.[^.]+$/, '') || 'Graphic';
+        const { data, error } = await client.from('graphics')
+          .insert({ name, url: publicUrl, storage_path: path, sort_order: graphics.length })
+          .select().single();
+        if (error) throw error;
+        graphics.push(data);
         renderGraphicsList();
-        log('Graphic added: ' + file.name);
+        log('Graphic added: ' + name);
       } catch (e) {
         log('Graphic upload failed: ' + e.message);
       }
@@ -1420,7 +1474,7 @@ Rules:
     try {
       await ch.send({
         type: 'broadcast', event: 'graphic-show',
-        payload: { dataUrl: g.dataUrl, duration: GFX_DURATION_MS, id: g.id, name: g.name },
+        payload: { url: g.url, duration: GFX_DURATION_MS, id: g.id, name: g.name },
       });
       log('Graphic sent: ' + g.name);
     } catch (e) {
@@ -1432,7 +1486,6 @@ Rules:
   }
 
   function initGraphics() {
-    loadGraphicsFromStorage();
     renderGraphicsList();
     const input = $('#gfx-file');
     if (input) {
@@ -1442,5 +1495,6 @@ Rules:
       };
     }
     ensureGfxChannel();
+    loadGraphicsFromSupabase();
   }
 })();

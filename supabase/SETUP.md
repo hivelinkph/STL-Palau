@@ -17,6 +17,8 @@ You now have:
 - `bets` — every bet with status + payout
 - `live_feed_state` — singleton row driving the homepage hero (photos vs. live draw)
 - `draw_results` — OCR or manual draw results per slot (10 AM / 3 PM / 7 PM) per game (d2 / d3 / pairs)
+- `music_tracks` — shared broadcast playlist (admin-write, public-read). Default presets seed on first load.
+- `graphics` — overlay image library (admin-write, public-read). Files stored in the **`graphics`** Storage bucket (auto-created by `schema.sql`, public-read).
 - A trigger that auto-creates a profile on signup
 - RPC functions `topup_wallet`, `withdraw_wallet`, `place_bet`, `resolve_draw` (atomic, SECURITY DEFINER)
 - Row Level Security so users only ever see their own data; `draw_results` is public-read, admin-write

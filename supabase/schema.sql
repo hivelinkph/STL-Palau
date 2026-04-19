@@ -168,6 +168,72 @@ do $$ begin
 exception when others then null;
 end $$;
 
+-- ─── music_tracks: shared broadcast playlist (admin-write, public-read) ─────
+create table if not exists public.music_tracks (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  vibe text not null default 'Custom',
+  url text not null,
+  is_preset boolean not null default false,
+  sort_order int not null default 0,
+  created_at timestamptz not null default now()
+);
+create index if not exists music_tracks_sort_idx on public.music_tracks(sort_order, created_at);
+
+alter table public.music_tracks enable row level security;
+drop policy if exists mt_select_all on public.music_tracks;
+create policy mt_select_all on public.music_tracks for select using (true);
+drop policy if exists mt_write_admin on public.music_tracks;
+create policy mt_write_admin on public.music_tracks for all
+  using (auth.jwt() ->> 'email' = 'hivelinkph@gmail.com')
+  with check (auth.jwt() ->> 'email' = 'hivelinkph@gmail.com');
+
+do $$ begin
+  execute 'alter publication supabase_realtime add table public.music_tracks';
+exception when others then null;
+end $$;
+
+-- ─── graphics: overlay image library (admin-write, public-read) ─────
+-- Images are uploaded to the 'graphics' Storage bucket; this table stores
+-- name + public URL + storage_path so admin can delete / reorder later.
+create table if not exists public.graphics (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  url text not null,
+  storage_path text,
+  sort_order int not null default 0,
+  created_at timestamptz not null default now()
+);
+create index if not exists graphics_sort_idx on public.graphics(sort_order, created_at);
+
+alter table public.graphics enable row level security;
+drop policy if exists gfx_select_all on public.graphics;
+create policy gfx_select_all on public.graphics for select using (true);
+drop policy if exists gfx_write_admin on public.graphics;
+create policy gfx_write_admin on public.graphics for all
+  using (auth.jwt() ->> 'email' = 'hivelinkph@gmail.com')
+  with check (auth.jwt() ->> 'email' = 'hivelinkph@gmail.com');
+
+do $$ begin
+  execute 'alter publication supabase_realtime add table public.graphics';
+exception when others then null;
+end $$;
+
+-- ─── Storage bucket 'graphics' (public-read, admin-write) ─────
+insert into storage.buckets (id, name, public)
+values ('graphics', 'graphics', true)
+on conflict (id) do update set public = true;
+
+drop policy if exists "graphics_read_public" on storage.objects;
+create policy "graphics_read_public" on storage.objects
+  for select using (bucket_id = 'graphics');
+
+drop policy if exists "graphics_write_admin" on storage.objects;
+create policy "graphics_write_admin" on storage.objects
+  for all
+  using (bucket_id = 'graphics' and auth.jwt() ->> 'email' = 'hivelinkph@gmail.com')
+  with check (bucket_id = 'graphics' and auth.jwt() ->> 'email' = 'hivelinkph@gmail.com');
+
 -- ─── RPC: resolve draw + pay winners (admin only) ─────
 create or replace function public.resolve_draw(
   p_draw_time timestamptz, p_game text, p_numbers text
