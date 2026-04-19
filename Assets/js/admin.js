@@ -1030,6 +1030,7 @@
     }
 
     initOCR();
+    initGraphics();
   });
 
   // ═══════════════════════════════════════════════════════════
@@ -1302,5 +1303,144 @@ Rules:
     const scanBtn = $('#ocr-scan-now');
     if (scanBtn) scanBtn.addEventListener('click', scanNow);
     if (saved) setOcrEnabled(true);
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  // Graphics overlay — upload images, flash on the live feed
+  // ═══════════════════════════════════════════════════════════
+  const GFX_KEY = 'stl_admin_graphics';
+  const GFX_CHANNEL = 'stl-graphics';
+  const GFX_MAX_DIM = 1024;
+  const GFX_DURATION_MS = 3000;
+
+  let graphics = [];
+  let gfxChannel = null;
+
+  const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) => (
+    { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]
+  ));
+
+  function loadGraphicsFromStorage() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(GFX_KEY) || '[]');
+      graphics = Array.isArray(raw) ? raw : [];
+    } catch (_) { graphics = []; }
+  }
+
+  function saveGraphicsToStorage() {
+    try { localStorage.setItem(GFX_KEY, JSON.stringify(graphics)); }
+    catch (e) { log('Graphics storage full: ' + e.message); }
+  }
+
+  function resizeImageFile(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error('read failed'));
+      reader.onload = () => {
+        const img = new Image();
+        img.onerror = () => reject(new Error('invalid image'));
+        img.onload = () => {
+          const scale = Math.min(1, GFX_MAX_DIM / Math.max(img.width, img.height));
+          const w = Math.max(1, Math.round(img.width * scale));
+          const h = Math.max(1, Math.round(img.height * scale));
+          const c = document.createElement('canvas');
+          c.width = w; c.height = h;
+          c.getContext('2d').drawImage(img, 0, 0, w, h);
+          const mime = file.type === 'image/jpeg' ? 'image/jpeg' : 'image/png';
+          resolve(c.toDataURL(mime, 0.9));
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function renderGraphicsList() {
+    const list = $('#gfx-list');
+    if (!list) return;
+    if (!graphics.length) {
+      list.innerHTML = '<div class="cam-empty">No graphics yet. Upload one to get started.</div>';
+      return;
+    }
+    list.innerHTML = graphics.map(g => `
+      <div class="gfx-item" data-id="${g.id}">
+        <div class="gfx-thumb" style="background-image:url('${g.dataUrl}')"></div>
+        <div class="gfx-name" title="${escapeHtml(g.name)}">${escapeHtml(g.name)}</div>
+        <div class="gfx-actions">
+          <button type="button" class="gfx-run" data-id="${g.id}">RUN</button>
+          <button type="button" class="gfx-del" data-id="${g.id}" aria-label="Delete">×</button>
+        </div>
+      </div>
+    `).join('');
+    list.querySelectorAll('.gfx-run').forEach(b => { b.onclick = () => runGraphic(b.dataset.id); });
+    list.querySelectorAll('.gfx-del').forEach(b => { b.onclick = () => deleteGraphic(b.dataset.id); });
+  }
+
+  function deleteGraphic(id) {
+    graphics = graphics.filter(g => g.id !== id);
+    saveGraphicsToStorage();
+    renderGraphicsList();
+  }
+
+  async function handleGraphicFiles(files) {
+    for (const file of Array.from(files || [])) {
+      if (!file.type.startsWith('image/')) continue;
+      try {
+        const dataUrl = await resizeImageFile(file);
+        graphics.push({
+          id: 'g_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36),
+          name: file.name.replace(/\.[^.]+$/, '') || 'Graphic',
+          dataUrl,
+        });
+        saveGraphicsToStorage();
+        renderGraphicsList();
+        log('Graphic added: ' + file.name);
+      } catch (e) {
+        log('Graphic upload failed: ' + e.message);
+      }
+    }
+  }
+
+  function ensureGfxChannel() {
+    if (gfxChannel) return gfxChannel;
+    const client = getClient();
+    if (!client) return null;
+    gfxChannel = client.channel(GFX_CHANNEL, { config: { broadcast: { self: false, ack: false } } });
+    gfxChannel.subscribe();
+    return gfxChannel;
+  }
+
+  async function runGraphic(id) {
+    const g = graphics.find(x => x.id === id);
+    if (!g) return;
+    const ch = ensureGfxChannel();
+    if (!ch) { log('Graphics: Supabase not ready'); return; }
+    const btn = document.querySelector(`.gfx-run[data-id="${id}"]`);
+    if (btn) { btn.disabled = true; btn.textContent = '…'; }
+    try {
+      await ch.send({
+        type: 'broadcast', event: 'graphic-show',
+        payload: { dataUrl: g.dataUrl, duration: GFX_DURATION_MS, id: g.id, name: g.name },
+      });
+      log('Graphic sent: ' + g.name);
+    } catch (e) {
+      log('Graphic send failed: ' + e.message);
+    }
+    setTimeout(() => {
+      if (btn) { btn.disabled = false; btn.textContent = 'RUN'; }
+    }, GFX_DURATION_MS);
+  }
+
+  function initGraphics() {
+    loadGraphicsFromStorage();
+    renderGraphicsList();
+    const input = $('#gfx-file');
+    if (input) {
+      input.onchange = async () => {
+        await handleGraphicFiles(input.files);
+        input.value = '';
+      };
+    }
+    ensureGfxChannel();
   }
 })();

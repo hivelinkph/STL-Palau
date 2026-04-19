@@ -330,4 +330,35 @@
     .subscribe();
 
   loadLatestResults();
+
+  // ── Graphics overlay: admin flashes an image for N ms ───────
+  function showGraphic(dataUrl, duration) {
+    if (!feed || !dataUrl) return;
+    let overlay = document.getElementById('feed-graphic');
+    if (!overlay) {
+      overlay = document.createElement('img');
+      overlay.id = 'feed-graphic';
+      overlay.alt = '';
+      overlay.style.cssText = [
+        'position:absolute', 'inset:0', 'width:100%', 'height:100%',
+        'object-fit:contain', 'pointer-events:none', 'z-index:10',
+        'opacity:0', 'transition:opacity 0.25s ease',
+      ].join(';');
+      feed.appendChild(overlay);
+    }
+    if (overlay._hideTimer) clearTimeout(overlay._hideTimer);
+    if (overlay._removeTimer) clearTimeout(overlay._removeTimer);
+    overlay.src = dataUrl;
+    requestAnimationFrame(() => { overlay.style.opacity = '1'; });
+    overlay._hideTimer = setTimeout(() => {
+      overlay.style.opacity = '0';
+      overlay._removeTimer = setTimeout(() => { overlay.remove(); }, 300);
+    }, Math.max(200, duration || 3000));
+  }
+
+  sb.channel('stl-graphics')
+    .on('broadcast', { event: 'graphic-show' }, ({ payload }) => {
+      if (payload?.dataUrl) showGraphic(payload.dataUrl, payload.duration);
+    })
+    .subscribe();
 })();

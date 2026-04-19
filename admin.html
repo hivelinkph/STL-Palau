@@ -583,6 +583,63 @@ body::before {
 }
 .ocr-actions { margin-top: 8px; display: flex; gap: 6px; }
 .ocr-actions .btn { padding: 6px 12px; font-size: 12px; }
+
+/* Graphics tab */
+.gfx-upload-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.gfx-upload-btn { cursor: pointer; }
+.gfx-hint { font-size: 11px; color: var(--text-muted); }
+.gfx-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+.gfx-item {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.gfx-thumb {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 6px;
+  background: #000 center/contain no-repeat;
+  border: 1px solid var(--border);
+}
+.gfx-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gfx-actions { display: flex; gap: 6px; }
+.gfx-run {
+  flex: 1;
+  padding: 8px;
+  background: var(--gold);
+  color: var(--bg);
+  border: 0;
+  border-radius: 6px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.gfx-run:hover { background: var(--gold-dark); }
+.gfx-run:disabled { opacity: 0.5; cursor: wait; }
+.gfx-del {
+  width: 32px;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.gfx-del:hover { color: #f87171; border-color: #f87171; }
 .ocr-key-row {
   display: flex;
   gap: 6px;
@@ -718,6 +775,7 @@ body::before {
         <button class="tab active" data-tab="broadcast">Broadcast</button>
         <button class="tab" data-tab="cameras">Cameras</button>
         <button class="tab" data-tab="music">Music</button>
+        <button class="tab" data-tab="graphics">Graphics</button>
       </div>
 
       <!-- Tab: Broadcast -->
@@ -860,6 +918,23 @@ body::before {
           </div>
           <div class="cam-add-error" id="music-error"></div>
         </form>
+      </div>
+
+      <!-- Tab: Graphics -->
+      <div class="tab-panel" id="tab-graphics" hidden>
+        <p class="card-sub">Upload overlay graphics (PNG / JPG / GIF). Click <strong>RUN</strong> to flash one on the live feed for 3 seconds — great for winning-number reveals, sponsor cards, or "Draw starting soon" slates.</p>
+
+        <div class="gfx-upload-row">
+          <label class="btn btn-primary gfx-upload-btn">
+            + Add graphic
+            <input type="file" id="gfx-file" accept="image/*" multiple hidden />
+          </label>
+          <span class="gfx-hint">Stored in your browser; resized to 1024px max for fast broadcast.</span>
+        </div>
+
+        <div class="gfx-list" id="gfx-list">
+          <div class="cam-empty">No graphics yet. Upload one to get started.</div>
+        </div>
       </div>
     </section>
   </main>
