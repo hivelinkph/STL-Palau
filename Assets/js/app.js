@@ -223,16 +223,45 @@ function toast(msg, type='info') {
   requestAnimationFrame(() => t.classList.add('show'));
   setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 3200);
 }
+const DRAW_SLOTS = [10, 15, 20]; // Palau hours: 10 AM, 3 PM, 8 PM
+const SLOT_LABELS = { 10: '10:00 AM', 15: '3:00 PM', 20: '8:00 PM' };
+
+// Palau = UTC+9, no DST — avoid Intl.DateTimeFormat quirks by using fixed offset.
+function palauNowParts() {
+  const fmt = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Pacific/Palau', year:'numeric', month:'2-digit', day:'2-digit',
+    hour:'2-digit', minute:'2-digit', hour12: false,
+  });
+  const parts = {};
+  fmt.formatToParts(new Date()).forEach(p => parts[p.type] = p.value);
+  return {
+    ymd: `${parts.year}-${parts.month}-${parts.day}`,
+    hour: parseInt(parts.hour, 10),
+    minute: parseInt(parts.minute, 10),
+  };
+}
+function drawTimeFromParts(ymd, slotHour) {
+  const [y, m, d] = ymd.split('-').map(Number);
+  // Palau wall-clock slotHour → UTC instant (Palau = UTC+9)
+  return new Date(Date.UTC(y, m - 1, d, slotHour - 9, 0, 0)).toISOString();
+}
+function fmtDrawSlot(iso) {
+  const d = new Date(iso);
+  return d.toLocaleString('en-US', {
+    timeZone: 'Pacific/Palau', month:'short', day:'numeric',
+    hour:'numeric', minute:'2-digit', hour12: true,
+  });
+}
 function nextDrawTime() {
-  const now = new Date(new Date().toLocaleString('en-US', { timeZone:'Pacific/Palau' }));
-  const draws = [10, 15, 20];
-  const h = now.getHours(), m = now.getMinutes();
-  const nowMin = h*60+m;
-  let nextH = draws.find(dh => dh*60 > nowMin);
-  const target = new Date(now);
-  if (!nextH) { nextH = draws[0]; target.setDate(target.getDate()+1); }
-  target.setHours(nextH, 0, 0, 0);
-  return target.toISOString();
+  const { ymd, hour, minute } = palauNowParts();
+  const nowMin = hour * 60 + minute;
+  const nextH = DRAW_SLOTS.find(h => h * 60 > nowMin);
+  if (nextH) return drawTimeFromParts(ymd, nextH);
+  // No slot left today — roll to next calendar day in Palau
+  const [y, m, d] = ymd.split('-').map(Number);
+  const tmr = new Date(Date.UTC(y, m - 1, d + 1));
+  const tomorrow = tmr.toISOString().slice(0, 10);
+  return drawTimeFromParts(tomorrow, DRAW_SLOTS[0]);
 }
 
 // ═══ MODALS ════════════════════════════════════════════════
@@ -371,7 +400,7 @@ async function renderRecentBets() {
   if (!body) return;
   const bets = await backend.listBets(5);
   if (!bets.length) {
-    body.innerHTML = `<tr><td colspan="5" class="pr-empty">No bets yet — pick a game above to place your first bet.</td></tr>`;
+    body.innerHTML = `<tr><td colspan="6" class="pr-empty">No bets yet — pick a game above to place your first bet.</td></tr>`;
     return;
   }
   body.innerHTML = bets.map(b => {
@@ -380,6 +409,7 @@ async function renderRecentBets() {
     const st = b.status || 'pending';
     return `<tr>
       <td>${fmtDate(b.created_at)}</td>
+      <td>${fmtDrawSlot(b.draw_time)}</td>
       <td>${gameName}</td>
       <td><span class="pr-num">${b.numbers}</span></td>
       <td>${fmtMoney(b.stake)}</td>
@@ -477,7 +507,64 @@ function openBet(gameId) {
   renderPicker();
   renderPicks();
   updatePayout();
+  initBetDrawControls();
   openModal('bet-modal');
+}
+
+function initBetDrawControls() {
+  const dateEl = $('#bet-draw-date');
+  const slotEl = $('#bet-draw-slot');
+  if (!dateEl || !slotEl) return;
+  const { ymd, hour, minute } = palauNowParts();
+  // Min date = today (Palau). Max = today + 30 days.
+  dateEl.min = ymd;
+  const [y, m, d] = ymd.split('-').map(Number);
+  const maxIso = new Date(Date.UTC(y, m - 1, d + 30)).toISOString().slice(0, 10);
+  dateEl.max = maxIso;
+
+  // Pre-select next open slot
+  const nowMin = hour * 60 + minute;
+  const nextH = DRAW_SLOTS.find(h => h * 60 > nowMin);
+  if (nextH) {
+    dateEl.value = ymd;
+    slotEl.value = String(nextH);
+  } else {
+    // All of today gone — jump to tomorrow's first slot
+    dateEl.value = new Date(Date.UTC(y, m - 1, d + 1)).toISOString().slice(0, 10);
+    slotEl.value = String(DRAW_SLOTS[0]);
+  }
+  applyBetSlotAvailability();
+  dateEl.onchange = applyBetSlotAvailability;
+}
+
+function applyBetSlotAvailability() {
+  const dateEl = $('#bet-draw-date');
+  const slotEl = $('#bet-draw-slot');
+  if (!dateEl || !slotEl) return;
+  const { ymd, hour, minute } = palauNowParts();
+  const chosen = dateEl.value;
+  const nowMin = hour * 60 + minute;
+  const isToday = chosen === ymd;
+  // Clear + repopulate options
+  slotEl.innerHTML = '';
+  const available = [];
+  DRAW_SLOTS.forEach(h => {
+    const passed = isToday && h * 60 <= nowMin;
+    const opt = document.createElement('option');
+    opt.value = String(h);
+    opt.textContent = SLOT_LABELS[h] + (passed ? ' (closed)' : '');
+    opt.disabled = passed;
+    slotEl.appendChild(opt);
+    if (!passed) available.push(h);
+  });
+  if (available.length === 0) {
+    // Roll to tomorrow
+    const [y, m, d] = ymd.split('-').map(Number);
+    dateEl.value = new Date(Date.UTC(y, m - 1, d + 1)).toISOString().slice(0, 10);
+    applyBetSlotAvailability();
+    return;
+  }
+  if (slotEl.selectedOptions[0]?.disabled) slotEl.value = String(available[0]);
 }
 
 function renderPicker() {
@@ -537,15 +624,24 @@ async function handleBetSubmit(e) {
   if (betPicks.length !== g.digits) { err.textContent = `Pick ${g.digits} numbers`; return; }
   if (stake < g.min) { err.textContent = `Minimum stake is ${fmtMoney(g.min)}`; return; }
   if (stake > currentProfile.wallet_balance) { err.textContent = 'Insufficient wallet balance — top up first'; return; }
+  const drawDate = $('#bet-draw-date')?.value;
+  const drawSlot = parseInt($('#bet-draw-slot')?.value || '0', 10);
+  if (!drawDate || !drawSlot) { err.textContent = 'Choose a draw date and slot'; return; }
+  const drawISO = drawTimeFromParts(drawDate, drawSlot);
+  if (new Date(drawISO).getTime() <= Date.now()) {
+    err.textContent = 'That draw has already closed — pick a future slot';
+    return;
+  }
   const numbers = betPicks.map(n => g.digits === 2 && g.range[1] <= 9 ? n : String(n).padStart(2,'0')).join('-');
   try {
     $('#bet-submit').disabled = true;
-    await backend.placeBet(betGame, numbers, 'straight', stake, nextDrawTime());
+    await backend.placeBet(betGame, numbers, 'straight', stake, drawISO);
     currentProfile.wallet_balance = Number(currentProfile.wallet_balance) - stake;
     renderAuthUI();
-    toast(`Bet placed: ${numbers} for ${fmtMoney(stake)}`, 'success');
+    toast(`Bet placed: ${numbers} for ${fmtMoney(stake)} · ${fmtDrawSlot(drawISO)}`, 'success');
     closeModal('bet-modal');
     renderHistory();
+    renderRecentBets();
   } catch (ex) {
     err.textContent = ex.message || 'Could not place bet';
   } finally {
@@ -580,6 +676,7 @@ async function renderHistory() {
     const payout = Number(b.payout||0) > 0 ? fmtMoney(b.payout) : '—';
     return `<tr>
       <td>${fmtDate(b.created_at)}</td>
+      <td>${fmtDrawSlot(b.draw_time)}</td>
       <td><strong>${gameName}</strong></td>
       <td><span class="hist-num">${b.numbers}</span></td>
       <td>${fmtMoney(b.stake)}</td>
@@ -587,7 +684,7 @@ async function renderHistory() {
       <td>${payout}</td>
       <td>${statusBadge}</td>
     </tr>`;
-  }).join('') : `<tr><td colspan="7" class="hist-empty">No bets yet — play a game to get started.</td></tr>`;
+  }).join('') : `<tr><td colspan="8" class="hist-empty">No bets yet — play a game to get started.</td></tr>`;
 
   $('#hist-bets-body').innerHTML = betRows;
 

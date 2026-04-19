@@ -892,11 +892,11 @@ body.sidebar-open .sidebar { transform: translateX(0); }
       <table class="pr-table">
         <thead>
           <tr>
-            <th>Date</th><th>Game</th><th>Numbers</th><th>Stake</th><th>Status</th>
+            <th>Placed</th><th>Draw</th><th>Game</th><th>Numbers</th><th>Stake</th><th>Status</th>
           </tr>
         </thead>
         <tbody id="recent-bets-body">
-          <tr><td colspan="5" class="pr-empty">Loading…</td></tr>
+          <tr><td colspan="6" class="pr-empty">Loading…</td></tr>
         </tbody>
       </table>
       <div class="pr-footer"><a id="view-all-history">View full bet & wallet history →</a></div>
@@ -955,7 +955,7 @@ body.sidebar-open .sidebar { transform: translateX(0); }
         <table class="pr-table">
           <thead>
             <tr>
-              <th>Date</th><th>Game</th><th>Numbers</th><th>Stake</th>
+              <th>Placed</th><th>Draw</th><th>Game</th><th>Numbers</th><th>Stake</th>
               <th>Winning</th><th>Payout</th><th>Status</th>
             </tr>
           </thead>
@@ -1110,6 +1110,18 @@ body.sidebar-open .sidebar { transform: translateX(0); }
       <div class="bet-picker" id="bet-picker"></div>
       <form class="stl-form" id="bet-form">
         <div class="bet-info-grid">
+          <label style="margin:0;">Draw date
+            <input type="date" id="bet-draw-date" required>
+          </label>
+          <label style="margin:0;">Draw slot
+            <select id="bet-draw-slot" required>
+              <option value="10">10:00 AM</option>
+              <option value="15">3:00 PM</option>
+              <option value="20">8:00 PM</option>
+            </select>
+          </label>
+        </div>
+        <div class="bet-info-grid">
           <label style="margin:0;">Stake (USD)
             <input type="number" id="bet-stake" min="0.25" step="0.25" required>
           </label>
@@ -1143,7 +1155,7 @@ body.sidebar-open .sidebar { transform: translateX(0); }
       <div id="hist-bets">
         <div class="hist-table-wrap">
           <table class="hist-table">
-            <thead><tr><th>Date</th><th>Game</th><th>Numbers</th><th>Stake</th><th>Winning</th><th>Payout</th><th>Status</th></tr></thead>
+            <thead><tr><th>Placed</th><th>Draw</th><th>Game</th><th>Numbers</th><th>Stake</th><th>Winning</th><th>Payout</th><th>Status</th></tr></thead>
             <tbody id="hist-bets-body"></tbody>
           </table>
         </div>
