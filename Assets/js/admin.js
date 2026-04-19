@@ -761,6 +761,12 @@
         const t = localStream.getVideoTracks()[0];
         activeDeviceId = t?.getSettings().deviceId || null;
       }
+      const vTracks = localStream.getVideoTracks();
+      const aTracks = localStream.getAudioTracks();
+      log(`Stream ready — video:${vTracks.length} audio:${aTracks.length}`);
+      if (!aTracks.length) {
+        log('⚠ No mic audio in stream. If using a phone/IP-cam URL, audio is unsupported; switch to a device camera with mic permission granted.');
+      }
     } catch (e) {
       log('source failed: ' + e.message);
       return;

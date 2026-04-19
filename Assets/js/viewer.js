@@ -62,11 +62,35 @@
     videoEl = document.createElement('video');
     videoEl.autoplay = true;
     videoEl.playsInline = true;
-    videoEl.muted = true;   // default muted — user unmutes via speaker icon
-    videoEl.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000;';
+    videoEl.muted = true;   // required for autoplay; unmutes on first user gesture
+    videoEl.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000;cursor:pointer;';
     slides.appendChild(videoEl);
 
-    // Speaker / mute toggle (bottom-left overlay)
+    // Centered "Tap to unmute" overlay — covers the feed until first unmute
+    const unmuteOverlay = document.createElement('div');
+    unmuteOverlay.id = 'feed-unmute-overlay';
+    unmuteOverlay.style.cssText = [
+      'position:absolute', 'inset:0', 'z-index:6',
+      'display:flex', 'flex-direction:column', 'align-items:center', 'justify-content:center',
+      'gap:12px', 'cursor:pointer',
+      'background:rgba(6,18,32,0.35)',
+      'backdrop-filter:blur(2px)', '-webkit-backdrop-filter:blur(2px)',
+      'transition:opacity 0.3s',
+    ].join(';');
+    unmuteOverlay.innerHTML =
+      '<div style="width:72px;height:72px;border-radius:50%;background:rgba(255,214,0,0.95);color:#061220;display:flex;align-items:center;justify-content:center;font-size:34px;box-shadow:0 6px 24px rgba(0,0,0,0.5);animation:stl-pulse 1.6s ease-in-out infinite;">🔇</div>' +
+      '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:18px;letter-spacing:2px;color:#fff;text-transform:uppercase;text-shadow:0 2px 8px rgba(0,0,0,0.8);">Tap to hear live audio</div>';
+
+    if (!document.getElementById('stl-pulse-style')) {
+      const st = document.createElement('style');
+      st.id = 'stl-pulse-style';
+      st.textContent =
+        '@keyframes stl-pulse{0%,100%{transform:scale(1);box-shadow:0 6px 24px rgba(0,0,0,0.5)}50%{transform:scale(1.08);box-shadow:0 8px 34px rgba(255,214,0,0.55)}}';
+      document.head.appendChild(st);
+    }
+
+    // Persistent speaker toggle (bottom-right); stays after first unmute so
+    // viewers can re-mute if needed.
     const btn = document.createElement('button');
     btn.id = 'feed-mute-btn';
     btn.type = 'button';
@@ -78,20 +102,44 @@
       'background:rgba(0,0,0,0.55)', 'color:#fff',
       'display:flex', 'align-items:center', 'justify-content:center',
       'font-size:22px', 'line-height:1', 'padding:0',
-      'backdrop-filter:blur(4px)',
-      '-webkit-backdrop-filter:blur(4px)',
-      'transition:background 0.2s, transform 0.1s',
+      'backdrop-filter:blur(4px)', '-webkit-backdrop-filter:blur(4px)',
+      'transition:background 0.2s',
     ].join(';');
     btn.innerHTML = '🔇';
     btn.onmouseenter = () => { btn.style.background = 'rgba(255,214,0,0.85)'; btn.style.color = '#061220'; };
     btn.onmouseleave = () => { btn.style.background = 'rgba(0,0,0,0.55)'; btn.style.color = '#fff'; };
-    btn.onclick = (ev) => {
-      ev.stopPropagation();
-      videoEl.muted = !videoEl.muted;
-      btn.innerHTML = videoEl.muted ? '🔇' : '🔊';
-      btn.setAttribute('aria-label', videoEl.muted ? 'Unmute' : 'Mute');
+
+    const setMuted = (m) => {
+      videoEl.muted = m;
+      btn.innerHTML = m ? '🔇' : '🔊';
+      btn.setAttribute('aria-label', m ? 'Unmute' : 'Mute');
       videoEl.play().catch(() => {});
     };
+
+    const dismissOverlay = () => {
+      unmuteOverlay.style.opacity = '0';
+      setTimeout(() => { try { unmuteOverlay.remove(); } catch (_) {} }, 320);
+    };
+
+    // Overlay click: unmute + dismiss
+    unmuteOverlay.onclick = (ev) => {
+      ev.stopPropagation();
+      setMuted(false);
+      dismissOverlay();
+    };
+
+    // Clicking the video itself also unmutes on first tap
+    videoEl.onclick = () => {
+      if (videoEl.muted) { setMuted(false); dismissOverlay(); }
+    };
+
+    btn.onclick = (ev) => {
+      ev.stopPropagation();
+      setMuted(!videoEl.muted);
+      if (!videoEl.muted) dismissOverlay();
+    };
+
+    slides.appendChild(unmuteOverlay);
     slides.appendChild(btn);
     setStatus('Waiting for broadcaster…');
     return videoEl;
