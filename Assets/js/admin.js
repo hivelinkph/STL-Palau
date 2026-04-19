@@ -229,10 +229,11 @@
     monitorGain = audioCtx.createGain();
     monitorGain.gain.value = adminMusicMuted ? 0 : 1;
     destNode = audioCtx.createMediaStreamDestination();
-    // both feed into broadcast destination
+    // mic always feeds into the broadcast destination
     micGain.connect(destNode);
-    musicGain.connect(destNode);
-    // music also audible locally for the admin (through independent monitor gain)
+    // music joins the broadcast only when mix-to-broadcast is on
+    if (mixMusicToBroadcast) musicGain.connect(destNode);
+    // music is always audible locally for the admin (independent monitor gain)
     musicGain.connect(monitorGain);
     monitorGain.connect(audioCtx.destination);
     return audioCtx;
@@ -352,14 +353,13 @@
     stopMusicElement();
     showMusicStatus('Loading: ' + track.name, false);
 
-    const wantGraph = mixMusicToBroadcast;
+    // Always try Web Audio graph mode so music flows through the same destNode
+    // track that viewers are already subscribed to — no mid-broadcast swaps.
     let corsOK = false;
+    ensureAudioGraph();
+    if (audioCtx?.state === 'suspended') { try { await audioCtx.resume(); } catch (_) {} }
 
-    if (wantGraph) {
-      ensureAudioGraph();
-      if (audioCtx?.state === 'suspended') { try { await audioCtx.resume(); } catch (_) {} }
-
-      // Attempt CORS-anonymous load so we can route through Web Audio
+    if (audioCtx) {
       const a = document.createElement('audio');
       a.crossOrigin = 'anonymous';
       a.src = track.url;
@@ -376,7 +376,7 @@
         musicPlaybackMode = 'graph';
         corsOK = true;
       } catch (e) {
-        log('Graph mode failed (' + e.message + ') — falling back to direct');
+        log('Graph mode failed (' + e.message + ') — falling back to local-only direct');
         try { musicSourceNode?.disconnect(); } catch (_) {}
         musicSourceNode = null;
         try { a.remove(); } catch (_) {}
@@ -423,12 +423,11 @@
     currentTrackId = id;
     renderMusicList();
     renderMusicNow();
-    if (wantGraph && !corsOK) {
+    if (!corsOK) {
       const el = $('#music-now');
       if (el) el.textContent += '  (local only — CORS blocked this track from broadcast)';
     }
     log('Music → ' + track.name + (musicPlaybackMode === 'graph' ? ' [mixed]' : ' [local]'));
-    updateBroadcastAudioTrack();
   }
 
   function stopMusicElement() {
@@ -442,26 +441,6 @@
     musicPlaybackMode = null;
   }
 
-  function updateBroadcastAudioTrack() {
-    const senders = [];
-    Object.values(peers).forEach(pc => {
-      pc.getSenders().forEach(s => { if (s.track?.kind === 'audio') senders.push(s); });
-    });
-    if (!senders.length) return;
-    let target = null;
-    if (mixMusicToBroadcast && musicPlaybackMode === 'graph' && destNode) {
-      // Need mic in the graph too so it gets mixed with music
-      wireMicIntoGraph(localStream);
-      target = destNode.stream.getAudioTracks()[0] || null;
-    } else {
-      target = localStream?.getAudioTracks()[0] || null;
-    }
-    if (!target) return;
-    senders.forEach(s => {
-      s.replaceTrack(target).catch(e => log('replaceTrack failed: ' + e.message));
-    });
-  }
-
   function stopMusic() {
     const name = tracks.find(t => t.id === currentTrackId)?.name;
     stopMusicElement();
@@ -469,7 +448,6 @@
     renderMusicList();
     renderMusicNow();
     if (name) log('Music stopped: ' + name);
-    updateBroadcastAudioTrack();
   }
 
   async function removeTrack(id) {
@@ -546,14 +524,13 @@
     mixMusicToBroadcast = !!on;
     localStorage.setItem(MIX_KEY, mixMusicToBroadcast ? '1' : '0');
     log('Broadcast music mix: ' + (mixMusicToBroadcast ? 'ON' : 'OFF'));
-    // Re-play current track under the new mode if something is playing
-    if (currentTrackId) {
-      const id = currentTrackId;
-      stopMusicElement();
-      currentTrackId = null;
-      playTrack(id);
-    } else {
-      updateBroadcastAudioTrack();
+    // Toggle the musicGain → destNode edge without swapping tracks on peers.
+    // Local monitoring (musicGain → monitorGain → speakers) is untouched.
+    if (musicGain && destNode) {
+      try { musicGain.disconnect(destNode); } catch (_) {}
+      if (mixMusicToBroadcast) {
+        try { musicGain.connect(destNode); } catch (_) {}
+      }
     }
   }
 
@@ -742,13 +719,14 @@
       return;
     }
     const newVideo = newStream.getVideoTracks()[0];
-    const newAudio = newStream.getAudioTracks()[0];
 
-    // Replace tracks on every live peer without renegotiating
+    // Replace only the video track on every live peer without renegotiating.
+    // The audio sender already points at the persistent Web Audio destNode
+    // track — we rewire the new mic into that graph below, so no audio
+    // replaceTrack is needed (and avoiding it fixes iOS Safari audio drops).
     Object.entries(peers).forEach(([vid, pc]) => {
       pc.getSenders().forEach(sender => {
         if (sender.track?.kind === 'video' && newVideo) sender.replaceTrack(newVideo);
-        if (sender.track?.kind === 'audio' && newAudio) sender.replaceTrack(newAudio);
       });
     });
 
@@ -756,6 +734,8 @@
     stopCurrentStream();
     localStream = newStream;
     streamCleanup = newStream.__stlCleanup || null;
+    // Swap the mic source into the audio graph (destNode track persists)
+    wireMicIntoGraph(newStream);
 
     const vid = $('#cam-preview');
     vid.srcObject = localStream;
@@ -820,6 +800,16 @@
     tickSince();
     renderCamList(cameras);
 
+    // Always route audio through the Web Audio graph. This way the audio track
+    // sent to viewers is the persistent destNode track — mic (+ optional music)
+    // are mixed into it via gain nodes. No mid-broadcast replaceTrack() needed,
+    // which is critical for iOS Safari where replaceTrack() on audio is flaky.
+    ensureAudioGraph();
+    if (audioCtx?.state === 'suspended') {
+      try { await audioCtx.resume(); } catch (_) {}
+    }
+    wireMicIntoGraph(localStream);
+
     // Auto-switch homepage to Live Draw so viewers know to connect
     await setMode('live');
 
@@ -860,7 +850,18 @@
     peers[viewer_id] = pc;
     updateViewerCount();
 
-    localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+    // Video: raw track from the current source. Audio: the persistent mixed
+    // track from the Web Audio graph (mic + optional music). Falling back to
+    // raw mic audio only if the graph isn't available (browser too old).
+    const vTrack = localStream.getVideoTracks()[0];
+    if (vTrack) pc.addTrack(vTrack, localStream);
+    const mixedAudio = getMixedAudioTrack();
+    if (mixedAudio) {
+      pc.addTrack(mixedAudio);
+    } else {
+      const rawAudio = localStream.getAudioTracks()[0];
+      if (rawAudio) pc.addTrack(rawAudio, localStream);
+    }
 
     pc.onicecandidate = (e) => {
       if (e.candidate && channel) {
