@@ -110,6 +110,116 @@ begin
   return v_new;
 end $$;
 
+-- ─── LIVE FEED STATE (admin-controlled singleton) ────
+create table if not exists public.live_feed_state (
+  id int primary key default 1,
+  mode text not null default 'photos' check (mode in ('photos','live')),
+  updated_at timestamptz not null default now(),
+  constraint live_feed_state_singleton check (id = 1)
+);
+insert into public.live_feed_state(id, mode) values (1, 'photos')
+  on conflict (id) do nothing;
+
+alter table public.live_feed_state enable row level security;
+
+drop policy if exists lfs_select_all on public.live_feed_state;
+create policy lfs_select_all on public.live_feed_state
+  for select using (true);
+
+drop policy if exists lfs_update_admin on public.live_feed_state;
+create policy lfs_update_admin on public.live_feed_state
+  for update
+  using (auth.jwt() ->> 'email' = 'hivelinkph@gmail.com')
+  with check (auth.jwt() ->> 'email' = 'hivelinkph@gmail.com');
+
+-- Enable realtime on live_feed_state (ignore if already enabled)
+do $$ begin
+  execute 'alter publication supabase_realtime add table public.live_feed_state';
+exception when others then null;
+end $$;
+
+-- ─── DRAW RESULTS (OCR or manual) ─────────────────────
+create table if not exists public.draw_results (
+  id uuid primary key default gen_random_uuid(),
+  draw_time timestamptz not null,
+  game text not null check (game in ('d2','d3','pairs')),
+  numbers text not null,
+  source text not null default 'ocr' check (source in ('ocr','manual')),
+  raw_text text,
+  created_at timestamptz not null default now(),
+  unique (draw_time, game)
+);
+create index if not exists draw_results_time_idx on public.draw_results(draw_time desc);
+
+alter table public.draw_results enable row level security;
+
+drop policy if exists dr_select_all on public.draw_results;
+create policy dr_select_all on public.draw_results
+  for select using (true);
+
+drop policy if exists dr_write_admin on public.draw_results;
+create policy dr_write_admin on public.draw_results
+  for all
+  using (auth.jwt() ->> 'email' = 'hivelinkph@gmail.com')
+  with check (auth.jwt() ->> 'email' = 'hivelinkph@gmail.com');
+
+do $$ begin
+  execute 'alter publication supabase_realtime add table public.draw_results';
+exception when others then null;
+end $$;
+
+-- ─── RPC: resolve draw + pay winners (admin only) ─────
+create or replace function public.resolve_draw(
+  p_draw_time timestamptz, p_game text, p_numbers text
+)
+returns int language plpgsql security definer set search_path = public as $$
+declare
+  v_email text := auth.jwt() ->> 'email';
+  v_bet record;
+  v_multiplier numeric;
+  v_payout numeric;
+  v_bal numeric;
+  v_paid int := 0;
+  v_window_start timestamptz := p_draw_time - interval '6 hours';
+  v_window_end timestamptz := p_draw_time + interval '6 hours';
+begin
+  if v_email is null or v_email <> 'hivelinkph@gmail.com' then
+    raise exception 'not authorized';
+  end if;
+  if p_game not in ('d2','d3','pairs') then raise exception 'invalid game'; end if;
+
+  insert into public.draw_results(draw_time, game, numbers, source)
+    values (p_draw_time, p_game, p_numbers, 'manual')
+    on conflict (draw_time, game) do update
+      set numbers = excluded.numbers, source = excluded.source;
+
+  v_multiplier := case p_game when 'd2' then 70 when 'd3' then 500 when 'pairs' then 40 end;
+
+  for v_bet in
+    select * from public.bets
+    where status = 'pending'
+      and game = p_game
+      and draw_time between v_window_start and v_window_end
+    for update
+  loop
+    if v_bet.numbers = p_numbers then
+      v_payout := v_bet.stake * v_multiplier;
+      update public.profiles set wallet_balance = wallet_balance + v_payout
+        where id = v_bet.user_id returning wallet_balance into v_bal;
+      update public.bets set status = 'won', winning_numbers = p_numbers,
+        payout = v_payout where id = v_bet.id;
+      insert into public.wallet_transactions(user_id, type, amount, direction, balance_after, reference)
+        values (v_bet.user_id, 'payout', v_payout, 'credit', v_bal, v_bet.id::text);
+      v_paid := v_paid + 1;
+    else
+      update public.bets set status = 'lost', winning_numbers = p_numbers
+        where id = v_bet.id;
+    end if;
+  end loop;
+
+  return v_paid;
+end $$;
+
 -- ─── RPC: atomic place_bet ────────────────────────────
 create or replace function public.place_bet(
   p_game text, p_numbers text, p_bet_type text,

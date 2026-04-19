@@ -517,6 +517,128 @@ body {
   border-radius: 2px;
 }
 
+/* Live draw results overlay (only shown when feed is in live mode) */
+.feed-results {
+  display: none;
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 35px 32px 28px;
+  background: linear-gradient(0deg, rgba(6,18,32,0.95) 0%, rgba(6,18,32,0.55) 70%, transparent 100%);
+  z-index: 4;
+  justify-content: space-around;
+  align-items: flex-end;
+  gap: 18px;
+  pointer-events: none;
+}
+.live-feed.is-live .feed-results { display: flex; }
+.live-feed.is-live .feed-bottom { display: none; }
+.live-feed.is-live .feed-game-label { display: none; }
+.live-feed:not(.is-live) .feed-top { display: none; }
+.live-feed:not(.is-live) .feed-fullscreen { display: none; }
+.fr-game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
+}
+.fr-label {
+  color: var(--gold);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 21px;
+  font-weight: 900;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+}
+.fr-balls {
+  display: flex;
+  gap: 11px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.fr-ball {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, #ffffff 0%, #f1f1f1 45%, #cfcfcf 100%);
+  color: #0A1A2E;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    inset -5px -7px 11px rgba(0,0,0,0.18),
+    inset 3px 3px 7px rgba(255,255,255,0.7),
+    0 5px 14px rgba(0,0,0,0.45);
+  border: 1px solid rgba(0,0,0,0.15);
+  line-height: 1;
+}
+.fr-ball.pending { color: #45B8E5; }
+@media (max-width: 520px) {
+  .fr-ball { width: 49px; height: 49px; font-size: 25px; }
+  .fr-label { font-size: 18px; letter-spacing: 2.5px; }
+  .feed-results { padding: 26px 20px 20px; gap: 10px; }
+  .fr-game { gap: 10px; }
+}
+
+/* Fullscreen toggle (shown only in live mode) */
+.feed-fullscreen {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  cursor: pointer;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  line-height: 1;
+  padding: 0;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: background 0.2s, color 0.2s;
+}
+.feed-fullscreen:hover {
+  background: rgba(255,214,0,0.85);
+  color: #061220;
+}
+.live-feed:fullscreen,
+.live-feed:-webkit-full-screen {
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+  border: 0;
+}
+.live-feed:fullscreen .feed-results,
+.live-feed:-webkit-full-screen .feed-results {
+  padding: 56px 60px 44px;
+  gap: 28px;
+}
+.live-feed:fullscreen .fr-ball,
+.live-feed:-webkit-full-screen .fr-ball {
+  width: 96px; height: 96px; font-size: 48px;
+}
+.live-feed:fullscreen .fr-label,
+.live-feed:-webkit-full-screen .fr-label {
+  font-size: 32px; letter-spacing: 5px;
+}
+.live-feed:fullscreen .fr-balls,
+.live-feed:-webkit-full-screen .fr-balls {
+  gap: 18px;
+}
+.live-feed:fullscreen .feed-fullscreen,
+.live-feed:-webkit-full-screen .feed-fullscreen {
+  top: 24px; right: 24px; width: 52px; height: 52px; font-size: 24px;
+}
+
 .feed-dot.active .feed-dot-fill {
   animation: dot-fill 3s linear forwards;
 }
@@ -1453,7 +1575,7 @@ body {
 }
 
 /* ══════════════════════════════
-   PRIZE TABLE
+   PRIZE CALCULATOR
 ══════════════════════════════ */
 .prizes-section {
   background: var(--bg2);
@@ -1461,70 +1583,99 @@ body {
   border-bottom: 1px solid var(--border);
 }
 
-.prize-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-
-.prize-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  overflow: hidden;
-}
-
-.prize-card-header {
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--border);
-}
-
-.prize-game-name {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 24px;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 4px;
-}
-
-.prize-game-name.blue { color: var(--blue); }
-.prize-game-name.gold { color: var(--gold); }
-.prize-game-name.teal { color: #45E5B4; }
-
-.prize-card-sub {
-  font-size: 12px;
-  color: var(--text-dim);
-}
-
-.prize-table {
+/* Bet calculator — image-backed slots */
+.bet-calc {
+  position: relative;
   width: 100%;
+  aspect-ratio: 2752 / 1536;
+  background: url('Assets/Icons/Container/wincalc.png') center/cover no-repeat;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 0;
 }
-
-.prize-table tr {
-  border-bottom: 1px solid rgba(69,184,229,0.07);
+.bc-slot {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
 }
-
-.prize-table tr:last-child { border-bottom: none; }
-
-.prize-table td {
-  padding: 14px 24px;
-  font-size: 13px;
-  font-weight: 400;
-  color: var(--text-muted);
+.bc-slot-input {
+  left: 7.8%;
+  width: 30.3%;
+  top: 31%;
+  height: 14%;
+  padding: 0 3%;
+  justify-content: flex-start;
 }
-
-.prize-table td:last-child {
+.bc-slot-input .bc-currency {
+  font: 700 clamp(20px, 3.6vw, 56px)/1 'Barlow Condensed', sans-serif;
+  color: #0A2540;
+  margin-right: 6px;
+}
+.bc-slot-input input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  font: 700 clamp(24px, 4.4vw, 72px)/1 'Barlow Condensed', sans-serif;
+  color: #0A2540;
+  width: 100%;
+  -moz-appearance: textfield;
+}
+.bc-slot-input input::-webkit-outer-spin-button,
+.bc-slot-input input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.bc-slot-presets {
+  left: 7.8%;
+  width: 30.3%;
+  top: 47%;
+  height: 5.5%;
+  display: flex;
+  gap: 2.94%;
+  padding: 0;
+}
+.bc-slot-presets button {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  color: #0A2540;
+  font: 700 clamp(9px, 1.05vw, 16px)/1 'Barlow Condensed', sans-serif;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s, transform 0.15s;
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 18px;
-  font-weight: 700;
-  text-align: right;
-  color: var(--gold);
 }
-
-.prize-table td:first-child {
-  color: var(--text-dim);
-  font-size: 12px;
+.bc-slot-presets button:hover { color: #1565C0; transform: scale(1.06); }
+.bc-slot-presets button.active { color: #C9941F; }
+.bc-slot-result {
+  flex-direction: column;
+  text-align: center;
+  top: 31%;
+  height: 27.4%;
+  padding: 1.5% 1%;
+}
+.bc-r1 { left: 40.8%; width: 16.2%; }
+.bc-r2 { left: 58.2%; width: 16.7%; }
+.bc-r3 { left: 76.2%; width: 16.1%; }
+.bc-game {
+  font: 700 clamp(9px, 1.15vw, 16px)/1 'Barlow Condensed', sans-serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #0A2540;
+  margin-bottom: 6%;
+}
+.bc-payout {
+  font: 900 clamp(18px, 2.6vw, 44px)/1 'Barlow Condensed', sans-serif;
+  color: #C9941F;
+}
+.bc-mult {
+  font-size: clamp(8px, 0.85vw, 12px);
+  color: rgba(10, 37, 64, 0.75);
+  margin-top: 6%;
   letter-spacing: 0.5px;
 }
 
@@ -2023,7 +2174,7 @@ footer {
    RESPONSIVE
 ══════════════════════════════ */
 @media (max-width: 1024px) {
-  .games-grid, .prize-grid, .promo-grid { grid-template-columns: repeat(2, 1fr); }
+  .games-grid, .promo-grid { grid-template-columns: repeat(2, 1fr); }
   .steps-grid { grid-template-columns: repeat(2, 1fr); }
   .draws-grid { grid-template-columns: repeat(2, 1fr); }
   .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
@@ -2040,7 +2191,7 @@ footer {
 }
 
 @media (max-width: 640px) {
-  .games-grid, .prize-grid, .promo-grid, .steps-grid, .draws-grid { grid-template-columns: 1fr; }
+  .games-grid, .promo-grid, .steps-grid, .draws-grid { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; }
   .stats-bar { grid-template-columns: repeat(2, 1fr); }
   .section { padding: 40px 20px; }
@@ -2286,6 +2437,7 @@ footer {
         </div>
         <span class="feed-game-label">STL Palau Official</span>
       </div>
+      <button type="button" class="feed-fullscreen" id="feed-fullscreen" aria-label="Toggle fullscreen" title="Fullscreen">⛶</button>
       <div class="feed-slides" id="feed-slides">
         <div class="feed-slide active"><img src="Assets/Photos/1.png" alt="How to Play STL"></div>
         <div class="feed-slide"><img src="Assets/Photos/2.png" alt="Step 1: Register"></div>
@@ -2295,8 +2447,7 @@ footer {
       </div>
       <div class="feed-bottom">
         <div class="feed-coming">
-          <span class="feed-coming-badge">Coming Soon</span>
-          <span class="feed-coming-text">Live draw feed will appear here</span>
+          <span class="feed-coming-badge">Live Draw Appears Here</span>
         </div>
         <div class="feed-progress" id="feed-progress">
           <div class="feed-dot active"><div class="feed-dot-fill"></div></div>
@@ -2304,6 +2455,31 @@ footer {
           <div class="feed-dot"><div class="feed-dot-fill"></div></div>
           <div class="feed-dot"><div class="feed-dot-fill"></div></div>
           <div class="feed-dot"><div class="feed-dot-fill"></div></div>
+        </div>
+      </div>
+
+      <div class="feed-results" id="feed-results">
+        <div class="fr-game">
+          <div class="fr-label">Digit 2</div>
+          <div class="fr-balls" data-game="d2">
+            <div class="fr-ball pending">?</div>
+            <div class="fr-ball pending">?</div>
+          </div>
+        </div>
+        <div class="fr-game">
+          <div class="fr-label">Digit 3</div>
+          <div class="fr-balls" data-game="d3">
+            <div class="fr-ball pending">?</div>
+            <div class="fr-ball pending">?</div>
+            <div class="fr-ball pending">?</div>
+          </div>
+        </div>
+        <div class="fr-game">
+          <div class="fr-label">Pairs</div>
+          <div class="fr-balls" data-game="pairs">
+            <div class="fr-ball pending">?</div>
+            <div class="fr-ball pending">?</div>
+          </div>
         </div>
       </div>
     </div>
@@ -2543,53 +2719,35 @@ footer {
         <div class="section-sub">What you can win on a $1.00 bet</div>
       </div>
     </div>
-    <div class="prize-grid">
-
-      <div class="prize-card">
-        <div class="prize-card-header">
-          <div class="prize-game-name blue">Palau Digits 2</div>
-          <div class="prize-card-sub">Pick 2 digits (0–9) in exact order</div>
-        </div>
-        <table class="prize-table">
-          <tr><td>$0.25 bet</td><td>$17.50</td></tr>
-          <tr><td>$0.50 bet</td><td>$35.00</td></tr>
-          <tr><td>$1.00 bet</td><td>$70.00</td></tr>
-          <tr><td>$5.00 bet</td><td>$350.00</td></tr>
-          <tr><td>$10.00 bet</td><td>$700.00</td></tr>
-          <tr><td>$50.00 bet</td><td>$3,500.00</td></tr>
-        </table>
+    <!-- Bet calculator (image-backed) -->
+    <div class="bet-calc">
+      <label class="bc-slot bc-slot-input" for="betCalcAmount">
+        <span class="bc-currency">$</span>
+        <input id="betCalcAmount" type="number" min="0" step="0.05" value="0.25" inputmode="decimal">
+      </label>
+      <div class="bc-slot bc-slot-presets" id="betCalcPresets">
+        <button type="button" class="bet-calc-preset active" data-amt="0.25">$0.25</button>
+        <button type="button" class="bet-calc-preset" data-amt="0.50">$0.50</button>
+        <button type="button" class="bet-calc-preset" data-amt="1">$1</button>
+        <button type="button" class="bet-calc-preset" data-amt="5">$5</button>
+        <button type="button" class="bet-calc-preset" data-amt="10">$10</button>
+        <button type="button" class="bet-calc-preset" data-amt="50">$50</button>
       </div>
-
-      <div class="prize-card">
-        <div class="prize-card-header">
-          <div class="prize-game-name gold">Palau Digits 3</div>
-          <div class="prize-card-sub">Pick 3 digits (0–9) in exact order</div>
-        </div>
-        <table class="prize-table">
-          <tr><td>$0.25 bet</td><td>$100.00</td></tr>
-          <tr><td>$0.50 bet</td><td>$200.00</td></tr>
-          <tr><td>$1.00 bet</td><td>$400.00</td></tr>
-          <tr><td>$5.00 bet</td><td>$2,000.00</td></tr>
-          <tr><td>$10.00 bet</td><td>$4,000.00</td></tr>
-          <tr><td>$50.00 bet</td><td>$20,000.00</td></tr>
-        </table>
+      <div class="bc-slot bc-slot-result bc-r1">
+        <div class="bc-game">Digits 2</div>
+        <div class="bc-payout" id="payoutD2">$17.50</div>
+        <div class="bc-mult">70× payout</div>
       </div>
-
-      <div class="prize-card">
-        <div class="prize-card-header">
-          <div class="prize-game-name teal">Palau Pairs</div>
-          <div class="prize-card-sub">Pick 2 numbers (1–40) in exact order</div>
-        </div>
-        <table class="prize-table">
-          <tr><td>$0.50 bet</td><td>$200.00</td></tr>
-          <tr><td>$1.00 bet</td><td>$400.00</td></tr>
-          <tr><td>$5.00 bet</td><td>$2,000.00</td></tr>
-          <tr><td>$10.00 bet</td><td>$4,000.00</td></tr>
-          <tr><td>$25.00 bet</td><td>$10,000.00</td></tr>
-          <tr><td>$50.00 bet</td><td>$20,000.00</td></tr>
-        </table>
+      <div class="bc-slot bc-slot-result bc-r2">
+        <div class="bc-game">Digits 3</div>
+        <div class="bc-payout" id="payoutD3">$100.00</div>
+        <div class="bc-mult">400× payout</div>
       </div>
-
+      <div class="bc-slot bc-slot-result bc-r3">
+        <div class="bc-game">Pairs</div>
+        <div class="bc-payout" id="payoutPairs">$100.00</div>
+        <div class="bc-mult">400× payout</div>
+      </div>
     </div>
   </div>
 </div>
@@ -2749,6 +2907,37 @@ function switchTab(tab, id) {
   });
 }
 
+// ── BET CALCULATOR ──
+(function() {
+  const input = document.getElementById('betCalcAmount');
+  if (!input) return;
+  const presets = document.querySelectorAll('#betCalcPresets .bet-calc-preset');
+  const out = {
+    d2: document.getElementById('payoutD2'),
+    d3: document.getElementById('payoutD3'),
+    pairs: document.getElementById('payoutPairs'),
+  };
+  const fmt = n => '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  function recalc() {
+    let amt = parseFloat(input.value);
+    if (!isFinite(amt) || amt < 0) amt = 0;
+    out.d2.textContent = fmt(amt * 70);
+    out.d3.textContent = fmt(amt * 400);
+    out.pairs.textContent = fmt(amt * 400);
+    presets.forEach(b => {
+      b.classList.toggle('active', parseFloat(b.dataset.amt) === amt);
+    });
+  }
+  input.addEventListener('input', recalc);
+  presets.forEach(btn => {
+    btn.addEventListener('click', () => {
+      input.value = btn.dataset.amt;
+      recalc();
+    });
+  });
+  recalc();
+})();
+
 // ── JACKPOT COUNTER ANIMATION ──
 (function() {
   const el = document.getElementById('jackpot-amount');
@@ -2764,28 +2953,37 @@ function switchTab(tab, id) {
 
 // ── HERO SLIDESHOW ──
 (function() {
-  const slides = document.querySelectorAll('.feed-slide');
-  const dots = document.querySelectorAll('.feed-dot');
   const INTERVAL = 3000;
   let current = 0;
 
+  function getSlides() { return document.querySelectorAll('#feed-slides .feed-slide'); }
+  function getDots()   { return document.querySelectorAll('#feed-progress .feed-dot'); }
+
   function goTo(idx) {
-    slides[current].classList.remove('active');
-    dots[current].classList.remove('active');
+    const slides = getSlides();
+    const dots = getDots();
+    if (!slides.length) return; // live-video mode has swapped out the slides
+    if (current >= slides.length) current = 0;
+    slides[current]?.classList.remove('active');
+    dots[current]?.classList.remove('active');
     current = idx % slides.length;
-    slides[current].classList.add('active');
-    dots[current].classList.remove('active');
-    // Force reflow to restart the fill animation
-    void dots[current].offsetWidth;
-    dots[current].classList.add('active');
+    slides[current]?.classList.add('active');
+    if (dots[current]) {
+      dots[current].classList.remove('active');
+      void dots[current].offsetWidth; // restart fill animation
+      dots[current].classList.add('active');
+    }
   }
 
   setInterval(() => goTo(current + 1), INTERVAL);
 
-  // Allow clicking dots
-  dots.forEach((dot, i) => {
-    dot.addEventListener('click', () => goTo(i));
-    dot.style.cursor = 'pointer';
+  // Click-through on dots (delegated so it survives DOM swaps)
+  document.addEventListener('click', (e) => {
+    const dot = e.target.closest('#feed-progress .feed-dot');
+    if (!dot) return;
+    const dots = getDots();
+    const i = Array.from(dots).indexOf(dot);
+    if (i >= 0) goTo(i);
   });
 })();
 
@@ -2857,6 +3055,7 @@ updateLiveCountdown();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="Assets/js/app.js"></script>
+<script src="Assets/js/viewer.js"></script>
 
 </body>
 </html>

@@ -9,6 +9,9 @@
 const SUPABASE_URL = window.STL_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = window.STL_SUPABASE_ANON_KEY || '';
 const USE_SUPABASE = !!(SUPABASE_URL && SUPABASE_ANON_KEY);
+const ADMIN_EMAIL = 'hivelinkph@gmail.com';
+const isAdminEmail = e => (e || '').trim().toLowerCase() === ADMIN_EMAIL;
+window.STL_ADMIN_EMAIL = ADMIN_EMAIL;
 
 // ═══ GAME CATALOG ══════════════════════════════════════════
 const GAMES = {
@@ -267,7 +270,7 @@ async function handleSignup(e) {
     await backend.signUp(email, pw, name);
     toast('Account created — welcome!', 'success');
     closeModal('auth-modal');
-    window.location.href = 'play.html';
+    window.location.href = isAdminEmail(email) ? 'admin.html' : 'play.html';
   } catch (ex) {
     err.textContent = ex.message || 'Could not create account';
   } finally {
@@ -286,7 +289,7 @@ async function handleLogin(e) {
     await backend.signIn(email, pw);
     toast('Signed in', 'success');
     closeModal('auth-modal');
-    window.location.href = 'play.html';
+    window.location.href = isAdminEmail(email) ? 'admin.html' : 'play.html';
   } catch (ex) {
     err.textContent = ex.message || 'Could not sign in';
   } finally {
@@ -297,7 +300,7 @@ async function handleLogin(e) {
 async function handleLogout() {
   await backend.signOut();
   toast('Signed out');
-  if (window.STL_PAGE === 'play') {
+  if (window.STL_PAGE === 'play' || window.STL_PAGE === 'admin') {
     window.location.href = 'index.html';
   } else {
     await refreshUser();
@@ -323,8 +326,14 @@ async function refreshUser(userArg) {
 }
 
 function renderAuthUI() {
+  // Admin lands on play.html? push them to the dashboard.
+  if (currentProfile && isAdminEmail(currentProfile.email) && window.STL_PAGE === 'play') {
+    window.location.replace('admin.html');
+    return;
+  }
   const loggedOut = $('#nav-loggedout');
   const loggedIn = $('#nav-loggedin');
+  if (!loggedOut || !loggedIn) return; // admin.html has its own nav
   if (currentProfile) {
     loggedOut.style.display = 'none';
     loggedIn.style.display = 'flex';

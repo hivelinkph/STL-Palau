@@ -15,9 +15,24 @@ You now have:
 - `profiles` — one row per user, wallet_balance included
 - `wallet_transactions` — topup / withdraw / bet / payout ledger
 - `bets` — every bet with status + payout
+- `live_feed_state` — singleton row driving the homepage hero (photos vs. live draw)
+- `draw_results` — OCR or manual draw results per slot (10 AM / 3 PM / 7 PM) per game (d2 / d3 / pairs)
 - A trigger that auto-creates a profile on signup
-- RPC functions `topup_wallet`, `withdraw_wallet`, `place_bet` (atomic, SECURITY DEFINER)
-- Row Level Security so users only ever see their own data
+- RPC functions `topup_wallet`, `withdraw_wallet`, `place_bet`, `resolve_draw` (atomic, SECURITY DEFINER)
+- Row Level Security so users only ever see their own data; `draw_results` is public-read, admin-write
+- Realtime enabled on `live_feed_state` and `draw_results` so updates propagate instantly
+
+## Admin account
+
+The admin is hard-coded to **`hivelinkph@gmail.com`**. Sign up (or sign in) with that email on the homepage and you'll be redirected to `admin.html`. Only this email can `UPDATE live_feed_state` (enforced by RLS via `auth.jwt() ->> 'email'`).
+
+The admin dashboard lets you:
+- Toggle the homepage hero between **Photo Gallery** and **Live Draw**.
+- Broadcast your phone camera over WebRTC to every viewer on the homepage. Signaling runs on the Supabase Realtime channel `stl-live-draw` — no extra infrastructure.
+- **Auto-detect draw results (Gemini 3 Pro vision)**: toggle on the Broadcast tab. Every 10 seconds the scanner grabs a frame from the local camera preview, POSTs it to `gemini-3-pro:generateContent` with a strict JSON-only extraction prompt, and upserts any detected `DIGIT 2 XX`, `DIGIT 3 XXX`, or `PAIRS XX` to `draw_results`. Paste a Gemini API key ([get one free](https://aistudio.google.com/app/apikey)) into the field next to the checkbox — the key is stored in `localStorage` on the admin browser, never in the repo. The draw slot (10 AM / 3 PM / 7 PM) is chosen by nearest local time.
+- **Manual override / payout**: use the "Manual entry / override" panel if OCR misreads. Calls `resolve_draw(p_draw_time, p_game, p_numbers)` which upserts the result AND atomically pays every winning pending bet in a ±6h window around the slot (multipliers: D2=70×, D3=500×, Pairs=40×).
+
+For broadcasts across symmetric NATs (cellular → cellular), you'll eventually need a TURN server; the STUN-only config ships as default and works on most Wi-Fi/home networks.
 
 ## 3. Wire the credentials
 Open `index.html`, find this block near the bottom:

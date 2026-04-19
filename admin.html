@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — STL Palau</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🇵🇼</text></svg>">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800;900&family=Barlow+Condensed:wght@400;600;700;800;900&display=swap');
+
+:root {
+  --blue:       #45B8E5;
+  --blue-dark:  #2A8FBA;
+  --gold:       #FFD600;
+  --gold-dark:  #E0B800;
+  --red:        #FF4444;
+  --green:      #45E5B4;
+  --bg:         #061220;
+  --bg2:        #0A1A2E;
+  --card:       #0D1F3C;
+  --card2:      #112548;
+  --border:     rgba(69,184,229,0.18);
+  --text:       #E8F4FD;
+  --text-muted: #7BA8C4;
+  --text-dim:   #4A7A9B;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { min-height: 100vh; }
+body {
+  font-family: 'Barlow', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+body::before {
+  content:''; position: fixed; inset: 0; z-index: -1;
+  background:
+    radial-gradient(ellipse at 15% 10%, rgba(69,184,229,0.10), transparent 55%),
+    radial-gradient(ellipse at 85% 90%, rgba(255,214,0,0.07), transparent 55%),
+    linear-gradient(180deg, var(--bg), var(--bg2));
+}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--blue-dark); border-radius: 3px; }
+
+/* NAV */
+.navbar {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(6,18,32,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  height: 64px;
+  display: flex; align-items: center; padding: 0 24px; gap: 18px;
+}
+.nav-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
+.nav-logo-flag { font-size: 28px; }
+.nav-logo-text { display:flex; flex-direction:column; line-height:1; }
+.nav-logo-text .top {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:22px; font-weight:900; color: var(--gold);
+  letter-spacing:2px; text-transform:uppercase;
+}
+.nav-logo-text .bottom {
+  font-size:9px; font-weight:500; color: var(--blue);
+  letter-spacing:3px; text-transform:uppercase;
+}
+.admin-pill {
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: var(--bg);
+  font-weight: 900;
+  font-size: 11px;
+  letter-spacing: 2px;
+  padding: 5px 12px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+.nav-spacer { flex: 1; }
+.nav-right { display:flex; align-items:center; gap:12px; }
+.nav-user {
+  display:flex; align-items:center; gap:8px;
+  font-size: 13px; color: var(--text-muted);
+}
+.nav-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), var(--gold));
+  display: flex; align-items: center; justify-content: center;
+  color: var(--bg); font-weight: 900;
+}
+.btn-logout {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--text); padding: 8px 16px; border-radius: 6px;
+  font-family: inherit; font-weight: 600; font-size: 13px;
+  cursor: pointer; transition: all 0.2s;
+}
+.btn-logout:hover { border-color: var(--red); color: var(--red); }
+
+/* MAIN */
+.admin-main {
+  max-width: 1280px; margin: 0 auto;
+  padding: 32px 24px 80px;
+  display: grid; grid-template-columns: 1.1fr 1fr;
+  gap: 24px;
+}
+@media (max-width: 960px) {
+  .admin-main { grid-template-columns: 1fr; }
+}
+.admin-title {
+  grid-column: 1 / -1;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 38px; font-weight: 900; letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.admin-subtitle {
+  grid-column: 1 / -1;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+}
+.card h2 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 22px; font-weight: 800; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--gold);
+  margin-bottom: 14px;
+}
+.card .card-sub {
+  color: var(--text-muted); font-size: 13px;
+  margin-top: -8px; margin-bottom: 18px;
+}
+
+/* MODE TOGGLE */
+.mode-row {
+  display: flex; gap: 10px;
+  padding: 8px; background: var(--bg);
+  border-radius: 10px; border: 1px solid var(--border);
+}
+.mode-btn {
+  flex: 1; padding: 14px 12px; border-radius: 8px;
+  border: 1px solid transparent; background: transparent;
+  color: var(--text-muted); font-family: inherit;
+  font-weight: 700; font-size: 14px; letter-spacing: 1px;
+  text-transform: uppercase; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  transition: all 0.2s;
+}
+.mode-btn:hover { color: var(--text); }
+.mode-btn.active {
+  background: linear-gradient(135deg, rgba(69,184,229,0.18), rgba(255,214,0,0.10));
+  border-color: var(--blue);
+  color: var(--text);
+}
+.mode-btn .mode-ico { font-size: 22px; }
+.mode-btn.active .mode-ico { filter: drop-shadow(0 0 8px rgba(69,184,229,0.7)); }
+.mode-state {
+  margin-top: 14px;
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border-radius: 8px;
+  background: var(--bg2); border: 1px solid var(--border);
+  font-size: 13px; color: var(--text-muted);
+}
+.mode-state .dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--text-dim);
+}
+.mode-state.is-live .dot {
+  background: var(--red); box-shadow: 0 0 10px var(--red);
+  animation: pulse 1.2s infinite;
+}
+.mode-state.is-photos .dot { background: var(--blue); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* BROADCAST */
+.video-preview {
+  position: relative;
+  aspect-ratio: 16/9;
+  background: #000;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  margin-bottom: 14px;
+}
+.video-preview video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover;
+  background: #000;
+  display: block;
+}
+.video-placeholder {
+  position: absolute; inset: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+}
+.video-placeholder .ph-ico {
+  font-size: 42px; opacity: 0.4;
+}
+.live-tag {
+  position: absolute; top: 10px; left: 10px;
+  background: var(--red); color: white;
+  font-size: 11px; font-weight: 900;
+  letter-spacing: 2px; padding: 4px 10px;
+  border-radius: 4px;
+  display: none;
+}
+.live-tag.on { display: inline-block; }
+
+.broadcast-actions {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  margin-bottom: 12px;
+}
+.btn {
+  padding: 13px 18px; border-radius: 8px;
+  border: none; cursor: pointer;
+  font-family: inherit; font-weight: 700;
+  font-size: 14px; letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-primary {
+  background: linear-gradient(135deg, var(--red), #cc2f2f);
+  color: white;
+}
+.btn-primary:not(:disabled):hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(255,68,68,0.3); }
+.btn-secondary {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-secondary:not(:disabled):hover { border-color: var(--blue); color: var(--blue); }
+
+/* Tabs */
+.tabs {
+  display: flex; gap: 6px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.tab {
+  background: transparent; border: none; padding: 10px 14px;
+  color: var(--text-muted); font-family: inherit; font-size: 13px;
+  font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  cursor: pointer; position: relative;
+}
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--gold); }
+.tab.active::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: -1px;
+  height: 2px; background: var(--gold);
+}
+.tab-panel[hidden] { display: none; }
+
+/* Camera list */
+.cam-list { display: flex; flex-direction: column; gap: 10px; }
+.cam-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 14px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.cam-item.active {
+  border-color: var(--red);
+  background: linear-gradient(135deg, rgba(255,68,68,0.08), rgba(69,184,229,0.04));
+}
+.cam-icon {
+  width: 40px; height: 40px; border-radius: 8px;
+  background: var(--bg); display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.cam-item.active .cam-icon { color: var(--red); }
+.cam-meta { flex: 1; min-width: 0; }
+.cam-name {
+  font-weight: 700; font-size: 14px; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cam-details {
+  font-size: 11px; color: var(--text-muted);
+  letter-spacing: 1px; text-transform: uppercase;
+  margin-top: 3px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cam-btn {
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text); padding: 8px 14px; border-radius: 6px;
+  font-family: inherit; font-weight: 700; font-size: 12px;
+  letter-spacing: 1px; text-transform: uppercase;
+  cursor: pointer; flex-shrink: 0;
+  transition: all 0.2s;
+}
+.cam-btn:hover { border-color: var(--blue); color: var(--blue); }
+.cam-btn.live {
+  background: var(--red); border-color: var(--red); color: white;
+  cursor: default;
+}
+.cam-btn.live:hover { background: var(--red); color: white; }
+.cam-empty {
+  padding: 24px; text-align: center; color: var(--text-muted);
+  font-size: 13px;
+}
+.cam-actions {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 10px;
+}
+.cam-refresh {
+  background: transparent; border: none;
+  color: var(--text-muted); font-family: inherit; font-size: 12px;
+  cursor: pointer; text-decoration: underline;
+  padding: 2px 4px;
+}
+.cam-refresh:hover { color: var(--blue); }
+
+.cam-item.custom .cam-icon { background: var(--bg3, #0F2244); }
+.cam-remove {
+  background: transparent; border: none;
+  color: var(--text-dim); cursor: pointer;
+  font-size: 16px; line-height: 1; padding: 4px 6px;
+  border-radius: 4px; margin-left: 2px;
+}
+.cam-remove:hover { color: var(--red); background: rgba(255,68,68,0.08); }
+
+.cam-add-form {
+  margin-top: 14px;
+  padding: 14px;
+  background: var(--bg);
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.cam-add-hint {
+  font-size: 12px; color: var(--text-muted); line-height: 1.5;
+}
+.cam-add-hint code {
+  background: var(--bg2); padding: 1px 6px; border-radius: 3px;
+  font-family: 'Barlow Condensed', monospace; color: var(--gold);
+}
+.cam-add-row input, .cam-add-row select {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: inherit; font-size: 13px;
+}
+.cam-add-row input:focus, .cam-add-row select:focus {
+  outline: none; border-color: var(--blue);
+}
+.cam-add-buttons {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.cam-add-buttons .btn { padding: 10px 14px; font-size: 13px; }
+.cam-add-error {
+  color: var(--red); font-size: 12px; min-height: 14px;
+}
+
+.stats {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  margin-top: 14px;
+}
+.stat {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+}
+.stat-val {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 26px; font-weight: 900;
+  color: var(--blue);
+  line-height: 1;
+}
+.stat-label {
+  font-size: 10px; color: var(--text-muted);
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.log {
+  margin-top: 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-family: 'Barlow Condensed', monospace;
+  font-size: 12px;
+  color: var(--text-muted);
+  max-height: 160px; overflow-y: auto;
+}
+.log-line { line-height: 1.5; }
+.log-line .t { color: var(--text-dim); margin-right: 8px; }
+
+/* Music mixer */
+.mix-row {
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.mix-label {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 11px; color: var(--text-muted);
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.mix-val { color: var(--gold); font-weight: 800; }
+.mix-slider {
+  width: 100%; height: 6px;
+  -webkit-appearance: none; appearance: none;
+  background: linear-gradient(90deg, var(--blue), var(--gold));
+  border-radius: 3px; outline: none; cursor: pointer;
+}
+.mix-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--gold); border: 2px solid var(--bg);
+  cursor: pointer; box-shadow: 0 0 8px rgba(255,214,0,0.5);
+}
+.mix-slider::-moz-range-thumb {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--gold); border: 2px solid var(--bg);
+  cursor: pointer;
+}
+.music-now {
+  padding: 10px 14px; margin-bottom: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--blue);
+  border-radius: 8px;
+  font-size: 13px; color: var(--text-muted);
+  font-family: 'Barlow Condensed', monospace;
+  letter-spacing: 1px;
+}
+.music-now.playing {
+  border-left-color: var(--gold);
+  color: var(--text);
+}
+.music-now.playing::before {
+  content: '♪ '; color: var(--gold); font-weight: 900;
+  animation: pulse 1.4s infinite;
+}
+.music-list { display: flex; flex-direction: column; gap: 8px; }
+.music-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.music-item.playing {
+  border-color: var(--gold);
+  background: linear-gradient(135deg, rgba(255,214,0,0.08), rgba(69,184,229,0.04));
+}
+.music-icon {
+  width: 34px; height: 34px; border-radius: 6px;
+  background: var(--bg); display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+.music-item.playing .music-icon { color: var(--gold); }
+.music-meta { flex: 1; min-width: 0; }
+.music-name {
+  font-weight: 700; font-size: 13px; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.music-vibe {
+  font-size: 10px; color: var(--text-muted);
+  letter-spacing: 1.5px; text-transform: uppercase;
+  margin-top: 2px;
+}
+.music-btn {
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text); padding: 7px 12px; border-radius: 6px;
+  font-family: inherit; font-weight: 700; font-size: 11px;
+  letter-spacing: 1px; text-transform: uppercase;
+  cursor: pointer; flex-shrink: 0;
+  transition: all 0.2s;
+}
+.music-btn:hover { border-color: var(--gold); color: var(--gold); }
+.music-btn.playing {
+  background: var(--gold); border-color: var(--gold); color: var(--bg);
+}
+.music-btn.playing:hover { background: var(--gold-dark); color: var(--bg); }
+
+.mix-check {
+  display: block;
+  padding: 12px 14px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 600;
+  line-height: 1.4;
+}
+.ocr-panel {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg2);
+}
+.ocr-head .mix-check { margin-bottom: 10px; background: var(--bg); }
+.ocr-status {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: 'SF Mono', Menlo, monospace;
+  padding: 8px 10px;
+  background: var(--bg);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+.ocr-status.active { color: var(--gold); border-color: var(--gold-dark); }
+.ocr-last {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text);
+}
+.ocr-last:empty { display: none; }
+.ocr-last .ocr-chip {
+  display: inline-block;
+  padding: 4px 8px;
+  background: var(--gold);
+  color: var(--bg);
+  border-radius: 4px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  margin-right: 6px;
+  font-size: 11px;
+}
+.ocr-manual { margin-top: 10px; }
+.ocr-manual summary {
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 4px 0;
+  user-select: none;
+}
+.ocr-manual-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+.ocr-manual-row select,
+.ocr-manual-row input {
+  flex: 1;
+  min-width: 80px;
+  padding: 8px 10px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+}
+.ocr-manual-row button { flex: 1 0 100%; }
+.ocr-m-msg { margin-top: 6px; font-size: 12px; color: var(--text-muted); }
+.ocr-m-msg.ok { color: #4ade80; }
+.ocr-m-msg.err { color: #f87171; }
+.ocr-hint {
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: var(--bg);
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.ocr-actions { margin-top: 8px; display: flex; gap: 6px; }
+.ocr-actions .btn { padding: 6px 12px; font-size: 12px; }
+.ocr-key-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.ocr-key-row input {
+  flex: 1;
+  padding: 8px 10px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: 'SF Mono', Menlo, monospace;
+}
+.ocr-key-row button { padding: 6px 12px; font-size: 12px; }
+.ocr-hint a { color: var(--gold); }
+.ocr-hint code {
+  background: var(--bg2);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 10.5px;
+}
+.mix-check input[type="checkbox"] {
+  accent-color: var(--gold);
+  width: 16px; height: 16px;
+  margin-right: 8px; vertical-align: middle;
+  cursor: pointer;
+}
+.mix-check .mix-check-hint {
+  display: block;
+  font-size: 11px; color: var(--text-muted);
+  font-weight: 400;
+  margin-top: 4px; margin-left: 24px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.mus-mute-btn {
+  width: 32px; height: 32px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 15px; line-height: 1; padding: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.mus-mute-btn:hover { border-color: var(--gold); color: var(--gold); }
+.mus-mute-btn.muted {
+  background: var(--red); border-color: var(--red); color: white;
+}
+
+#admin-guard {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 999;
+  color: var(--text-muted);
+  font-size: 14px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+#admin-shell { display: none; }
+</style>
+</head>
+<body>
+
+<div id="admin-guard">Checking access…</div>
+
+<div id="admin-shell">
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo">
+      <span class="nav-logo-flag">🇵🇼</span>
+      <span class="nav-logo-text">
+        <span class="top">STL Palau</span>
+        <span class="bottom">Small Town Lottery</span>
+      </span>
+    </a>
+    <span class="admin-pill">Admin</span>
+    <span class="nav-spacer"></span>
+    <div class="nav-right">
+      <div class="nav-user">
+        <div class="nav-avatar" id="nav-avatar">A</div>
+        <span id="nav-email">—</span>
+      </div>
+      <button class="btn-logout" id="btn-logout">Sign out</button>
+    </div>
+  </nav>
+
+  <main class="admin-main">
+    <h1 class="admin-title">Control Room</h1>
+    <p class="admin-subtitle">Toggle the public homepage live feed and broadcast the draw from your phone camera.</p>
+
+    <!-- LEFT: MODE TOGGLE -->
+    <section class="card">
+      <h2>Homepage Live Feed</h2>
+      <p class="card-sub">Pick what viewers on <strong>hivelinkph.com</strong> see in the hero panel.</p>
+      <div class="mode-row">
+        <button class="mode-btn" data-mode="photos" id="mode-photos">
+          <span class="mode-ico">🖼️</span>
+          Photo Gallery
+        </button>
+        <button class="mode-btn" data-mode="live" id="mode-live">
+          <span class="mode-ico">🎥</span>
+          Live Draw
+        </button>
+      </div>
+      <div class="mode-state is-photos" id="mode-state">
+        <span class="dot"></span>
+        <span id="mode-state-text">Current mode: Photo Gallery</span>
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-val" id="stat-viewers">0</div>
+          <div class="stat-label">Connected</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" id="stat-status">OFF</div>
+          <div class="stat-label">Broadcast</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" id="stat-since">—</div>
+          <div class="stat-label">Since</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT: BROADCAST -->
+    <section class="card">
+      <h2>Camera Broadcast</h2>
+      <div class="tabs">
+        <button class="tab active" data-tab="broadcast">Broadcast</button>
+        <button class="tab" data-tab="cameras">Cameras</button>
+        <button class="tab" data-tab="music">Music</button>
+      </div>
+
+      <!-- Tab: Broadcast -->
+      <div class="tab-panel" id="tab-broadcast">
+        <p class="card-sub">Allow camera access, pick a source in the <strong>Cameras</strong> tab, then press <strong>Go Live</strong>.</p>
+        <div class="video-preview">
+          <video id="cam-preview" autoplay playsinline muted></video>
+          <div class="video-placeholder" id="cam-placeholder">
+            <span class="ph-ico">📷</span>
+            <span>Camera preview will appear here</span>
+          </div>
+          <span class="live-tag" id="live-tag">● LIVE</span>
+        </div>
+        <div id="active-cam-label" class="card-sub" style="margin:-4px 0 10px;">Active source: —</div>
+        <div class="broadcast-actions">
+          <button class="btn btn-primary" id="btn-start">Go Live</button>
+          <button class="btn btn-secondary" id="btn-stop" disabled>Stop</button>
+        </div>
+
+        <div class="ocr-panel" id="ocr-panel">
+          <div class="ocr-head">
+            <label class="mix-check">
+              <input type="checkbox" id="ocr-enable" />
+              <span>Auto-detect draw results (Gemini 2.5 Flash)</span>
+              <span class="mix-check-hint">Scans the live feed every 10s via Google Gemini and logs detected DIGIT 2 / DIGIT 3 / PAIRS to Supabase.</span>
+            </label>
+          </div>
+          <div class="ocr-key-row">
+            <input type="password" id="ocr-api-key" placeholder="Gemini API key (stored locally)" autocomplete="off" />
+            <button type="button" class="btn btn-secondary" id="ocr-save-key">Save key</button>
+          </div>
+          <div class="ocr-status" id="ocr-status">Vision idle</div>
+          <div class="ocr-last" id="ocr-last"></div>
+          <div class="ocr-hint">
+            Get a free key at <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">aistudio.google.com/app/apikey</a>.
+            Show any recognizable on-screen label (printed, handwritten, or rendered) of
+            <code>DIGIT 2 XX</code>, <code>DIGIT 3 XXX</code>, or <code>PAIRS XX</code> —
+            Gemini will extract it. Scans run every 10&nbsp;s; use "Scan now" for an instant test.
+          </div>
+          <div class="ocr-actions">
+            <button type="button" class="btn btn-secondary" id="ocr-scan-now">Scan now</button>
+          </div>
+          <details class="ocr-manual">
+            <summary>Manual entry / override</summary>
+            <div class="ocr-manual-row">
+              <select id="ocr-m-game">
+                <option value="d2">Digit 2</option>
+                <option value="d3">Digit 3</option>
+                <option value="pairs">Pairs</option>
+              </select>
+              <select id="ocr-m-slot">
+                <option value="10">10 AM</option>
+                <option value="15" selected>3 PM</option>
+                <option value="19">7 PM</option>
+              </select>
+              <input id="ocr-m-numbers" placeholder="e.g. 74 or 375" maxlength="6" />
+              <button class="btn btn-primary" id="ocr-m-save">Save + Pay winners</button>
+            </div>
+            <div class="ocr-m-msg" id="ocr-m-msg"></div>
+          </details>
+        </div>
+
+        <div class="log" id="log"></div>
+      </div>
+
+      <!-- Tab: Cameras -->
+      <div class="tab-panel" id="tab-cameras" hidden>
+        <p class="card-sub">Detected video inputs and manually added sources. Click a camera to make it live — viewers stay connected while the feed switches.</p>
+        <div class="cam-list" id="cam-list">
+          <div class="cam-empty">Grant camera permission first, then refresh.</div>
+        </div>
+        <div class="cam-actions">
+          <button class="cam-refresh" id="cam-refresh">↻ Refresh list</button>
+          <button class="cam-refresh" id="cam-toggle-add">+ Add source</button>
+        </div>
+        <form class="cam-add-form" id="cam-add-form" hidden>
+          <div class="cam-add-hint">Add a phone or IP-cam feed. For Android, install the free <strong>IP Webcam</strong> app, start the server, and paste the <code>/video</code> URL. Example: <code>http://192.168.1.50:8080/video</code>.</div>
+          <div class="cam-add-row">
+            <input id="add-name" placeholder="Name (e.g., Phone 1)" autocomplete="off" required />
+          </div>
+          <div class="cam-add-row">
+            <input id="add-url" placeholder="http://192.168.1.50:8080/video" autocomplete="off" required />
+          </div>
+          <div class="cam-add-row">
+            <select id="add-type">
+              <option value="mjpeg">MJPEG stream (IP Webcam / ONVIF snapshot loop)</option>
+              <option value="video">Video URL (.mp4 / .webm / .m3u8)</option>
+            </select>
+          </div>
+          <div class="cam-add-row cam-add-buttons">
+            <button type="submit" class="btn btn-primary">Add source</button>
+            <button type="button" class="btn btn-secondary" id="add-cancel">Cancel</button>
+          </div>
+          <div class="cam-add-error" id="add-error"></div>
+        </form>
+      </div>
+
+      <!-- Tab: Music -->
+      <div class="tab-panel" id="tab-music" hidden>
+        <p class="card-sub">Background tracks mix into your broadcast audio. Play previews locally; while live, viewers hear it alongside your mic.</p>
+
+        <label class="mix-check">
+          <input type="checkbox" id="mix-to-broadcast" />
+          <span>Include background music in broadcast</span>
+          <span class="mix-check-hint">Viewers hear mic + music. Track URL must allow CORS.</span>
+        </label>
+
+        <div class="mix-row">
+          <div class="mix-label">
+            <span>Music volume</span>
+            <span style="display:flex;align-items:center;gap:10px;">
+              <button type="button" id="mus-mute" class="mus-mute-btn" aria-label="Mute locally">🔊</button>
+              <span class="mix-val" id="mus-vol-val">60%</span>
+            </span>
+          </div>
+          <input type="range" class="mix-slider" id="mus-vol" min="0" max="100" value="60" />
+        </div>
+        <div class="mix-row">
+          <div class="mix-label">
+            <span>Mic volume</span>
+            <span class="mix-val" id="mic-vol-val">100%</span>
+          </div>
+          <input type="range" class="mix-slider" id="mic-vol" min="0" max="100" value="100" />
+        </div>
+
+        <div class="music-now" id="music-now">Nothing playing</div>
+
+        <div class="music-list" id="music-list"></div>
+        <div class="cam-actions">
+          <button class="cam-refresh" id="music-reset">↻ Restore presets</button>
+          <button class="cam-refresh" id="music-toggle-add">+ Add track</button>
+        </div>
+        <form class="cam-add-form" id="music-add-form" hidden>
+          <div class="cam-add-hint">Paste a direct MP3/OGG URL. For broadcast mixing, source must allow CORS. Easiest: drop the file into <code>Assets/audio/</code> and use a relative path like <code>Assets/audio/my-track.mp3</code> — same-origin bypasses CORS entirely.</div>
+          <div class="cam-add-row"><input id="music-name" placeholder="Track name (e.g., Tropical Groove)" autocomplete="off" required /></div>
+          <div class="cam-add-row"><input id="music-url" placeholder="https://…/track.mp3" autocomplete="off" required /></div>
+          <div class="cam-add-row cam-add-buttons">
+            <button type="submit" class="btn btn-primary">Add track</button>
+            <button type="button" class="btn btn-secondary" id="music-cancel">Cancel</button>
+          </div>
+          <div class="cam-add-error" id="music-error"></div>
+        </form>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- SUPABASE + APP -->
+<script>
+  window.STL_SUPABASE_URL = 'https://wgkpnjrpdfqoaagkftjm.supabase.co';
+  window.STL_SUPABASE_ANON_KEY = 'sb_publishable_WtVCaotX_QZJSplVe3gyTQ_mHEQy8Yw';
+  // Gemini key is kept out of source — paste it once in the admin OCR panel;
+  // it's persisted to localStorage on that browser only.
+  window.STL_PAGE = 'admin';
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="Assets/js/admin.js"></script>
+
+</body>
+</html>
