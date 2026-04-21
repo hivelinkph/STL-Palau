@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
-   STL Palau — app.js
+   Lucky 21 — app.js
    Auth, Wallet, Betting, History
    ─────────────────────────────────────────────────────────── */
 
@@ -15,9 +15,9 @@ window.STL_ADMIN_EMAIL = ADMIN_EMAIL;
 
 // ═══ GAME CATALOG ══════════════════════════════════════════
 const GAMES = {
-  digits2: { id:'digits2', name:'Palau Digits 2', digits:2, range:[0,9], min:0.25, mult:70,  max:3500  },
-  digits3: { id:'digits3', name:'Palau Digits 3', digits:3, range:[0,9], min:0.25, mult:400, max:20000 },
-  pairs:   { id:'pairs',   name:'Palau Pairs',    digits:2, range:[1,40],min:0.50, mult:400, max:20000 },
+  digits2: { id:'digits2', name:'Nauru Digits 2', digits:2, range:[0,9], min:0.25, mult:70,  max:3500  },
+  digits3: { id:'digits3', name:'Nauru Digits 3', digits:3, range:[0,9], min:0.25, mult:400, max:20000 },
+  pairs:   { id:'pairs',   name:'Nauru Pairs',    digits:2, range:[1,40],min:0.50, mult:400, max:20000 },
 };
 
 // ═══ BACKEND ABSTRACTION ═══════════════════════════════════
@@ -223,13 +223,13 @@ function toast(msg, type='info') {
   requestAnimationFrame(() => t.classList.add('show'));
   setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 3200);
 }
-const DRAW_SLOTS = [10, 15, 20]; // Palau hours: 10 AM, 3 PM, 8 PM
+const DRAW_SLOTS = [10, 15, 20]; // Nauru hours: 10 AM, 3 PM, 8 PM
 const SLOT_LABELS = { 10: '10:00 AM', 15: '3:00 PM', 20: '8:00 PM' };
 
-// Palau = UTC+9, no DST — avoid Intl.DateTimeFormat quirks by using fixed offset.
+// Nauru = UTC+9, no DST — avoid Intl.DateTimeFormat quirks by using fixed offset.
 function palauNowParts() {
   const fmt = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Pacific/Palau', year:'numeric', month:'2-digit', day:'2-digit',
+    timeZone: 'Pacific/Nauru', year:'numeric', month:'2-digit', day:'2-digit',
     hour:'2-digit', minute:'2-digit', hour12: false,
   });
   const parts = {};
@@ -242,13 +242,13 @@ function palauNowParts() {
 }
 function drawTimeFromParts(ymd, slotHour) {
   const [y, m, d] = ymd.split('-').map(Number);
-  // Palau wall-clock slotHour → UTC instant (Palau = UTC+9)
+  // Nauru wall-clock slotHour → UTC instant (Nauru = UTC+9)
   return new Date(Date.UTC(y, m - 1, d, slotHour - 9, 0, 0)).toISOString();
 }
 function fmtDrawSlot(iso) {
   const d = new Date(iso);
   return d.toLocaleString('en-US', {
-    timeZone: 'Pacific/Palau', month:'short', day:'numeric',
+    timeZone: 'Pacific/Nauru', month:'short', day:'numeric',
     hour:'numeric', minute:'2-digit', hour12: true,
   });
 }
@@ -257,7 +257,7 @@ function nextDrawTime() {
   const nowMin = hour * 60 + minute;
   const nextH = DRAW_SLOTS.find(h => h * 60 > nowMin);
   if (nextH) return drawTimeFromParts(ymd, nextH);
-  // No slot left today — roll to next calendar day in Palau
+  // No slot left today — roll to next calendar day in Nauru
   const [y, m, d] = ymd.split('-').map(Number);
   const tmr = new Date(Date.UTC(y, m - 1, d + 1));
   const tomorrow = tmr.toISOString().slice(0, 10);
@@ -494,7 +494,7 @@ function methodLabel(m) {
 // ═══ BETTING ═══════════════════════════════════════════════
 let betGame = 'digits2';
 let betPicks = [];
-let betDates = new Set();     // 'YYYY-MM-DD' (Palau local dates)
+let betDates = new Set();     // 'YYYY-MM-DD' (Nauru local dates)
 let betCalY = 0, betCalM = 0; // month currently displayed (1-12)
 const BET_CAL_MAX_DAYS = 60;
 

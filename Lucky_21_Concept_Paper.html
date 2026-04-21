@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lucky 21 — Feasibility Concept Paper</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;500;600&family=Source+Code+Pro:wght@400;500&display=swap');
+
+  :root {
+    --navy: #0d1b2a;
+    --navy-mid: #1b2e44;
+    --navy-light: #243b55;
+    --gold: #c9a84c;
+    --gold-light: #e8c96a;
+    --gold-pale: #f5e9c8;
+    --cream: #faf8f3;
+    --cream-dark: #f0ece0;
+    --text: #1a1a2e;
+    --text-muted: #5a6072;
+    --text-light: #8892a4;
+    --green: #2d7a4f;
+    --green-bg: #e8f5ee;
+    --red: #b53b3b;
+    --red-bg: #fdf0f0;
+    --amber: #c07a2a;
+    --amber-bg: #fdf5e6;
+    --border: #d8d2c0;
+    --shadow: rgba(13, 27, 42, 0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Sans 3', Georgia, sans-serif;
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text);
+    background: var(--cream);
+  }
+
+  /* ── COVER PAGE ── */
+  .cover {
+    min-height: 100vh;
+    background: var(--navy);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 50% 20%, rgba(201,168,76,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 80% 80%, rgba(36,59,85,0.8) 0%, transparent 60%);
+  }
+
+  .cover-badge {
+    position: relative;
+    display: inline-block;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid rgba(201,168,76,0.4);
+    padding: 6px 20px;
+    border-radius: 2px;
+    margin-bottom: 48px;
+  }
+
+  .cover-flag {
+    position: relative;
+    font-size: 64px;
+    margin-bottom: 32px;
+    filter: drop-shadow(0 4px 24px rgba(201,168,76,0.3));
+  }
+
+  .cover h1 {
+    position: relative;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+    max-width: 760px;
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+  }
+
+  .cover h1 span {
+    color: var(--gold-light);
+  }
+
+  .cover-subtitle {
+    position: relative;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: rgba(255,255,255,0.6);
+    max-width: 620px;
+    margin-bottom: 64px;
+    line-height: 1.6;
+  }
+
+  .cover-meta {
+    position: relative;
+    display: flex;
+    gap: 60px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .cover-meta-item {
+    text-align: center;
+  }
+
+  .cover-meta-item .label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+
+  .cover-meta-item .value {
+    font-size: 14px;
+    color: rgba(255,255,255,0.8);
+    font-weight: 300;
+  }
+
+  .cover-divider {
+    position: relative;
+    width: 80px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 48px auto;
+  }
+
+  /* ── DOCUMENT WRAPPER ── */
+  .document {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  /* ── EXEC SUMMARY BANNER ── */
+  .exec-banner {
+    background: var(--navy);
+    color: #fff;
+    padding: 48px 56px;
+    margin: 56px -24px 56px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .exec-banner::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 5px;
+    background: linear-gradient(180deg, var(--gold), var(--gold-light));
+  }
+
+  .exec-banner h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+
+  .exec-banner p {
+    font-size: 16px;
+    line-height: 1.8;
+    color: rgba(255,255,255,0.85);
+    max-width: 740px;
+    margin-bottom: 16px;
+  }
+
+  .exec-banner p:last-child { margin-bottom: 0; }
+
+  .exec-banner strong { color: var(--gold-light); font-weight: 600; }
+
+  /* ── VERDICT BOX ── */
+  .verdict {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin: 40px 0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .verdict-item {
+    background: var(--cream);
+    padding: 24px 28px;
+    text-align: center;
+  }
+
+  .verdict-item .v-icon { font-size: 28px; margin-bottom: 8px; }
+  .verdict-item .v-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .verdict-item .v-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .verdict-item .v-note {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* ── SECTION HEADERS ── */
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    margin: 64px 0 32px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--navy);
+  }
+
+  .section-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+    opacity: 0.5;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.2;
+  }
+
+  /* ── TYPOGRAPHY ── */
+  h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--navy);
+    margin: 36px 0 12px;
+  }
+
+  h4 {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 28px 0 10px;
+  }
+
+  p {
+    margin-bottom: 16px;
+    color: var(--text);
+    font-weight: 300;
+  }
+
+  strong { font-weight: 600; color: var(--text); }
+
+  ul, ol {
+    margin: 0 0 20px 20px;
+    font-weight: 300;
+  }
+
+  li { margin-bottom: 6px; }
+
+  /* ── TABLES ── */
+  .table-wrap { overflow-x: auto; margin: 24px 0 32px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    font-weight: 300;
+  }
+
+  thead tr {
+    background: var(--navy);
+    color: #fff;
+  }
+
+  thead th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  tbody tr { border-bottom: 1px solid var(--border); }
+  tbody tr:nth-child(even) { background: var(--cream-dark); }
+  tbody tr:last-child { border-bottom: none; }
+
+  td {
+    padding: 12px 16px;
+    vertical-align: top;
+    line-height: 1.6;
+  }
+
+  td:first-child { font-weight: 500; color: var(--navy); }
+
+  /* ── STAT CARDS ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .stat-card {
+    background: var(--navy);
+    color: #fff;
+    padding: 24px 20px;
+    border-radius: 4px;
+    text-align: center;
+  }
+
+  .stat-card .s-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--gold-light);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-card .s-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  /* ── CALLOUT BOXES ── */
+  .callout {
+    border-left: 4px solid;
+    padding: 20px 24px;
+    margin: 28px 0;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .callout.green { border-color: var(--green); background: var(--green-bg); }
+  .callout.red { border-color: var(--red); background: var(--red-bg); }
+  .callout.amber { border-color: var(--amber); background: var(--amber-bg); }
+  .callout.navy { border-color: var(--navy); background: var(--cream-dark); }
+
+  .callout .callout-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .callout.green .callout-label { color: var(--green); }
+  .callout.red .callout-label { color: var(--red); }
+  .callout.amber .callout-label { color: var(--amber); }
+  .callout.navy .callout-label { color: var(--navy); }
+
+  .callout p { margin-bottom: 6px; font-size: 14px; }
+  .callout p:last-child { margin-bottom: 0; }
+
+  /* ── RISK BADGE ── */
+  .risk {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .risk.high { background: var(--red-bg); color: var(--red); border: 1px solid rgba(181,59,59,0.3); }
+  .risk.med { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(192,122,42,0.3); }
+  .risk.low { background: var(--green-bg); color: var(--green); border: 1px solid rgba(45,122,79,0.3); }
+
+  /* ── ROADMAP ── */
+  .roadmap {
+    position: relative;
+    margin: 32px 0;
+  }
+
+  .roadmap-item {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 28px;
+    position: relative;
+  }
+
+  .roadmap-item::before {
+    content: '';
+    position: absolute;
+    left: 19px;
+    top: 40px;
+    bottom: -28px;
+    width: 2px;
+    background: var(--border);
+  }
+
+  .roadmap-item:last-child::before { display: none; }
+
+  .roadmap-dot {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+    font-family: 'Playfair Display', serif;
+    position: relative;
+    z-index: 1;
+  }
+
+  .roadmap-content { padding-top: 6px; }
+
+  .roadmap-phase {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+
+  .roadmap-content h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--navy);
+    margin: 0 0 6px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .roadmap-content p {
+    font-size: 14px;
+    font-weight: 300;
+    margin-bottom: 0;
+    color: var(--text-muted);
+  }
+
+  /* ── REVENUE MODEL ── */
+  .rev-bars {
+    margin: 24px 0;
+  }
+
+  .rev-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
+
+  .rev-bar-label {
+    font-size: 13px;
+    font-weight: 500;
+    width: 180px;
+    flex-shrink: 0;
+    color: var(--text);
+  }
+
+  .rev-bar-track {
+    flex: 1;
+    height: 28px;
+    background: var(--cream-dark);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .rev-bar-fill {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding-left: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    border-radius: 3px;
+  }
+
+  .rev-bar-fill.winners { background: var(--navy); width: 55%; }
+  .rev-bar-fill.govt { background: var(--gold); color: var(--navy); width: 25%; }
+  .rev-bar-fill.operator { background: var(--navy-light); width: 15%; }
+  .rev-bar-fill.agents { background: var(--text-muted); width: 5%; }
+
+  /* ── LEGAL PATH ── */
+  .legal-paths {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .legal-path {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 24px 20px;
+    background: var(--cream);
+  }
+
+  .legal-path.recommended {
+    border-color: var(--gold);
+    background: #fffdf5;
+    position: relative;
+  }
+
+  .legal-path.recommended::before {
+    content: 'RECOMMENDED';
+    position: absolute;
+    top: -1px; right: 16px;
+    background: var(--gold);
+    color: var(--navy);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    padding: 3px 10px;
+    border-radius: 0 0 4px 4px;
+  }
+
+  .legal-path-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--gold);
+    opacity: 0.4;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .legal-path h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--navy);
+    margin: 0 0 10px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .legal-path p { font-size: 13px; color: var(--text-muted); margin-bottom: 0; }
+
+  /* ── COMPARABLE TABLE HIGHLIGHT ── */
+  .palau-row td { background: rgba(201,168,76,0.08) !important; font-weight: 500 !important; }
+  .palau-row td:first-child { color: var(--gold) !important; font-weight: 700 !important; }
+
+  /* ── CONCLUSION ── */
+  .conclusion {
+    background: var(--navy);
+    color: #fff;
+    padding: 56px;
+    margin: 56px -24px 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .conclusion::before {
+    content: '"';
+    position: absolute;
+    top: -20px;
+    left: 36px;
+    font-family: 'Playfair Display', serif;
+    font-size: 200px;
+    color: rgba(201,168,76,0.08);
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .conclusion h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--gold-light);
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  .conclusion p {
+    font-size: 16px;
+    line-height: 1.85;
+    color: rgba(255,255,255,0.8);
+    max-width: 740px;
+    margin-bottom: 20px;
+    position: relative;
+    font-weight: 300;
+  }
+
+  .conclusion p strong { color: var(--gold-light); font-weight: 600; }
+  .conclusion p:last-child { margin-bottom: 0; }
+
+  /* ── FOOTER ── */
+  .doc-footer {
+    text-align: center;
+    padding: 40px 24px;
+    color: var(--text-light);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+    margin-top: 56px;
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    .cover { min-height: auto; padding: 40px; page-break-after: always; }
+    .exec-banner, .conclusion { margin-left: 0; margin-right: 0; }
+    .section-header { margin-top: 40px; }
+    body { font-size: 13px; }
+    .stats-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  @media (max-width: 640px) {
+    .exec-banner { padding: 32px 24px; }
+    .conclusion { padding: 40px 24px; }
+    .cover-meta { gap: 32px; }
+    .section-num { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════ COVER ══════════════════════════ -->
+<div class="cover">
+  <div class="cover-badge">Feasibility Concept Paper</div>
+  <div class="cover-flag">🇳🇷</div>
+  <h1>STL <span>Nauru</span></h1>
+  <p class="cover-subtitle">A Nauru Lottery Platform for the Republic of Nauru — Market Readiness, Cultural Fit &amp; Legal Pathway</p>
+  <div class="cover-divider"></div>
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <div class="label">Prepared For</div>
+      <div class="value">AntiGravity / Lucky 21 Initiative</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="label">Date</div>
+      <div class="value">April 2026</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="label">Classification</div>
+      <div class="value">Confidential — Internal Use</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="label">Version</div>
+      <div class="value">1.0 — Initial Concept</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════ BODY ══════════════════════════ -->
+<div class="document">
+
+  <!-- EXECUTIVE SUMMARY -->
+  <div class="exec-banner">
+    <h2>Executive Summary</h2>
+    <p>This concept paper assesses the feasibility of launching an STL (Nauru Lottery) digital platform in the Republic of Nauru — a Pacific island nation of approximately 17,600 people. The STL model, pioneered by the Philippine Charity Sweepstakes Office (PCSO), is a low-denomination, high-frequency draw game deeply embedded in grassroots community culture. The question is whether it can be transplanted to one of the smallest sovereign nations in the Pacific.</p>
+    <p><strong>Our finding is cautiously optimistic.</strong> Nauru's population is digitally engaged, culturally receptive to gambling, and served by an unexpectedly sophisticated fintech ecosystem. The STL model's micro-bet structure ($0.25 minimum) is well-suited to the market's income profile. However, <strong>the single most critical barrier is legal:</strong> Nauru's Constitution effectively prohibits gambling, and existing laws explicitly ban Nauruan residents from participating in any licensed online gaming. No licensed operator has ever commenced operations under the exceptions available since 2000.</p>
+    <p><strong>The recommended path</strong> is a two-phase strategy: immediately acquire an existing Internet Digits Lottery license and launch a tourist/diaspora-facing platform, while simultaneously advocating for a "Nauru National Lottery Act" through the Olbiil Era Kelulau (OEK). This builds operational credibility, generates early revenue, and creates the political foundation for full domestic participation.</p>
+  </div>
+
+  <!-- KEY METRICS -->
+  <div class="verdict">
+    <div class="verdict-item">
+      <div class="v-icon">👥</div>
+      <div class="v-label">Total Population</div>
+      <div class="v-value">17,614</div>
+      <div class="v-note">as of 2026</div>
+    </div>
+    <div class="verdict-item">
+      <div class="v-icon">📱</div>
+      <div class="v-label">Social Media Reach</div>
+      <div class="v-value">85.1%</div>
+      <div class="v-note">of population</div>
+    </div>
+    <div class="verdict-item">
+      <div class="v-icon">🎲</div>
+      <div class="v-label">Early Adopter Pool</div>
+      <div class="v-value">3,000–5,000</div>
+      <div class="v-note">digitally active bettors</div>
+    </div>
+    <div class="verdict-item">
+      <div class="v-icon">⚖️</div>
+      <div class="v-label">Legal Status</div>
+      <div class="v-value">Restricted</div>
+      <div class="v-note">reform required</div>
+    </div>
+    <div class="verdict-item">
+      <div class="v-icon">💰</div>
+      <div class="v-label">Est. Annual Revenue</div>
+      <div class="v-value">$1.08M</div>
+      <div class="v-note">conservative projection</div>
+    </div>
+  </div>
+
+
+  <!-- ─── SECTION 1 ─── -->
+  <div class="section-header">
+    <div class="section-num">01</div>
+    <div class="section-title">Introduction &amp; Rationale</div>
+  </div>
+
+  <h3>What Is the Nauru Lottery (STL)?</h3>
+  <p>The Nauru Lottery (STL) is a government-authorized, low-denomination draw game originally developed and managed by the Philippine Charity Sweepstakes Office (PCSO). Unlike national mega-jackpot games, STL is deliberately grassroots — designed for small communities, played with bets as low as PHP 12 (approximately $0.21 USD), with three daily draws that keep the game embedded in the rhythm of daily life.</p>
+
+  <p>STL offers three game types:</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Game</th><th>Mechanic</th><th>Min. Bet</th><th>Payout</th></tr></thead>
+      <tbody>
+        <tr><td>STL Pares</td><td>Pick 2 numbers from 1–40 in exact order</td><td>PHP 12</td><td>PHP 4,000 per PHP 10 bet</td></tr>
+        <tr><td>STL Swer2 (Pick 2)</td><td>Two-chamber machine draws digits 0–9; match in exact order</td><td>PHP 12</td><td>70× stake</td></tr>
+        <tr><td>STL Swer3 (Pick 3)</td><td>Three-chamber machine draws digits 0–9; match in exact order</td><td>PHP 12</td><td>400× stake</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Draws are held three times daily (10:30 AM, 3:00 PM, 7:00 PM). In 2025, STL generated PHP 35.57 billion in gross retail receipts — accounting for 54.7% of PCSO's total gaming sales — making it the dominant lottery product in the Philippines by a significant margin.</p>
+
+  <h3>Why Nauru?</h3>
+  <p>Nauru presents a rare combination of factors that make it worth studying as an STL expansion market:</p>
+  <ul>
+    <li><strong>Economic vulnerability:</strong> Nauru's economy is heavily dependent on tourism (40% of GDP pre-COVID) and foreign assistance (~20% of GDP). Economic diversification is a stated government priority.</li>
+    <li><strong>Digital leapfrog:</strong> Despite its small size, Nauru has an advanced fintech infrastructure — including 11 mobile banks, a blockchain-native digital residency program, and a planned national stablecoin developed in partnership with Ripple.</li>
+    <li><strong>Cultural fit:</strong> Sports betting and social gambling are culturally normalized. Informal wagering is widespread, indicating latent demand for a regulated alternative.</li>
+    <li><strong>Government revenue need:</strong> Legislative proposals in 2022 and 2024 demonstrate political interest in online gaming as a revenue source.</li>
+    <li><strong>Philippine diaspora connection:</strong> Significant Filipino worker population in Nauru already familiar with the STL model.</li>
+  </ul>
+
+  <p>The purpose of this paper is to rigorously assess whether these factors combine to produce a viable, sustainable STL operation — and if so, on what terms and through what legal pathway.</p>
+
+
+  <!-- ─── SECTION 2 ─── -->
+  <div class="section-header">
+    <div class="section-num">02</div>
+    <div class="section-title">Nauru Country Profile</div>
+  </div>
+
+  <h3>Demographics &amp; Economy</h3>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="s-value">17,614</div>
+      <div class="s-label">Total Population (2026)</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-value">38.9</div>
+      <div class="s-label">Median Age (years)</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-value">91%</div>
+      <div class="s-label">Urban Concentration</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-value">$17,000</div>
+      <div class="s-label">GDP per Capita (USD)</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-value">40%</div>
+      <div class="s-label">Tourism Share of GDP</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-value">30%</div>
+      <div class="s-label">Govt. Workforce Share</div>
+    </div>
+  </div>
+
+  <p>Nauru is a middle-income Pacific island nation with per capita GDP of approximately $17,000 — among the wealthier Micronesian states — but with significant economic fragility. Tourism accounts for roughly 40% of GDP and 25% of employment, making the economy acutely vulnerable to external shocks. COVID-19 caused a 9.5% GDP contraction in 2020, recovery from which remains incomplete. Government is the single largest employer at approximately 30% of the workforce, with U.S. Compact of Free Association funding financing roughly 50% of government spending.</p>
+
+  <h3>Digital Infrastructure</h3>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="s-value">57.5%</div>
+      <div class="s-label">Internet Penetration (Jan 2025)</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-value">+18.4%</div>
+      <div class="s-label">Internet Growth YoY</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-value">144%</div>
+      <div class="s-label">Mobile Connections (% of pop.)</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-value">94.9%</div>
+      <div class="s-label">Broadband-Capable Mobile</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-value">85.1%</div>
+      <div class="s-label">Social Media Penetration</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-value">11</div>
+      <div class="s-label">Mobile Banks Operating</div>
+    </div>
+  </div>
+
+  <p>Despite only 57.5% of the population being active internet users, the mobile infrastructure is strong: 25,400 mobile connections serve a population of 17,600 (144% penetration), with 94.9% of those connections being 3G/4G/5G broadband-capable. Social media penetration at 85.1% is the key indicator of smartphone adoption and digital comfort.</p>
+
+  <p>Crucially, Nauru's fintech ecosystem punches far above its weight. It is the first sovereign nation with a blockchain-native digital residency program (legislated 2021), is developing a national stablecoin in partnership with Ripple, and has launched "Nauru Invest" blockchain-based digital savings bonds. This infrastructure creates a genuine opportunity for crypto-enabled lottery payments — a significant differentiator from other Pacific island lottery operators.</p>
+
+  <div class="callout navy">
+    <div class="callout-label">Notable Gap</div>
+    <p>42.5% of Nauruans remain offline. Any viable STL platform must include an SMS-based betting channel and an agent/retailer network to capture this segment — consistent with how STL operates in rural Philippine communities.</p>
+  </div>
+
+  <h3>Gambling Culture &amp; Digital Behavior</h3>
+  <p>Gambling in Nauru occupies a paradoxical position: constitutionally restricted, yet culturally embedded. Sports betting — particularly on basketball, soccer, volleyball, and baseball — is widespread and socially accepted. Esports betting is growing rapidly among the primary target demographic (ages 21–40). Social gambling (informal wagering among friends and family) is normalized and broadly practiced.</p>
+
+  <p>The primary gaming demographic skews 54% male, with growing female participation. This group strongly prefers mobile wallets and cryptocurrency for financial transactions — exactly the payment infrastructure an online lottery would use. Government enforcement is active: a 2022 crackdown detained 60 Chinese nationals operating an unlicensed online gambling operation from a hotel, and a separate 2022 action detained 57 individuals for illegal sports betting. Active enforcement paradoxically signals that latent demand is substantial enough to sustain black-market operations.</p>
+
+
+  <!-- ─── SECTION 3 ─── -->
+  <div class="section-header">
+    <div class="section-num">03</div>
+    <div class="section-title">Market Readiness Assessment</div>
+  </div>
+
+  <h3>Demand Indicators — What Works in Nauru's Favor</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Factor</th><th>Evidence</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Gambling appetite</td>
+          <td>Sports/esports betting culturally embedded; social gambling normalized; active black market demonstrates demand</td>
+          <td>Strong</td>
+        </tr>
+        <tr>
+          <td>Digital adoption</td>
+          <td>85% social media use; 94.9% broadband-capable mobile connections; mobile-first behavior</td>
+          <td>Strong</td>
+        </tr>
+        <tr>
+          <td>Fintech readiness</td>
+          <td>11 mobile banks; crypto/mobile wallet preferred by target demographic; national stablecoin in development</td>
+          <td>Strong</td>
+        </tr>
+        <tr>
+          <td>Target demographic fit</td>
+          <td>Primary players aged 21–40; tech-savvy, mobile-first, sports-betting familiar</td>
+          <td>Strong</td>
+        </tr>
+        <tr>
+          <td>Government openness</td>
+          <td>2022 and 2024 legislative proposals; President signed stricter (modernized) regulations Apr 2024</td>
+          <td>Moderate</td>
+        </tr>
+        <tr>
+          <td>STL model familiarity</td>
+          <td>Large Filipino worker community in Nauru already familiar with PCSO STL</td>
+          <td>Moderate</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Demand Constraints — What Works Against It</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Factor</th><th>Evidence</th><th>Severity</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Tiny domestic market</td>
+          <td>~17,614 residents — 5–11× smaller than the smallest comparable Pacific lottery nation</td>
+          <td><span class="risk high">High</span></td>
+        </tr>
+        <tr>
+          <td>Legal prohibition on residents</td>
+          <td>Current law explicitly bars Nauruans from participating in any licensed online gaming</td>
+          <td><span class="risk high">High</span></td>
+        </tr>
+        <tr>
+          <td>Constitutional gambling ban</td>
+          <td>Nauru's Constitution contains explicit prohibition; narrow exceptions carved out by statute</td>
+          <td><span class="risk high">High</span></td>
+        </tr>
+        <tr>
+          <td>Internet access gap</td>
+          <td>42.5% of population still offline; digital channel alone is insufficient</td>
+          <td><span class="risk med">Medium</span></td>
+        </tr>
+        <tr>
+          <td>Civil society opposition</td>
+          <td>Active Change.org petition against gambling legalization; community concerns documented</td>
+          <td><span class="risk med">Medium</span></td>
+        </tr>
+        <tr>
+          <td>Low discretionary income</td>
+          <td>Tourism/government employment economy; income variance high</td>
+          <td><span class="risk low">Low</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Patronage Likelihood — Assessment</h3>
+
+  <div class="callout green">
+    <div class="callout-label">Core Early Adopters (Phase 1)</div>
+    <p><strong>3,000–5,000 individuals</strong> — digitally active, ages 21–40, current sports/esports bettors. This segment is already spending money on unregulated betting; a licensed, convenient mobile lottery is a natural substitute.</p>
+  </div>
+
+  <div class="callout amber">
+    <div class="callout-label">Expansion Market (Phase 2)</div>
+    <p><strong>Nauruan diaspora</strong> (concentrated in the U.S. — particularly Guam, Hawaii, and Pacific Northwest) and <strong>tourist arrivals</strong> (pre-COVID: ~100,000/year, primarily from Japan, Taiwan, U.S.). Tourists are explicitly permitted to play under current law.</p>
+  </div>
+
+  <div class="callout navy">
+    <div class="callout-label">Willingness to Pay</div>
+    <p>The STL's micro-bet structure ($0.25–$2.00 USD equivalent) aligns well with Nauru's income profile. The entertainment framing — three draws daily, instant digital result — suits the mobile-first behavior pattern observed. Patronage demand is real and will materialize once a legal, convenient option exists.</p>
+  </div>
+
+  <p><strong>Overall Verdict:</strong> The population of Nauru is culturally ready and digitally equipped to patronize an STL-style platform. The constraint is not willingness — it is access. The moment a legal domestic option exists, adoption among the 21–40 demographic will be rapid, driven by the same impulses that sustain a thriving informal betting culture today.</p>
+
+
+  <!-- ─── SECTION 4 ─── -->
+  <div class="section-header">
+    <div class="section-num">04</div>
+    <div class="section-title">Legal &amp; Regulatory Landscape</div>
+  </div>
+
+  <h3>Constitutional Framework</h3>
+  <p>Nauru's Constitution contains an <strong>explicit prohibition on gambling</strong>. This is the foundational legal constraint from which everything else flows. However, the prohibition has been navigated — not eliminated — through statute. The 2000 Internet Gaming Law (amended 2008) carved out narrow exceptions for Virtual Pachinko and Internet Digits Lottery, framed as amendments to pre-existing exceptions rather than new gambling authorizations.</p>
+
+  <div class="callout red">
+    <div class="callout-label">Critical Legal Fact</div>
+    <p>Despite these licenses being available since 2000 — now 26 years — <strong>no licensed operator has ever commenced operations</strong>. Two Virtual Pachinko and two Internet Digits Lottery licenses have been issued, but remain entirely dormant. This track record raises material questions about enforcement, operational viability, and whether the regulatory environment is truly open for business.</p>
+  </div>
+
+  <h3>Current Licensing Framework</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Item</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td>Regulatory Authority</td><td>Ministry of Finance + Financial Intelligence Unit + Attorney General's Office</td></tr>
+        <tr><td>License Types Available</td><td>Virtual Pachinko (2 licenses) &amp; Internet Digits Lottery (2 licenses)</td></tr>
+        <tr><td>Annual License Fee</td><td>$45,000 per license</td></tr>
+        <tr><td>Revenue Tax</td><td>4% of gross gaming revenue minus player payouts</td></tr>
+        <tr><td>Resident Participation</td><td><strong>Explicitly prohibited</strong> — operators must implement technical blocks on domestic access</td></tr>
+        <tr><td>Server Location</td><td>Must be located in Nauru (for tax audit access)</td></tr>
+        <tr><td>Operational Deadline</td><td>Operations must commence within 3 years of license issuance</td></tr>
+        <tr><td>Operational Status</td><td>Zero active operators; all concessions dormant</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Recent Legislative Developments</h3>
+  <p><strong>2022 House of Delegates Bill:</strong> Proposed issuance of 30 gaming licenses spanning e-Casino, Lottery Business, Sports Betting, Virtual Pachinko, and other internet gaming categories. Proposed an Offshore Internet Gaming Commission (3 members). Fee structure: $150,000 non-refundable application fee + $750,000 concession fee + $250,000/year. The bill did not complete all three required readings in the OEK and was not enacted.</p>
+
+  <p><strong>April 2024:</strong> President Surangel Whipps Jr. signed stricter regulations for online gaming operators, emphasizing enhanced security and transparency. The government simultaneously reopened applications for online gaming concessions. This signals renewed executive-level interest in modernizing the framework — and a window of opportunity.</p>
+
+  <h3>Legal Pathways for a Domestic STL</h3>
+
+  <div class="legal-paths">
+    <div class="legal-path">
+      <div class="legal-path-num">1</div>
+      <h4>Legislative Amendment — "Nauru National Lottery Act"</h4>
+      <p>Propose and advocate for legislation creating a government-owned or government-licensed lottery authority (modeled on PCSO or Samoa's Gambling Control Authority) that explicitly authorizes resident participation in a domestic lottery. Requires OEK action and likely a constitutional workaround framing lottery as "charitable gaming." Timeline: 18–36 months.</p>
+    </div>
+    <div class="legal-path recommended">
+      <div class="legal-path-num">2</div>
+      <h4>Acquire Existing Internet Lottery License → Advocate for Amendment</h4>
+      <p>Apply for one of the two available Internet Digits Lottery licenses ($45,000/year). Launch serving tourists and Nauruan diaspora abroad — legally compliant with current law. Build operational track record and government revenue relationship. Use this foundation to advocate for Phase 2 resident participation amendment. <em>This is the recommended immediate path.</em></p>
+    </div>
+    <div class="legal-path">
+      <div class="legal-path-num">3</div>
+      <h4>Tourism-Integrated Lottery</h4>
+      <p>Frame the lottery as a tourism experience primarily for visiting players, with incidental resident access characterized as "social lottery" with charitable purposes. Legally uncertain and politically risky. Not recommended as primary strategy, but viable as messaging frame to complement Route 2.</p>
+    </div>
+  </div>
+
+  <h3>Opposition &amp; Risk Factors</h3>
+  <p>Civil society opposition to gambling is documented and organized. A Change.org petition explicitly calling to "BAN GAMBLING in Nauru — online or onsite" has circulated, with proponents arguing that gambling would damage Nauruan social fabric. Religious community sentiment is likely aligned with this position. Any successful legislative strategy must proactively address these concerns through charitable fund design, responsible gambling commitments, and transparent public benefit allocation.</p>
+
+
+  <!-- ─── SECTION 5 ─── -->
+  <div class="section-header">
+    <div class="section-num">05</div>
+    <div class="section-title">Business Model</div>
+  </div>
+
+  <h3>Game Design</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Game</th><th>Type</th><th>Min Bet (USD)</th><th>Max Bet</th><th>Prize Multiplier</th></tr></thead>
+      <tbody>
+        <tr><td>Nauru Digits 2</td><td>Pick 2 digits (0–9), exact order</td><td>$0.25</td><td>$50.00</td><td>70×</td></tr>
+        <tr><td>Nauru Digits 3</td><td>Pick 3 digits (0–9), exact order</td><td>$0.25</td><td>$50.00</td><td>400×</td></tr>
+        <tr><td>Nauru Pairs</td><td>Pick 2 numbers (1–40), exact order</td><td>$0.50</td><td>$50.00</td><td>400×</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Three draws per day: 10:00 AM, 3:00 PM, 8:00 PM ChST (Chamorro Standard Time, UTC+10). Results broadcast via app push notification, SMS, and social media simultaneously.</p>
+
+  <h3>Revenue Allocation Model</h3>
+
+  <div class="rev-bars">
+    <div class="rev-bar-row">
+      <div class="rev-bar-label">Prize Fund (Winners)</div>
+      <div class="rev-bar-track"><div class="rev-bar-fill winners">55%</div></div>
+    </div>
+    <div class="rev-bar-row">
+      <div class="rev-bar-label">Government / Public Fund</div>
+      <div class="rev-bar-track"><div class="rev-bar-fill govt">25%</div></div>
+    </div>
+    <div class="rev-bar-row">
+      <div class="rev-bar-label">Operator / Platform</div>
+      <div class="rev-bar-track"><div class="rev-bar-fill operator">15%</div></div>
+    </div>
+    <div class="rev-bar-row">
+      <div class="rev-bar-label">Agent / Retailer Network</div>
+      <div class="rev-bar-track"><div class="rev-bar-fill agents">5%</div></div>
+    </div>
+  </div>
+
+  <p>The 25% government/public fund allocation is intended to be visibly earmarked for health and education — a critical political strategy to neutralize civil society opposition and model the approach used by PCSO's charity fund, which has historically been its strongest argument for public acceptance.</p>
+
+  <h3>Revenue Projections</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Scenario</th><th>Active Users</th><th>Avg. Daily Spend</th><th>Annual Gross</th><th>Operator Net (15%)</th><th>Govt Fund (25%)</th></tr></thead>
+      <tbody>
+        <tr><td>Conservative</td><td>3,000</td><td>$1.00</td><td>$1.08M</td><td>$162,000</td><td>$270,000</td></tr>
+        <tr><td>Moderate</td><td>5,000</td><td>$1.50</td><td>$2.74M</td><td>$411,000</td><td>$685,000</td></tr>
+        <tr><td>Optimistic</td><td>8,000</td><td>$2.00</td><td>$5.84M</td><td>$876,000</td><td>$1.46M</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:13px; color:var(--text-muted);"><em>Optimistic scenario assumes diaspora and tourist market fully activated. Conservative scenario reflects domestic-only Phase 1 (tourists + diaspora visitors).</em></p>
+
+  <h3>Technology Platform</h3>
+  <p><strong>Phase 1 (Launch):</strong> White-label lottery platform from an established vendor. Setup cost: $5,000–$30,000 + 2% revenue share. Deployment timeline: 6–8 weeks. This approach prioritizes speed to market and minimizes technical risk.</p>
+  <p><strong>Recommended Stack:</strong> React Native (iOS/Android app), Node.js backend, Firebase for real-time draw results, Stripe + local mobile wallet integration for payments. Given Nauru's stablecoin initiative, a crypto payment integration pathway should be built from the outset.</p>
+  <p><strong>Phase 2 (Scale):</strong> Custom platform development upon proof of concept. Budget: $50,000–$100,000. Integration with Nauru's planned national stablecoin for seamless domestic digital payments.</p>
+
+  <h3>Distribution Channels</h3>
+  <ol>
+    <li><strong>Mobile App (iOS + Android)</strong> — Primary channel for the 85% with smartphone access</li>
+    <li><strong>SMS Betting</strong> — Secondary channel for the 42.5% without active internet; submit bets via text message</li>
+    <li><strong>Agent/Retailer Network</strong> — Physical bet placement at convenience stores, hotels, dive shops, and tourism operators in Koror</li>
+    <li><strong>Tourist-Facing Kiosks</strong> — Self-service terminals at Nauru International Airport and major resort hotels</li>
+    <li><strong>Diaspora Web Platform</strong> — Browser-accessible for U.S.-based Nauruan diaspora; localized for Guam, Hawaii, and Pacific Northwest markets</li>
+  </ol>
+
+
+  <!-- ─── SECTION 6 ─── -->
+  <div class="section-header">
+    <div class="section-num">06</div>
+    <div class="section-title">Comparable Models in the Pacific</div>
+  </div>
+
+  <p>No Pacific island lottery operates at Nauru's population scale. The table below provides the closest comparable jurisdictions, all of which are 5–17× larger. The key lesson from these comparators is that <strong>digital-first operations are essential to viability at small scale</strong> — and that government authorization and charitable framing are universal features of successful Pacific lotteries.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Country</th><th>Population</th><th>Model</th><th>Key Feature</th><th>Relevant Lesson</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Philippines</td>
+          <td>113 million</td>
+          <td>PCSO STL — government charity lottery</td>
+          <td>PHP 35.57B gross sales (2025); 3× daily draws; 55/30/15 split</td>
+          <td>Source model. Proves micro-bet, high-frequency draws drive mass engagement</td>
+        </tr>
+        <tr>
+          <td>Vanuatu</td>
+          <td>~330,000</td>
+          <td>321 Lotto Vanuatu — digital platform (launched 2024)</td>
+          <td>Daily draws 14:20 local; jackpot games + instant scratchies; legal casino market</td>
+          <td>Most advanced Pacific digital lottery; digital-first from launch</td>
+        </tr>
+        <tr>
+          <td>Samoa</td>
+          <td>~200,000</td>
+          <td>Gambling Control Authority; Samoa National Lotto + international draws</td>
+          <td>Government-run authority managing all gambling; sports lotto + Oz Lotto access</td>
+          <td>Government lottery authority model; charitable mandate key to acceptance</td>
+        </tr>
+        <tr>
+          <td>Tonga</td>
+          <td>~100,000</td>
+          <td>Government online lottery (since 2009); nightly draws ~20:35</td>
+          <td>Revenue diversification explicit rationale; digital delivery</td>
+          <td>Revenue-driven justification; successful at 100K population with online model</td>
+        </tr>
+        <tr class="palau-row">
+          <td>🇳🇷 Nauru (Proposed)</td>
+          <td>17,614</td>
+          <td>STL-style digital platform; diaspora + tourist market</td>
+          <td>Blockchain/stablecoin infrastructure; 85% social media reach</td>
+          <td><strong>Smallest market. Requires diaspora/tourist participation for viability.</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout amber">
+    <div class="callout-label">Scale Reality Check</div>
+    <p>Nauru at 17,614 is 5.7× smaller than Tonga (the smallest successful Pacific lottery market). This scale gap is bridgeable — but only with a digital-first, low-overhead operation that does not require significant physical infrastructure, and only by treating diaspora and tourist players as equal parts of the addressable market rather than secondary afterthoughts.</p>
+  </div>
+
+
+  <!-- ─── SECTION 7 ─── -->
+  <div class="section-header">
+    <div class="section-num">07</div>
+    <div class="section-title">Risks &amp; Mitigations</div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Risk</th><th>Severity</th><th>Mitigation Strategy</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Constitutional challenge to any resident-facing lottery</td>
+          <td><span class="risk high">High</span></td>
+          <td>Frame as "National Lottery" with charitable mandate — identical framing to Samoa's GCA model. Engage constitutional lawyer before OEK submission. Build ecclesiastical and community leader coalitions.</td>
+        </tr>
+        <tr>
+          <td>Small domestic market insufficient for standalone viability</td>
+          <td><span class="risk high">High</span></td>
+          <td>Diaspora (Nauruan-Americans in Guam, Hawaii, Pacific NW) + tourist players treated as co-primary markets from Day 1. This is viable under current law and requires no legal reform.</td>
+        </tr>
+        <tr>
+          <td>24-year history of zero operator activity under existing licenses</td>
+          <td><span class="risk high">High</span></td>
+          <td>Commission independent legal memo on why prior licensees did not operate. Address identified barriers in business plan before committing capital. Consider direct engagement with Ministry of Finance before applying.</td>
+        </tr>
+        <tr>
+          <td>Civil society and religious opposition</td>
+          <td><span class="risk med">Medium</span></td>
+          <td>Earmark 25% of revenue transparently for health and education. Establish Responsible Gambling Board with civil society representation. Commission independent social impact study. Proactively communicate charitable outcomes.</td>
+        </tr>
+        <tr>
+          <td>Internet access gap (42.5% offline)</td>
+          <td><span class="risk med">Medium</span></td>
+          <td>SMS betting channel from Day 1. Physical agent network in Koror's commercial districts. Partnership with local retailers for bet placement.</td>
+        </tr>
+        <tr>
+          <td>Political/regulatory instability</td>
+          <td><span class="risk med">Medium</span></td>
+          <td>"Vulnerable to change" regulatory environment (2025 assessment) cuts both ways — reform is possible but regression is also possible. Maintain low fixed-cost operations to limit exposure.</td>
+        </tr>
+        <tr>
+          <td>Low discretionary income limiting ticket volume</td>
+          <td><span class="risk low">Low</span></td>
+          <td>$0.25 minimum bet is specifically designed for this scenario. STL's success in Philippine communities with similar income profiles validates the model.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <!-- ─── SECTION 8 ─── -->
+  <div class="section-header">
+    <div class="section-num">08</div>
+    <div class="section-title">Recommendations &amp; Roadmap</div>
+  </div>
+
+  <div class="roadmap">
+    <div class="roadmap-item">
+      <div class="roadmap-dot">1</div>
+      <div class="roadmap-content">
+        <div class="roadmap-phase">Immediate — Months 0–3</div>
+        <h4>Legal Groundwork &amp; License Acquisition</h4>
+        <p>Retain Nauru-based legal counsel to commission a constitutional analysis of the domestic lottery pathway. File for one of the two existing Internet Digits Lottery licenses ($45,000/year). Engage directly with the Ministry of Finance and Financial Intelligence Unit to understand the operational requirements that prior licensees failed to meet. Register a Nauru business entity.</p>
+      </div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-dot">2</div>
+      <div class="roadmap-content">
+        <div class="roadmap-phase">Short-Term — Months 3–6</div>
+        <h4>Platform Build &amp; Stakeholder Engagement</h4>
+        <p>Select and contract white-label lottery platform vendor. Design STL game rules adapted for USD and Nauru time zones. Begin stakeholder consultation with OEK delegates and Ministry of Finance regarding "Nauru National Lottery Act" legislative strategy. Commission independent social impact study to pre-empt opposition. Build agent/retailer network in Koror.</p>
+      </div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-dot">3</div>
+      <div class="roadmap-content">
+        <div class="roadmap-phase">Medium-Term — Months 6–12</div>
+        <h4>Soft Launch — Tourist &amp; Diaspora Market</h4>
+        <p>Launch platform serving tourists and Nauruan diaspora (fully compliant with current law). Establish public reporting of government fund allocations to health and education. Build operational track record. Introduce draft "Nauru National Lottery Act" to OEK with Ministry of Finance backing and social impact data from Phase 1 operations.</p>
+      </div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-dot">4</div>
+      <div class="roadmap-content">
+        <div class="roadmap-phase">Long-Term — Months 12–24</div>
+        <h4>Full Domestic Launch &amp; Expansion</h4>
+        <p>Contingent on legislative amendment: open platform to Nauruan residents. Expand game types (Sports Digits, Jackpot Draws). Integrate with Nauru's national stablecoin for seamless domestic digital payments. Explore regional Pacific network partnerships for cross-jurisdiction jackpot pools to increase prize attractiveness.</p>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ─── SECTION 9 (CONCLUSION) ─── -->
+  <div class="conclusion">
+    <h2>Conclusion</h2>
+    <p>Nauru is a market that is <strong>culturally ready but legally constrained</strong> for an STL-style lottery. The population is digitally equipped, gambling is woven into social culture, and the government has demonstrated recurring interest in online gaming as a revenue mechanism. The STL model — with its micro-bet structure, three daily draws, and community-facing design — is better suited to Nauru's scale and income profile than any other lottery format.</p>
+    <p>The obstacle is not the people. The obstacle is a legal framework designed 26 years ago that has never successfully produced an active operator. The first task is therefore not to build an app — it is to understand why those licenses have sat dormant and to build a business case that addresses those root causes directly.</p>
+    <p>If that groundwork is done correctly, <strong>a conservative STL operation in Nauru could generate $1 million in annual gross revenue, $270,000 for public benefit, and $162,000 for the operator</strong> — with material upside as diaspora and tourist markets are activated. For a nation of 17,600, those are meaningful numbers.</p>
+    <p>The Lucky 21 opportunity is real. It requires patience on the legal pathway and discipline on the operational model. The window created by the April 2024 regulatory renewal and the ongoing OEK interest in gaming revenue is the best entry point available. The moment to move is now.</p>
+  </div>
+
+</div>
+
+<div class="doc-footer">
+  <p>Lucky 21 Feasibility Concept Paper — Version 1.0 — April 2026</p>
+  <p style="margin-top:6px;">Research sources: DataReportal Digital 2025 Nauru · iGamingToday Nauru Market Report · Island Times (Nauru) · PCSO Annual Report 2025 · Marianas Variety · World Casino Directory · Constitute Project · U.S. Department of State Investment Climate Statement</p>
+  <p style="margin-top:6px; font-style:italic;">This document is prepared for internal strategic planning purposes. It does not constitute legal advice. Formal legal counsel in Nauru should be engaged before any business decisions are made.</p>
+</div>
+
+</body>
+</html>

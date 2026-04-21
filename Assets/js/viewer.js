@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
-   STL Palau — viewer.js
+   Lucky 21 — viewer.js
    Public homepage: listen for live_feed_state, swap photo
    slideshow for WebRTC camera stream when mode = 'live'.
    ─────────────────────────────────────────────────────────── */

@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STL Nauru — Feasibility Concept Paper</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;500;600&family=Source+Code+Pro:wght@400;500&display=swap');
+
+  :root {
+    --navy: #0d1b2a;
+    --navy-mid: #1b2e44;
+    --navy-light: #243b55;
+    --gold: #c9a84c;
+    --gold-light: #e8c96a;
+    --gold-pale: #f5e9c8;
+    --cream: #faf8f3;
+    --cream-dark: #f0ece0;
+    --text: #1a1a2e;
+    --text-muted: #5a6072;
+    --text-light: #8892a4;
+    --green: #2d7a4f;
+    --green-bg: #e8f5ee;
+    --red: #b53b3b;
+    --red-bg: #fdf0f0;
+    --amber: #c07a2a;
+    --amber-bg: #fdf5e6;
+    --border: #d8d2c0;
+    --shadow: rgba(13, 27, 42, 0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Sans 3', Georgia, sans-serif;
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text);
+    background: var(--cream);
+  }
+
+  /* ── COVER PAGE ── */
+  .cover {
+    min-height: 100vh;
+    background: var(--navy);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 50% 20%, rgba(201,168,76,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 80% 80%, rgba(36,59,85,0.8) 0%, transparent 60%);
+  }
+
+  .cover-badge {
+    position: relative;
+    display: inline-block;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid rgba(201,168,76,0.4);
+    padding: 6px 20px;
+    border-radius: 2px;
+    margin-bottom: 48px;
+  }
+
+  .cover-flag {
+    position: relative;
+    font-size: 64px;
+    margin-bottom: 32px;
+    filter: drop-shadow(0 4px 24px rgba(201,168,76,0.3));
+  }
+
+  .cover h1 {
+    position: relative;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+    max-width: 760px;
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+  }
+
+  .cover h1 span {
+    color: var(--gold-light);
+  }
+
+  .cover-subtitle {
+    position: relative;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: rgba(255,255,255,0.6);
+    max-width: 620px;
+    margin-bottom: 64px;
+    line-height: 1.6;
+  }
+
+  .cover-meta {
+    position: relative;
+    display: flex;
+    gap: 60px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .cover-meta-item {
+    text-align: center;
+  }
+
+  .cover-meta-item .label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+
+  .cover-meta-item .value {
+    font-size: 14px;
+    color: rgba(255,255,255,0.8);
+    font-weight: 300;
+  }
+
+  .cover-divider {
+    position: relative;
+    width: 80px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 48px auto;
+  }
+
+  /* ── DOCUMENT WRAPPER ── */
+  .document {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  /* ── EXEC SUMMARY BANNER ── */
+  .exec-banner {
+    background: var(--navy);
+    color: #fff;
+    padding: 48px 56px;
+    margin: 56px -24px 56px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .exec-banner::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 5px;
+    background: linear-gradient(180deg, var(--gold), var(--gold-light));
+  }
+
+  .exec-banner h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+
+  .exec-banner p {
+    font-size: 16px;
+    line-height: 1.8;
+    color: rgba(255,255,255,0.85);
+    max-width: 740px;
+    margin-bottom: 16px;
+  }
+
+  .exec-banner p:last-child { margin-bottom: 0; }
+
+  .exec-banner strong { color: var(--gold-light); font-weight: 600; }
+
+  /* ── VERDICT BOX ── */
+  .verdict {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin: 40px 0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .verdict-item {
+    background: var(--cream);
+    padding: 24px 28px;
+    text-align: center;
+  }
+
+  .verdict-item .v-icon { font-size: 28px; margin-bottom: 8px; }
+  .verdict-item .v-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .verdict-item .v-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .verdict-item .v-note {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* ── SECTION HEADERS ── */
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    margin: 64px 0 32px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--navy);
+  }
+
+  .section-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+    opacity: 0.5;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.2;
+  }
+
+  /* ── TYPOGRAPHY ── */
+  h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--navy);
+    margin: 36px 0 12px;
+  }
+
+  h4 {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 28px 0 10px;
+  }
+
+  p {
+    margin-bottom: 16px;
+    color: var(--text);
+    font-weight: 300;
+  }
+
+  strong { font-weight: 600; color: var(--text); }
+
+  ul, ol {
+    margin: 0 0 20px 20px;
+    font-weight: 300;
+  }
+
+  li { margin-bottom: 6px; }
+
+  /* ── TABLES ── */
+  .table-wrap { overflow-x: auto; margin: 24px 0 32px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    font-weight: 300;
+  }
+
+  thead tr {
+    background: var(--navy);
+    color: #fff;
+  }
+
+  thead th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  tbody tr { border-bottom: 1px solid var(--border); }
+  tbody tr:nth-child(even) { background: var(--cream-dark); }
+  tbody tr:last-child { border-bottom: none; }
+
+  td {
+    padding: 12px 16px;
+    vertical-align: top;
+    line-height: 1.6;
+  }
+
+  td:first-child { font-weight: 500; color: var(--navy); }
+
+  /* ── STAT CARDS ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .stat-card {
+    background: var(--navy);
+    color: #fff;
+    padding: 24px 20px;
+    border-radius: 4px;
+    text-align: center;
+  }
+
+  .stat-card .s-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--gold-light);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-card .s-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  /* ── CALLOUT BOXES ── */
+  .callout {
+    border-left: 4px solid;
+    padding: 20px 24px;
+    margin: 28px 0;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .callout.green { border-color: var(--green); background: var(--green-bg); }
+  .callout.red { border-color: var(--red); background: var(--red-bg); }
+  .callout.amber { border-color: var(--amber); background: var(--amber-bg); }
+  .callout.navy { border-color: var(--navy); background: var(--cream-dark); }
+
+  .callout .callout-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .callout.green .callout-label { color: var(--green); }
+  .callout.red .callout-label { color: var(--red); }
+  .callout.amber .callout-label { color: var(--amber); }
+  .callout.navy .callout-label { color: var(--navy); }
+
+  .callout p { margin-bottom: 6px; font-size: 14px; }
+  .callout p:last-child { margin-bottom: 0; }
+
+  /* ── RISK BADGE ── */
+  .risk {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .risk.high { background: var(--red-bg); color: var(--red); border: 1px solid rgba(181,59,59,0.3); }
+  .risk.med { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(192,122,42,0.3); }
+  .risk.low { background: var(--green-bg); color: var(--green); border: 1px solid rgba(45,122,79,0.3); }
+
+  /* ── ROADMAP ── */
+  .roadmap {
+    position: relative;
+    margin: 32px 0;
+  }
+
+  .roadmap-item {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 28px;
+    position: relative;
+  }
+
+  .roadmap-item::before {
+    content: '';
+    position: absolute;
+    left: 19px;
+    top: 40px;
+    bottom: -28px;
+    width: 2px;
+    background: var(--border);
+  }
+
+  .roadmap-item:last-child::before { display: none; }
+
+  .roadmap-dot {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+    font-family: 'Playfair Display', serif;
+    position: relative;
+    z-index: 1;
+  }
+
+  .roadmap-content { padding-top: 6px; }
+
+  .roadmap-phase {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+
+  .roadmap-content h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--navy);
+    margin: 0 0 6px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .roadmap-content p {
+    font-size: 14px;
+    font-weight: 300;
+    margin-bottom: 0;
+    color: var(--text-muted);
+  }
+
+  /* ── REVENUE MODEL ── */
+  .rev-bars {
+    margin: 24px 0;
+  }
+
+  .rev-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
+
+  .rev-bar-label {
+    font-size: 13px;
+    font-weight: 500;
+    width: 180px;
+    flex-shrink: 0;
+    color: var(--text);
+  }
+
+  .rev-bar-track {
+    flex: 1;
+    height: 28px;
+    background: var(--cream-dark);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .rev-bar-fill {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding-left: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    border-radius: 3px;
+  }
+
+  .rev-bar-fill.winners { background: var(--navy); width: 55%; }
+  .rev-bar-fill.govt { background: var(--gold); color: var(--navy); width: 25%; }
+  .rev-bar-fill.operator { background: var(--navy-light); width: 15%; }
+  .rev-bar-fill.agents { background: var(--text-muted); width: 5%; }
+
+  /* ── LEGAL PATH ── */
+  .legal-paths {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .legal-path {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 24px 20px;
+    background: var(--cream);
+  }
+
+  .legal-path.recommended {
+    border-color: var(--gold);
+    background: #fffdf5;
+    position: relative;
+  }
+
+  .legal-path.recommended::before {
+    content: 'RECOMMENDED';
+    position: absolute;
+    top: -1px; right: 16px;
+    background: var(--gold);
+    color: var(--navy);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    padding: 3px 10px;
+    border-radius: 0 0 4px 4px;
+  }
+
+  .legal-path-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--gold);
+    opacity: 0.4;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .legal-path h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--navy);
+    margin: 0 0 10px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .legal-path p { font-size: 13px; color: var(--text-muted); margin-bottom: 0; }
+
+  /* ── COMPARABLE TABLE HIGHLIGHT ── */
+  .palau-row td { background: rgba(201,168,76,0.08) !important; font-weight: 500 !important; }
+  .palau-row td:first-child { color: var(--gold) !important; font-weight: 700 !important; }
+
+  /* ── CONCLUSION ── */
+  .conclusion {
+    background: var(--navy);
+    color: #fff;
+    padding: 56px;
+    margin: 56px -24px 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .conclusion::before {
+    content: '"';
+    position: absolute;
+    top: -20px;
+    left: 36px;
+    font-family: 'Playfair Display', serif;
+    font-size: 200px;
+    color: rgba(201,168,76,0.08);
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .conclusion h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--gold-light);
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  .conclusion p {
+    font-size: 16px;
+    line-height: 1.85;
+    color: rgba(255,255,255,0.8);
+    max-width: 740px;
+    margin-bottom: 20px;
+    position: relative;
+    font-weight: 300;
+  }
+
+  .conclusion p strong { color: var(--gold-light); font-weight: 600; }
+  .conclusion p:last-child { margin-bottom: 0; }
+
+  /* ── FOOTER ── */
+  .doc-footer {
+    text-align: center;
+    padding: 40px 24px;
+    color: var(--text-light);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+    margin-top: 56px;
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    .cover { min-height: auto; padding: 40px; page-break-after: always; }
+    .exec-banner, .conclusion { margin-left: 0; margin-right: 0; }
+    .section-header { margin-top: 40px; }
+    body { font-size: 13px; }
+    .stats-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  @media (max-width: 640px) {
+    .exec-banner { padding: 32px 24px; }
+    .conclusion { padding: 40px 24px; }
+    .cover-meta { gap: 32px; }
+    .section-num { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════ COVER ══════════════════════════ -->
+<div class="cover">
+  <div class="cover-badge">Feasibility Concept Paper</div>
+  <div class="cover-flag">🇳🇷</div>
+  <h1>STL <span>Nauru</span></h1>
+  <p class="cover-subtitle">A Small Town Lottery Platform for the Republic of Nauru — Market Readiness, Economic Need &amp; Future Outlook</p>
+  <div class="cover-divider"></div>
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <div class="label">Prepared For</div>
+      <div class="value">AntiGravity / STL Nauru Initiative</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="label">Date</div>
+      <div class="value">April 2026</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="label">Classification</div>
+      <div class="value">Confidential — Internal Use</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="label">Version</div>
+      <div class="value">2.0 — Nauru Rewrite</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════ BODY ══════════════════════════ -->
+<div class="document">
+
+  <!-- EXECUTIVE SUMMARY -->
+  <div class="exec-banner">
+    <h2>Executive Summary</h2>
+    <p>This concept paper assesses the feasibility of launching an STL (Small Town Lottery) digital platform in the Republic of Nauru — one of the smallest sovereign nations in the world with a population of approximately 12,100 people. The STL model, a low-denomination, high-frequency draw game deeply embedded in grassroots community culture, presents a unique opportunity for an economy eager to diversify its revenue streams.</p>
+    <p><strong>Our finding is uniquely promising.</strong> Nauru's economy has historically relied on phosphate mining and, more recently, revenues from hosting the Regional Processing Centre (RPC) and fishing licenses. With leaders searching for new revenue models to ensure long-term stability, an STL platform offers a consistent supplementary financial engine. The model's micro-bet structure ($0.25 minimum) aligns perfectly with the population's median age (20.2 years) and income distribution profiles.</p>
+    <p><strong>The recommended path</strong> is a fast-tracked implementation supported directly by the government to establish a domestic lottery program that heavily incorporates Nauru's burgeoning youth and mobile infrastructure while delivering a dedicated chunk of revenue back to public works, healthcare, and education.</p>
+  </div>
+
+  <!-- KEY METRICS -->
+  <div class="verdict">
+    <div class="verdict-item">
+      <div class="v-icon">👥</div>
+      <div class="v-label">Total Population</div>
+      <div class="v-value">12,100</div>
+      <div class="v-note">as of 2026</div>
+    </div>
+    <div class="verdict-item">
+      <div class="v-icon">🧑</div>
+      <div class="v-label">Median Age</div>
+      <div class="v-value">20.2</div>
+      <div class="v-note">very youthful demographic</div>
+    </div>
+    <div class="verdict-item">
+      <div class="v-icon">🎲</div>
+      <div class="v-label">Early Adopter Pool</div>
+      <div class="v-value">2,500–4,000</div>
+      <div class="v-note">digitally active bettors</div>
+    </div>
+    <div class="verdict-item">
+      <div class="v-icon">⚖️</div>
+      <div class="v-label">Economic Need</div>
+      <div class="v-value">Urgent</div>
+      <div class="v-note">funding diversification</div>
+    </div>
+    <div class="verdict-item">
+      <div class="v-icon">💰</div>
+      <div class="v-label">Est. Annual Revenue</div>
+      <div class="v-value">$850K</div>
+      <div class="v-note">conservative projection</div>
+    </div>
+  </div>
+
+
+  <!-- ─── SECTION 1 ─── -->
+  <div class="section-header">
+    <div class="section-num">01</div>
+    <div class="section-title">Introduction &amp; Rationale</div>
+  </div>
+
+  <h3>What Is the Small Town Lottery (STL)?</h3>
+  <p>The Small Town Lottery (STL) is a government-authorized, low-denomination draw game initially conceived for scale in nations like the Philippines. It is deliberately grassroots — designed for small communities, played with very small bets, boasting three daily draws that integrate naturally into the rhythm of daily life.</p>
+
+  <p>STL offers three basic game types:</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Game</th><th>Mechanic</th><th>Min. Bet</th><th>Payout</th></tr></thead>
+      <tbody>
+        <tr><td>STL Pairs</td><td>Pick 2 numbers from 1–40 in exact order</td><td>$0.25</td><td>$80 per $0.25 bet</td></tr>
+        <tr><td>STL Digits 2</td><td>Two-chamber machine draws digits 0–9; match in exact order</td><td>$0.25</td><td>70× stake</td></tr>
+        <tr><td>STL Digits 3</td><td>Three-chamber machine draws digits 0–9; match in exact order</td><td>$0.25</td><td>400× stake</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Draws are held three times daily. This constant loop keeps the excitement fresh while offering meaningful payouts to the local winners and predictable margins for public taxation and revenue generation.</p>
+
+  <h3>Why Nauru?</h3>
+  <p>Nauru presents a fascinating environment for an STL expansion model:</p>
+  <ul>
+    <li><strong>Economic vulnerability:</strong> Nauru's economy has been largely dependent on external funding channels — Australian aid, the Regional Processing Centre (RPC), and commercial fishing licenses. Economic diversification is a vital necessity.</li>
+    <li><strong>Demographics:</strong> A tiny population (12,100) with a surprisingly young median age of 20.2 years offers a mobile-native demographic prone to digital entertainment.</li>
+    <li><strong>Small footprint limits:</strong> Given that the entire island is about 21 square kilometers, an internet and mobile-based lottery circumvents the need for a massive retail footprint while penetrating 100% of the island.</li>
+    <li><strong>Public workforce connection:</strong> Significant percentage of residents work for the government or RPC. A lottery that expressly funds public works directly appeals to the vast majority of households.</li>
+  </ul>
+
+
+  <!-- ─── SECTION 2 ─── -->
+  <div class="section-header">
+    <div class="section-num">02</div>
+    <div class="section-title">Nauru Country Profile</div>
+  </div>
+
+  <h3>Demographics &amp; Economy</h3>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="s-value">12,100</div>
+      <div class="s-label">Total Population (2026)</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-value">20.2</div>
+      <div class="s-label">Median Age (years)</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-value">100%</div>
+      <div class="s-label">Urban Concentration</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-value">$16,053</div>
+      <div class="s-label">GDP per Capita (USD)*</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-value">~1%</div>
+      <div class="s-label">Tourism Share of GDP</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-value">High</div>
+      <div class="s-label">Govt. / RPC Workforce Share</div>
+    </div>
+  </div>
+
+  <p>Nauru is a high-cost environment primarily subsidized by external capital streams. Historically reliant on phosphate, its pivot to refugee processing (via Australia) and fishing licenses has maintained its current GDP per capita around $16,053 (IMF estimates 2026). However, the eventual winding down of the RPC necessitates immediate new paths for sustainable fiscal policy. </p>
+
+  <h3>Digital Infrastructure</h3>
+
+  <p>Nauru’s digital infrastructure is steadily improving, spearheaded prominently by mobile internet usage. With such a geographically constrained space, a single mobile provider setup effectively covers the entire nation with 3G/4G connectivity, allowing mobile banking solutions and SMS usage to be pervasive.</p>
+
+  <div class="callout navy">
+    <div class="callout-label">Tech Adoption Strategy</div>
+    <p>Given the youth-heavy demographic, social media use is ubiquitous among adults and older teens. Any lottery implementation must focus heavily on a mobile web interface and SMS integration to capture players without necessitating high-end broadband.</p>
+  </div>
+
+
+  <!-- ─── SECTION 3 ─── -->
+  <div class="section-header">
+    <div class="section-num">03</div>
+    <div class="section-title">Market Readiness Assessment</div>
+  </div>
+
+  <h3>Demand Indicators — What Works in Nauru's Favor</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Factor</th><th>Evidence</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Urgent National Need</td>
+          <td>Government highly motivated to find new revenue sources to replace fading RPC income.</td>
+          <td>Strong</td>
+        </tr>
+        <tr>
+          <td>Mobile Adoption</td>
+          <td>High mobile network coverage means the entire country can be active players via digital/SMS.</td>
+          <td>Strong</td>
+        </tr>
+        <tr>
+          <td>Youth Demographic</td>
+          <td>Median age of 20.2 translates to a populace accustomed to immediate digital entertainment and micro-transactions.</td>
+          <td>Strong</td>
+        </tr>
+        <tr>
+          <td>Target demographic fit</td>
+          <td>Tech-savvy younger population and civil servants.</td>
+          <td>Strong</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Demand Constraints — What Works Against It</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Factor</th><th>Evidence</th><th>Severity</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Tiny domestic market</td>
+          <td>~12,100 residents sets a rigid ceiling on potential daily domestic transaction volume.</td>
+          <td><span class="risk high">High</span></td>
+        </tr>
+        <tr>
+          <td>Religious/Civil opposition</td>
+          <td>Similar to many Pacific island states, organized religion may express resistance to gaming.</td>
+          <td><span class="risk med">Medium</span></td>
+        </tr>
+        <tr>
+          <td>Tourism absence</td>
+          <td>Unlike Palau, Nauru lacks a massive tourism industry to buffer the player pool (tourism ~1%).</td>
+          <td><span class="risk high">High</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Patronage Likelihood — Assessment</h3>
+
+  <div class="callout green">
+    <div class="callout-label">Core Early Adopters (Phase 1)</div>
+    <p><strong>2,500–4,000 individuals</strong> — digitally active adults who have disposable income from government roles or RPC contracts. A centralized app with easy mobile payment unlocks this demographic entirely.</p>
+  </div>
+
+  <p><strong>Overall Verdict:</strong> Nauru is small, but its density and youth make it an incredible test bed for a perfectly digitized, nationally-approved lottery app. The primary hurdle is ensuring the government perceives this as a critical infrastructure project rather than a fringe activity.</p>
+
+
+  <!-- ─── SECTION 4 ─── -->
+  <div class="section-header">
+    <div class="section-num">04</div>
+    <div class="section-title">Legal &amp; Regulatory Landscape</div>
+  </div>
+
+  <h3>The Legislative Avenue</h3>
+  <p>Nauru does not have a sprawling pre-existing gambling regulatory body compared to larger nations, giving the government the flexibility to pass bespoke legislation creating the <strong>Nauru State Lottery</strong>. By establishing it as a government-chartered monopoly managed by a third-party technology provider (AntiGravity), the revenue sharing model becomes an act of parliament.</p>
+
+  <div class="legal-paths">
+    <div class="legal-path recommended">
+      <div class="legal-path-num">1</div>
+      <h4>National Lottery Partnership Act</h4>
+      <p>A direct joint venture with the government of Nauru where the technology partner manages operations and the state blesses it legally as the "National Small Town Lottery." This approach shortcuts massive regulatory gray-areas and mandates a straight public-private partnership.</p>
+    </div>
+  </div>
+
+  <h3>Opposition &amp; Risk Factors</h3>
+  <p>As with multiple Oceania nations, local religious groups wield substantial influence. The counter-measure is structural: the resulting bill must codify that the government’s 25% take is locked in a sovereign trust solely designated for hospital updates, public schools, and community infrastructure in Yaren and surrounding districts.</p>
+
+
+  <!-- ─── SECTION 5 ─── -->
+  <div class="section-header">
+    <div class="section-num">05</div>
+    <div class="section-title">Business Model</div>
+  </div>
+
+  <h3>Game Design</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Game</th><th>Type</th><th>Min Bet (USD)</th><th>Max Bet</th><th>Prize Multiplier</th></tr></thead>
+      <tbody>
+        <tr><td>Nauru Digits 2</td><td>Pick 2 digits (0–9), exact order</td><td>$0.25</td><td>$50.00</td><td>70×</td></tr>
+        <tr><td>Nauru Digits 3</td><td>Pick 3 digits (0–9), exact order</td><td>$0.25</td><td>$50.00</td><td>400×</td></tr>
+        <tr><td>Nauru Pairs</td><td>Pick 2 numbers (1–40), exact order</td><td>$0.50</td><td>$50.00</td><td>400×</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Three draws per day: 10:00 AM, 3:00 PM, 8:00 PM Nauru Time (UTC+12). Results broadcast via app push notification, SMS, and Facebook.</p>
+
+  <h3>Revenue Allocation Model</h3>
+
+  <div class="rev-bars">
+    <div class="rev-bar-row">
+      <div class="rev-bar-label">Prize Fund (Winners)</div>
+      <div class="rev-bar-track"><div class="rev-bar-fill winners">55%</div></div>
+    </div>
+    <div class="rev-bar-row">
+      <div class="rev-bar-label">Nauru Public Trust</div>
+      <div class="rev-bar-track"><div class="rev-bar-fill govt">25%</div></div>
+    </div>
+    <div class="rev-bar-row">
+      <div class="rev-bar-label">Operator / Platform</div>
+      <div class="rev-bar-track"><div class="rev-bar-fill operator">15%</div></div>
+    </div>
+    <div class="rev-bar-row">
+      <div class="rev-bar-label">Agent / Retailer Network</div>
+      <div class="rev-bar-track"><div class="rev-bar-fill agents">5%</div></div>
+    </div>
+  </div>
+
+  <h3>Revenue Projections</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Scenario</th><th>Active Users</th><th>Avg. Daily Spend</th><th>Annual Gross</th><th>Operator Net (15%)</th><th>Govt Trust (25%)</th></tr></thead>
+      <tbody>
+        <tr><td>Conservative</td><td>2,000</td><td>$1.00</td><td>$730,000</td><td>$109,500</td><td>$182,500</td></tr>
+        <tr><td>Moderate</td><td>3,500</td><td>$1.50</td><td>$1.91M</td><td>$287,500</td><td>$477,500</td></tr>
+        <tr><td>Optimistic</td><td>5,000</td><td>$2.00</td><td>$3.65M</td><td>$547,500</td><td>$912,500</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:13px; color:var(--text-muted);"><em>Optimistic scenario assumes an exceptionally high regular engagement rate from the core adult population + occasional diaspora involvement in Australia/Fiji.</em></p>
+
+
+  <!-- ─── SECTION 6 ─── -->
+  <div class="section-header">
+    <div class="section-num">06</div>
+    <div class="section-title">Comparable Models in the Pacific</div>
+  </div>
+
+  <p>Nauru represents what is arguably the most concentrated, captive potential lottery market in the Pacific due to its size and geographic isolation.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Country</th><th>Population</th><th>Model / Takeaway</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Philippines</td>
+          <td>113 million</td>
+          <td>PCSO STL model. Proves micro-bet, high-frequency draws drive mass engagement.</td>
+        </tr>
+        <tr>
+          <td>Vanuatu</td>
+          <td>~330,000</td>
+          <td>Digital-first execution proved faster time to market with lower overhead.</td>
+        </tr>
+        <tr>
+          <td>Tonga</td>
+          <td>~100,000</td>
+          <td>Demonstrated that a fully government-backed operation normalizes play via national branding.</td>
+        </tr>
+        <tr class="palau-row">
+          <td>🇳🇷 Nauru (Proposed)</td>
+          <td>12,100</td>
+          <td><strong>Micro-state testbed. Relies on very high domestic penetration utilizing SMS and smartphone apps.</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ─── SECTION 7 ─── -->
+  <div class="section-header">
+    <div class="section-num">07</div>
+    <div class="section-title">Recommendations &amp; Roadmap</div>
+  </div>
+
+  <div class="roadmap">
+    <div class="roadmap-item">
+      <div class="roadmap-dot">1</div>
+      <div class="roadmap-content">
+        <div class="roadmap-phase">Phase 1: Government Lobbying</div>
+        <h4>Public-Private Partnership Proposal</h4>
+        <p>Present the whitepaper directly to Nauru government officials framing the lottery as an immediate mechanism to generate public funds amidst RPC uncertainty. Negotiate the 25% sovereign trust split.</p>
+      </div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-dot">2</div>
+      <div class="roadmap-content">
+        <div class="roadmap-phase">Phase 2: Platform Customization</div>
+        <h4>Tech Rollout &amp; Integration</h4>
+        <p>Utilize robust white-label lottery systems emphasizing mobile money / telecom billing integrations. Crucial reliance on straightforward SMS bet parsing and a simple mobile web app.</p>
+      </div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-dot">3</div>
+      <div class="roadmap-content">
+        <div class="roadmap-phase">Phase 3: Launch &amp; Operations</div>
+        <h4>Market Saturation</h4>
+        <p>Because of Nauru's scale, the marketing launch can involve the entire nation simultaneously. Billboards in Yaren, comprehensive Facebook ad blasts (given high Meta penetration), and community ambassador events to drive initial app downloads.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECTION 8 (CONCLUSION) ─── -->
+  <div class="conclusion">
+    <h2>Conclusion</h2>
+    <p>Nauru stands at a critical fiscal juncture. With the potential wind down of historic primary revenue streams, novel internal revenue generation is paramount. While the population is exceptionally small at 12,100, the density, youth, and smartphone adaptation creates a perfect microcosm for a highly efficient digital STL operation.</p>
+    <p><strong>A successful rollout in Nauru could net almost a half a million dollars in new public revenue annually</strong>, directly injecting funds into national infrastructure while delivering a state-of-the-art entertainment product. The recommended path is a swift, deeply integrated partnership with the state to formalize the network from day one.</p>
+  </div>
+
+</div>
+
+<div class="doc-footer">
+  <p>STL Nauru Feasibility Concept Paper — Version 2.0 — April 2026</p>
+  <p style="margin-top:6px;">Research sources: IMF 2026 Projections · World Data Demographics 2026 · Oceania Telecom Reports</p>
+  <p style="margin-top:6px; font-style:italic;">This document is prepared for internal strategic planning purposes. It does not constitute legal advice.</p>
+</div>
+
+</body>
+</html>

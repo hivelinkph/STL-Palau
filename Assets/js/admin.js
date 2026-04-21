@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
-   STL Palau — admin.js
+   Lucky 21 — admin.js
    Admin dashboard: feed-mode toggle + WebRTC broadcaster
    Depends on app.js (defines SUPABASE creds, backend, ADMIN_EMAIL)
    ─────────────────────────────────────────────────────────── */
@@ -36,7 +36,7 @@
   const DEFAULT_TRACKS = [
     { id: 'p1', name: 'Casino Rush',      vibe: 'Energetic · Upbeat',  url: 'Assets/audio/casino-rush.mp3' },
     { id: 'p2', name: 'Jackpot Groove',   vibe: 'Funky · Rhythmic',    url: 'Assets/audio/jackpot-groove.mp3' },
-    { id: 'p3', name: 'Palau Lounge',     vibe: 'Tropical · Chill',    url: 'Assets/audio/palau-lounge.mp3' },
+    { id: 'p3', name: 'Nauru Lounge',     vibe: 'Tropical · Chill',    url: 'Assets/audio/palau-lounge.mp3' },
     { id: 'p4', name: 'Draw Night Beats', vibe: 'Hype · Drumline',     url: 'Assets/audio/draw-night-beats.mp3' },
     { id: 'p5', name: 'Island Fortune',   vibe: 'Latin · Carnival',    url: 'Assets/audio/island-fortune.mp3' },
     { id: 'p6', name: 'High Roller',      vibe: 'Glossy · Anthemic',   url: 'Assets/audio/high-roller.mp3' },
@@ -1075,10 +1075,10 @@
   const OCR_KEY = 'stl_admin_ocr_enabled';
   const GEMINI_KEY = 'stl_admin_gemini_key';
   const GEMINI_MODEL = 'gemini-2.5-flash';
-  const DRAW_SLOTS = [10, 15, 19]; // 10 AM, 3 PM, 7 PM (Palau local hours)
+  const DRAW_SLOTS = [10, 15, 19]; // 10 AM, 3 PM, 7 PM (Nauru local hours)
   const OCR_INTERVAL_MS = 10000;   // 10s — Gemini is paid, don't burn quota
 
-  const GEMINI_PROMPT = `You are reading a live video frame from the STL Palau lottery draw broadcast. Extract visible labeled draw results.
+  const GEMINI_PROMPT = `You are reading a live video frame from the Lucky 21 lottery draw broadcast. Extract visible labeled draw results.
 
 Labels to look for (printed, handwritten, or rendered):
 - "DIGIT 2" (or "DIGITS 2") followed by 2 numeric digits → D2 result
@@ -1109,8 +1109,8 @@ Rules:
   }
 
   function nearestDrawSlot(now = new Date()) {
-    // Palau has no DST; assume local time on this machine is Palau time
-    // (or at least close enough — user confirmed admin is in Palau context).
+    // Nauru has no DST; assume local time on this machine is Nauru time
+    // (or at least close enough — user confirmed admin is in Nauru context).
     let best = null;
     let bestDiff = Infinity;
     for (let dayOffset = -1; dayOffset <= 1; dayOffset++) {
