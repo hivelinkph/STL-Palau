@@ -1,1191 +1,1995 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Play — Lucky 21</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🇳🇷</text></svg>">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Play — Lucky 21</title>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🇳🇷</text></svg>">
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800;900&family=Barlow+Condensed:wght@400;600;700;800;900&display=swap');
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800;900&family=Barlow+Condensed:wght@400;600;700;800;900&display=swap');
 
-:root {
-  --blue:       #002B7F;
-  --blue-dark:  #001C53;
-  --gold:       #FFC61E;
-  --gold-dark:  #DDA514;
-  --bg:         #061220;
-  --bg2:        #0A1A2E;
-  --bg3:        #0F2244;
-  --card:       #0D1F3C;
-  --card2:      #112548;
-  --border:     rgba(69,184,229,0.18);
-  --text:       #E8F4FD;
-  --text-muted: #7BA8C4;
-  --text-dim:   #4A7A9B;
-  --green:      #45E5B4;
-}
+    :root {
+      --blue: #002B7F;
+      --blue-dark: #001C53;
+      --gold: #FFC61E;
+      --gold-dark: #DDA514;
+      --bg: #061220;
+      --bg2: #0A1A2E;
+      --bg3: #0F2244;
+      --card: #0D1F3C;
+      --card2: #112548;
+      --border: rgba(69, 184, 229, 0.18);
+      --text: #E8F4FD;
+      --text-muted: #7BA8C4;
+      --text-dim: #4A7A9B;
+      --green: #45E5B4;
+    }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  font-family: 'Barlow', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-}
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--blue-dark); border-radius: 3px; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-body::before {
-  content:''; position: fixed; inset: 0; z-index: -1;
-  background:
-    radial-gradient(ellipse at 15% 10%, rgba(69,184,229,0.10), transparent 55%),
-    radial-gradient(ellipse at 85% 90%, rgba(255,214,0,0.07), transparent 55%),
-    linear-gradient(180deg, var(--bg), var(--bg2));
-}
+    html {
+      scroll-behavior: smooth;
+    }
 
-/* ══ NAVBAR ══ */
-.navbar {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-  background: rgba(6,18,32,0.92);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border);
-  height: 64px;
-  display: flex; align-items: center; padding: 0 24px;
-}
-.nav-logo { display:flex; align-items:center; gap:10px; text-decoration:none; flex-shrink:0; }
-.nav-logo-flag { font-size: 28px; }
-.nav-logo-text { display:flex; flex-direction:column; line-height:1; }
-.nav-logo-text .top {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:22px; font-weight:900; color: var(--gold);
-  letter-spacing:2px; text-transform:uppercase;
-}
-.nav-logo-text .bottom {
-  font-size:9px; font-weight:500; color: var(--blue);
-  letter-spacing:3px; text-transform:uppercase;
-}
-.nav-spacer { flex: 1; }
-.nav-live {
-  display:flex; align-items:center; gap:6px;
-  font-size:12px; font-weight:600; color: var(--gold);
-  background: rgba(255,214,0,0.1);
-  border: 1px solid rgba(255,214,0,0.3);
-  padding: 6px 14px; border-radius: 20px;
-  margin-right: 16px;
-}
-.nav-live::before {
-  content:''; width:8px; height:8px; border-radius:50%;
-  background: var(--gold); box-shadow: 0 0 10px var(--gold);
-  animation: pulse-dot 1.6s infinite;
-}
-@keyframes pulse-dot { 0%,100% { opacity:1; } 50% { opacity:.4; } }
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
 
-/* ── hamburger ── */
-.hamburger {
-  background: transparent; border: 1px solid var(--border);
-  color: var(--text);
-  width: 40px; height: 40px;
-  border-radius: 10px;
-  display: none;
-  align-items: center; justify-content: center;
-  cursor: pointer;
-  margin-right: 16px;
-  transition: all .2s;
-}
-.hamburger:hover { background: rgba(69,184,229,0.08); border-color: var(--blue); }
-.hamburger span {
-  display: block; width: 18px; height: 2px;
-  background: var(--text); border-radius: 2px;
-  position: relative;
-}
-.hamburger span::before, .hamburger span::after {
-  content:''; position: absolute; left: 0; width: 18px; height: 2px;
-  background: var(--text); border-radius: 2px;
-  transition: transform .25s;
-}
-.hamburger span::before { top: -6px; }
-.hamburger span::after  { top:  6px; }
-body.sidebar-open .hamburger span { background: transparent; }
-body.sidebar-open .hamburger span::before { transform: translateY(6px) rotate(45deg); }
-body.sidebar-open .hamburger span::after  { transform: translateY(-6px) rotate(-45deg); }
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
 
-/* show hamburger only when logged in */
-body.is-logged-in .hamburger { display: inline-flex; }
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
 
-/* ══ SIDEBAR ══ */
-.sidebar-backdrop {
-  position: fixed; inset: 0; z-index: 1400;
-  background: rgba(6,18,32,0.7);
-  backdrop-filter: blur(4px);
-  opacity: 0; pointer-events: none;
-  transition: opacity .25s;
-}
-body.sidebar-open .sidebar-backdrop { opacity: 1; pointer-events: auto; }
+    ::-webkit-scrollbar-thumb {
+      background: var(--blue-dark);
+      border-radius: 3px;
+    }
 
-.sidebar {
-  position: fixed; top: 0; left: 0; bottom: 0;
-  width: 280px; max-width: 85vw;
-  z-index: 1500;
-  background: linear-gradient(180deg, var(--bg2), var(--card));
-  border-right: 1px solid var(--border);
-  transform: translateX(-100%);
-  transition: transform .3s cubic-bezier(.2,1.2,.4,1);
-  display: flex; flex-direction: column;
-  padding-top: 64px;
-}
-body.sidebar-open .sidebar { transform: translateX(0); }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background:
+        radial-gradient(ellipse at 15% 10%, rgba(69, 184, 229, 0.10), transparent 55%),
+        radial-gradient(ellipse at 85% 90%, rgba(255, 214, 0, 0.07), transparent 55%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+    }
 
-.sidebar-head {
-  padding: 22px 24px 16px;
-  border-bottom: 1px solid var(--border);
-}
-.sidebar-head .sh-name {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size: 18px; font-weight: 900; color: #fff; letter-spacing: 0.5px;
-}
-.sidebar-head .sh-email { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-.sidebar-head .sh-wallet {
-  margin-top: 12px;
-  background: rgba(255,214,0,0.08);
-  border: 1px solid rgba(255,214,0,0.25);
-  border-radius: 10px;
-  padding: 10px 14px;
-  display: flex; align-items: baseline; justify-content: space-between;
-}
-.sidebar-head .sh-wallet .lbl {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size: 10px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase;
-  color: var(--gold-dark);
-}
-.sidebar-head .sh-wallet .val {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size: 22px; font-weight: 900; color: var(--gold);
-}
+    /* ══ NAVBAR ══ */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(6, 18, 32, 0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      height: 64px;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+    }
 
-.sidebar-nav { flex: 1; padding: 12px 12px; display: flex; flex-direction: column; gap: 2px; }
-.sb-item {
-  background: transparent; border: none; cursor: pointer;
-  text-align: left;
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 14px;
-  border-radius: 10px;
-  color: var(--text-muted);
-  font-family:'Barlow',sans-serif;
-  font-size: 14px; font-weight: 700;
-  letter-spacing: 1px; text-transform: uppercase;
-  transition: all .15s;
-}
-.sb-item .icon { font-size: 18px; opacity: 0.85; }
-.sb-item:hover { background: rgba(69,184,229,0.08); color: var(--blue); }
-.sb-item.active {
-  background: linear-gradient(90deg, rgba(69,184,229,0.18), rgba(69,184,229,0.02));
-  color: var(--blue);
-  box-shadow: inset 3px 0 0 var(--blue);
-}
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
 
-.sidebar-foot { padding: 16px 14px; border-top: 1px solid var(--border); }
-.sb-signout {
-  width: 100%;
-  background: transparent;
-  border: 1px solid rgba(255,107,107,0.4);
-  color: #ff8b8b;
-  font-family:'Barlow',sans-serif;
-  font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;
-  padding: 10px; border-radius: 8px; cursor: pointer;
-  transition: all .15s;
-}
-.sb-signout:hover { background: rgba(255,107,107,0.1); }
+    .nav-logo-flag {
+      font-size: 28px;
+    }
 
-/* ══ SHELL ══ */
-.play-shell {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 96px 24px 48px;
-}
+    .nav-logo-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+    }
 
-.view { display: none; }
-.view.active { display: block; }
+    .nav-logo-text .top {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--gold);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
 
-/* welcome strip */
-.welcome-strip {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr;
-  gap: 14px;
-  margin-bottom: 32px;
-}
-.ws-card {
-  background: linear-gradient(160deg, var(--card2), var(--card));
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 18px 20px;
-  display: flex; flex-direction: column; gap: 6px;
-  position: relative; overflow: hidden;
-}
-.ws-card .ws-label {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size: 11px; font-weight:800; letter-spacing:2px;
-  text-transform:uppercase; color: var(--text-muted);
-}
-.ws-card .ws-value {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size: 32px; font-weight: 900; line-height: 1.1;
-}
-.ws-card .ws-sub { font-size: 12px; color: var(--text-dim); }
-.ws-welcome .ws-value { color: #fff; }
-.ws-welcome .ws-value span { color: var(--gold); }
-.ws-wallet { border-color: rgba(255,214,0,0.35); }
-.ws-wallet .ws-value { color: var(--gold); text-shadow: 0 0 18px rgba(255,214,0,0.35); }
-.ws-wallet .ws-actions { display:flex; gap:8px; margin-top:4px; }
-.ws-wallet .ws-btn {
-  border:none; cursor:pointer;
-  font-family:'Barlow',sans-serif;
-  font-size:11px; font-weight:800; letter-spacing:0.8px; text-transform:uppercase;
-  padding: 7px 14px; border-radius: 999px;
-  transition: all .15s;
-}
-.ws-wallet .ws-btn.topup {
-  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-  color: var(--bg);
-}
-.ws-wallet .ws-btn.wd {
-  background: transparent; color: var(--gold);
-  border: 1px solid rgba(255,214,0,0.5);
-}
-.ws-wallet .ws-btn:hover { transform: translateY(-1px); }
-.ws-countdown .ws-value { color: var(--blue); font-variant-numeric: tabular-nums; }
+    .nav-logo-text .bottom {
+      font-size: 9px;
+      font-weight: 500;
+      color: var(--blue);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
 
-/* section title */
-.section-title {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size: 28px; font-weight: 900;
-  letter-spacing: 1px; text-transform: uppercase;
-  color: #fff;
-  margin-bottom: 18px;
-}
-.section-title span { color: var(--gold); }
-.section-title .sub {
-  display:block;
-  font-family:'Barlow',sans-serif;
-  font-size: 13px; font-weight: 500;
-  letter-spacing: 0; text-transform: none;
-  color: var(--text-muted);
-  margin-top: 4px;
-}
+    .nav-spacer {
+      flex: 1;
+    }
 
-/* games grid */
-.play-games {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-  margin-bottom: 44px;
-}
-.play-game {
-  background: linear-gradient(180deg, var(--card2), var(--card));
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 26px;
-  display: flex; flex-direction: column; gap: 14px;
-  position: relative; overflow: hidden;
-  transition: transform .25s, border-color .25s, box-shadow .25s;
-  cursor: pointer;
-}
-.play-game:hover {
-  transform: translateY(-4px);
-  border-color: var(--blue);
-  box-shadow: 0 24px 48px rgba(0,0,0,0.45), 0 0 40px rgba(69,184,229,0.15);
-}
-.play-game::before {
-  content:''; position:absolute; inset:-2px;
-  background: radial-gradient(circle at 80% 0%, var(--_glow, transparent), transparent 55%);
-  opacity: 0.4; pointer-events: none;
-}
-.pg-d2    { --_glow: rgba(69,184,229,0.4); }
-.pg-d3    { --_glow: rgba(255,214,0,0.4); }
-.pg-pairs { --_glow: rgba(69,229,180,0.4); }
+    .nav-live {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gold);
+      background: rgba(255, 214, 0, 0.1);
+      border: 1px solid rgba(255, 214, 0, 0.3);
+      padding: 6px 14px;
+      border-radius: 20px;
+      margin-right: 16px;
+    }
 
-.pg-tag {
-  align-self: flex-start;
-  font-family:'Barlow Condensed',sans-serif;
-  font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
-  padding: 4px 10px; border-radius: 999px;
-  position: relative; z-index: 1;
-}
-.pg-d2 .pg-tag    { background: rgba(69,184,229,0.15); color: var(--blue); border:1px solid rgba(69,184,229,0.4); }
-.pg-d3 .pg-tag    { background: rgba(255,214,0,0.15);  color: var(--gold); border:1px solid rgba(255,214,0,0.4); }
-.pg-pairs .pg-tag { background: rgba(69,229,180,0.15); color: var(--green);border:1px solid rgba(69,229,180,0.4); }
+    .nav-live::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 10px var(--gold);
+      animation: pulse-dot 1.6s infinite;
+    }
 
-.pg-name {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size: 30px; font-weight: 900; line-height: 1;
-  letter-spacing: 0.5px;
-  position: relative; z-index: 1;
-}
-.pg-d2 .pg-name    { color: var(--blue); }
-.pg-d3 .pg-name    { color: var(--gold); }
-.pg-pairs .pg-name { color: var(--green); }
-.pg-sub { font-size: 13px; color: var(--text-muted); line-height: 1.5; position: relative; z-index: 1; }
+    @keyframes pulse-dot {
 
-.pg-balls { display:flex; align-items:center; gap:8px; margin-top: 4px; position: relative; z-index: 1; }
-.pg-ball {
-  width: 44px; height: 44px; border-radius: 50%;
-  display:flex; align-items:center; justify-content:center;
-  font-family:'Barlow Condensed',sans-serif;
-  font-size: 20px; font-weight: 900; color: #fff;
-}
-.pg-d2 .pg-ball    { background: linear-gradient(135deg, #2A8FBA, #1A6090); box-shadow: 0 6px 20px rgba(69,184,229,0.4); }
-.pg-d3 .pg-ball    { background: linear-gradient(135deg, #C09000, #906800); box-shadow: 0 6px 20px rgba(255,214,0,0.4); }
-.pg-pairs .pg-ball { background: linear-gradient(135deg, #20A080, #107060); box-shadow: 0 6px 20px rgba(69,229,180,0.4); }
-.pg-ball.q { background: rgba(255,255,255,0.06); color: var(--text-dim); box-shadow: none; border: 2px dashed var(--border); }
-.pg-dash { color: var(--text-dim); font-weight: 800; }
+      0%,
+      100% {
+        opacity: 1;
+      }
 
-.pg-meta {
-  display: grid; grid-template-columns: repeat(3,1fr);
-  gap: 10px; padding-top: 14px;
-  border-top: 1px solid var(--border);
-  position: relative; z-index: 1;
-}
-.pg-meta-cell { display:flex; flex-direction:column; gap:2px; }
-.pg-meta-lbl {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size: 9px; font-weight: 700; letter-spacing: 1.4px;
-  text-transform: uppercase; color: var(--text-dim);
-}
-.pg-meta-val {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size: 16px; font-weight: 800;
-}
-.pg-d2 .pg-meta-val    { color: var(--blue); }
-.pg-d3 .pg-meta-val    { color: var(--gold); }
-.pg-pairs .pg-meta-val { color: var(--green); }
+      50% {
+        opacity: .4;
+      }
+    }
 
-.pg-cta {
-  margin-top: 8px;
-  border: none; cursor: pointer;
-  font-family:'Barlow',sans-serif;
-  font-size: 14px; font-weight: 800;
-  letter-spacing: 1px; text-transform: uppercase;
-  padding: 14px; border-radius: 10px;
-  transition: transform .15s, box-shadow .15s;
-  position: relative; z-index: 1;
-}
-.pg-d2 .pg-cta    { background: linear-gradient(135deg, var(--blue), var(--blue-dark)); color: #fff; }
-.pg-d3 .pg-cta    { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: var(--bg); }
-.pg-pairs .pg-cta { background: linear-gradient(135deg, var(--green), #20A080); color: var(--bg); }
-.pg-cta:hover { transform: translateY(-2px); }
+    /* ── hamburger ── */
+    .hamburger {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin-right: 16px;
+      transition: all .2s;
+    }
 
-/* tables */
-.pr-table-wrap {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  overflow: hidden;
-}
-.pr-table { width: 100%; border-collapse: collapse; }
-.pr-table th, .pr-table td {
-  padding: 12px 16px;
-  text-align: left;
-  font-size: 13px;
-  border-bottom: 1px solid var(--border);
-}
-.pr-table th {
-  background: rgba(0,0,0,0.3);
-  font-family:'Barlow Condensed',sans-serif;
-  font-size: 11px; font-weight: 800;
-  letter-spacing: 1.4px; text-transform: uppercase;
-  color: var(--text-muted);
-}
-.pr-table tr:last-child td { border-bottom: none; }
-.pr-table td { color: var(--text); font-weight: 500; }
-.pr-num {
-  font-family:'Barlow Condensed',sans-serif;
-  font-weight: 900; color: var(--gold); letter-spacing: 1px;
-}
-.pr-empty { text-align: center; color: var(--text-dim); padding: 32px 16px !important; }
-.pr-badge {
-  display: inline-block;
-  font-family:'Barlow Condensed',sans-serif;
-  font-size: 10px; font-weight: 800; letter-spacing: 1.4px;
-  padding: 3px 9px; border-radius: 999px;
-}
-.st-pending { background: rgba(69,184,229,0.15); color: var(--blue); border:1px solid rgba(69,184,229,0.4); }
-.st-won     { background: rgba(69,229,180,0.15); color: var(--green); border:1px solid rgba(69,229,180,0.4); }
-.st-lost    { background: rgba(255,107,107,0.12); color: #ff6b6b; border:1px solid rgba(255,107,107,0.35); }
-.st-voided  { background: rgba(122,122,122,0.15); color: var(--text-dim); border:1px solid var(--border); }
+    .hamburger:hover {
+      background: rgba(69, 184, 229, 0.08);
+      border-color: var(--blue);
+    }
 
-.pr-footer {
-  display:flex; justify-content:flex-end;
-  padding: 10px 16px;
-  background: rgba(0,0,0,0.2);
-}
-.pr-footer a {
-  font-family:'Barlow',sans-serif;
-  font-size: 12px; font-weight: 700;
-  letter-spacing: 0.6px; text-transform: uppercase;
-  color: var(--blue); text-decoration: none;
-  cursor: pointer;
-}
-.pr-footer a:hover { color: var(--gold); }
+    .hamburger span {
+      display: block;
+      width: 18px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      position: relative;
+    }
 
-/* ══ LIVE DRAW VIEW ══ */
-.ld-wrap {
-  display: grid;
-  grid-template-columns: 1.3fr 1fr;
-  gap: 20px;
-}
-.ld-main, .ld-side {
-  background: linear-gradient(180deg, var(--card2), var(--card));
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 24px;
-}
-.ld-stage {
-  aspect-ratio: 16/9;
-  background:
-    radial-gradient(circle at 30% 30%, rgba(255,214,0,0.15), transparent 55%),
-    radial-gradient(circle at 70% 70%, rgba(69,184,229,0.15), transparent 55%),
-    #000;
-  border-radius: 12px;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 12px; color: #fff;
-}
-.ld-stage .live-pill {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size: 11px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;
-  padding: 4px 12px; border-radius: 999px;
-  background: #d73e3e; color: #fff;
-  display: inline-flex; align-items: center; gap: 6px;
-}
-.ld-stage .live-pill::before { content:''; width:7px; height:7px; border-radius:50%; background:#fff; animation: pulse-dot 1.4s infinite; }
-.ld-stage h3 { font-family:'Barlow Condensed',sans-serif; font-size: 32px; font-weight: 900; letter-spacing: 1.5px; }
-.ld-stage p { color: rgba(255,255,255,0.6); font-size: 14px; }
-.ld-countdown-big {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size: 56px; font-weight: 900; color: var(--gold);
-  font-variant-numeric: tabular-nums;
-  text-shadow: 0 0 24px rgba(255,214,0,0.4);
-}
-.ld-sched { margin-top: 18px; display: flex; flex-direction: column; gap: 10px; }
-.ld-sched-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 14px;
-  background: rgba(0,0,0,0.25);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-}
-.ld-sched-row.next { border-color: var(--gold); background: rgba(255,214,0,0.06); }
-.ld-sched-time {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size: 18px; font-weight: 800; color: var(--text);
-}
-.ld-sched-status {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size: 11px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase;
-  color: var(--text-dim);
-}
-.ld-sched-row.next .ld-sched-status { color: var(--gold); }
+    .hamburger span::before,
+    .hamburger span::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      width: 18px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: transform .25s;
+    }
 
-.ld-side h3 {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size: 20px; font-weight: 900;
-  letter-spacing: 1px; text-transform: uppercase;
-  color: #fff; margin-bottom: 12px;
-}
-.ld-result-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
-}
-.ld-result-row:last-child { border-bottom: none; }
-.ld-result-label { font-size: 12px; color: var(--text-muted); }
-.ld-result-label strong { display:block; font-size: 13px; color: var(--text); font-weight: 700; }
-.ld-result-nums { display: flex; gap: 6px; }
-.ld-result-nums .n {
-  width: 32px; height: 32px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-  color: var(--bg);
-  font-family:'Barlow Condensed',sans-serif;
-  font-size: 14px; font-weight: 900;
-}
+    .hamburger span::before {
+      top: -6px;
+    }
 
-/* ══ HISTORY VIEW (inline; mirrors modal layout) ══ */
-.view-tabs {
-  display: inline-flex; gap: 4px; padding: 4px;
-  background: rgba(0,0,0,0.25);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  margin-bottom: 18px;
-}
-.view-tab {
-  background: transparent; border: none; cursor: pointer;
-  font-family:'Barlow',sans-serif;
-  font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-  color: var(--text-muted);
-  padding: 8px 16px; border-radius: 8px;
-  transition: all .15s;
-}
-.view-tab.active { background: var(--blue); color: #fff; }
-.amt-credit { color: var(--green); font-weight: 700; }
-.amt-debit { color: #ff8b6b; font-weight: 700; }
+    .hamburger span::after {
+      top: 6px;
+    }
 
-/* ══ AUTOMATION VIEW ══ */
-.auto-grid {
-  display: grid; grid-template-columns: 1.1fr 1.4fr; gap: 20px;
-}
-.auto-card {
-  background: linear-gradient(180deg, var(--card2), var(--card));
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 22px 24px;
-}
-.auto-card h3 {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size: 20px; font-weight: 900;
-  letter-spacing: 1px; text-transform: uppercase;
-  color: #fff; margin-bottom: 16px;
-}
-.auto-form { display: flex; flex-direction: column; gap: 14px; }
-.auto-form label {
-  display: flex; flex-direction: column; gap: 6px;
-  font-family:'Barlow',sans-serif;
-  font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-  color: var(--text-muted);
-}
-.auto-form input, .auto-form select {
-  background: rgba(0,0,0,0.3);
-  border: 1px solid var(--border);
-  color: var(--text);
-  font-family:'Barlow',sans-serif; font-size: 15px; font-weight: 500;
-  padding: 12px 14px; border-radius: 8px;
-}
-.auto-form input:focus, .auto-form select:focus {
-  outline: none; border-color: var(--blue);
-  box-shadow: 0 0 0 3px rgba(69,184,229,0.15);
-}
-.auto-form .hint { font-size: 11px; color: var(--text-dim); font-weight: 400; text-transform: none; letter-spacing: 0; }
+    body.sidebar-open .hamburger span {
+      background: transparent;
+    }
 
-.auto-times { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.auto-time {
-  display: flex; align-items: center; gap: 6px;
-  padding: 12px; border-radius: 10px;
-  background: rgba(0,0,0,0.3);
-  border: 1px solid var(--border);
-  cursor: pointer;
-  font-family:'Barlow',sans-serif;
-  font-size: 13px; font-weight: 700;
-  color: var(--text-muted);
-  transition: all .15s;
-  user-select: none;
-}
-.auto-time input { display:none; }
-.auto-time:hover { border-color: var(--blue); color: var(--blue); }
-.auto-time.on {
-  background: rgba(69,184,229,0.15);
-  border-color: var(--blue);
-  color: #fff;
-  box-shadow: inset 0 0 0 1px var(--blue);
-}
+    body.sidebar-open .hamburger span::before {
+      transform: translateY(6px) rotate(45deg);
+    }
 
-.auto-list { display: flex; flex-direction: column; gap: 10px; max-height: 600px; overflow-y: auto; }
-.auto-list-empty {
-  text-align: center; color: var(--text-dim);
-  padding: 32px 16px; font-size: 13px;
-}
-.auto-item {
-  background: rgba(0,0,0,0.25);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 14px 16px;
-  display: grid; grid-template-columns: 1fr auto; gap: 10px;
-  align-items: center;
-}
-.auto-item.paused { opacity: 0.55; }
-.auto-item .ai-top {
-  display: flex; align-items: center; gap: 10px; margin-bottom: 4px;
-}
-.auto-item .ai-game {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
-}
-.auto-item .ai-nums {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size: 15px; font-weight: 900; color: var(--gold); letter-spacing: 1.5px;
-}
-.auto-item .ai-sub {
-  font-size: 12px; color: var(--text-muted);
-}
-.auto-item .ai-stake { color: var(--green); font-weight: 700; }
-.auto-item .ai-actions { display:flex; gap:6px; }
-.auto-item .ai-btn {
-  border: 1px solid var(--border);
-  background: transparent; color: var(--text-muted);
-  font-family:'Barlow',sans-serif;
-  font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase;
-  padding: 6px 10px; border-radius: 6px;
-  cursor: pointer;
-  transition: all .15s;
-}
-.auto-item .ai-btn:hover { color: var(--blue); border-color: var(--blue); }
-.auto-item .ai-btn.del:hover { color: #ff8b8b; border-color: rgba(255,107,107,0.4); }
+    body.sidebar-open .hamburger span::after {
+      transform: translateY(-6px) rotate(-45deg);
+    }
 
-.auto-note {
-  margin-top: 12px;
-  padding: 10px 14px;
-  background: rgba(69,184,229,0.06);
-  border: 1px solid rgba(69,184,229,0.2);
-  border-radius: 8px;
-  font-size: 12px; color: var(--text-muted); line-height: 1.5;
-}
+    /* show hamburger only when logged in */
+    body.is-logged-in .hamburger {
+      display: inline-flex;
+    }
 
-.btn-submit-full {
-  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-  color: var(--bg);
-  border: none; cursor: pointer;
-  font-family:'Barlow',sans-serif;
-  font-size: 13px; font-weight: 800;
-  letter-spacing: 0.8px; text-transform: uppercase;
-  padding: 13px; border-radius: 8px;
-  transition: all .15s;
-}
-.btn-submit-full:hover { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(255,214,0,0.35); }
-.btn-submit-full:disabled { opacity: 0.55; cursor: not-allowed; }
+    /* ══ SIDEBAR ══ */
+    .sidebar-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 1400;
+      background: rgba(6, 18, 32, 0.7);
+      backdrop-filter: blur(4px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s;
+    }
 
-.auto-err { color: #ff6b6b; font-size: 12px; font-weight: 600; min-height: 16px; }
+    body.sidebar-open .sidebar-backdrop {
+      opacity: 1;
+      pointer-events: auto;
+    }
 
-/* responsive */
-@media (max-width: 1000px) {
-  .welcome-strip { grid-template-columns: 1fr; }
-  .play-games { grid-template-columns: 1fr; }
-  .ld-wrap { grid-template-columns: 1fr; }
-  .auto-grid { grid-template-columns: 1fr; }
-}
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 280px;
+      max-width: 85vw;
+      z-index: 1500;
+      background: linear-gradient(180deg, var(--bg2), var(--card));
+      border-right: 1px solid var(--border);
+      transform: translateX(-100%);
+      transition: transform .3s cubic-bezier(.2, 1.2, .4, 1);
+      display: flex;
+      flex-direction: column;
+      padding-top: 64px;
+    }
 
-/* guard */
-.play-guard {
-  position: fixed; inset: 64px 0 0 0;
-  display: none;
-  align-items: center; justify-content: center;
-  padding: 40px 20px;
-  z-index: 10;
-}
-.play-guard .gc {
-  max-width: 420px; text-align: center;
-  background: linear-gradient(180deg, var(--card2), var(--card));
-  border: 1px solid var(--border);
-  border-radius: 16px; padding: 36px 28px;
-}
-.play-guard .gc h2 {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size: 28px; font-weight: 900; color: #fff;
-  letter-spacing: 1px; text-transform: uppercase;
-  margin-bottom: 10px;
-}
-.play-guard .gc h2 span { color: var(--gold); }
-.play-guard .gc p { color: var(--text-muted); font-size: 14px; margin-bottom: 22px; }
-.play-guard .gc .row { display: flex; gap: 10px; justify-content: center; }
-.play-guard .gc button {
-  border: none; cursor: pointer;
-  font-family:'Barlow',sans-serif;
-  font-size: 13px; font-weight: 800;
-  letter-spacing: 0.8px; text-transform: uppercase;
-  padding: 12px 22px; border-radius: 8px;
-  transition: transform .15s, box-shadow .15s;
-}
-.play-guard .gc .btn-a {
-  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-  color: var(--bg);
-}
-.play-guard .gc .btn-b {
-  background: transparent; color: var(--blue);
-  border: 1px solid var(--blue);
-}
-.play-guard .gc button:hover { transform: translateY(-1px); }
+    body.sidebar-open .sidebar {
+      transform: translateX(0);
+    }
 
-/* logged-in nav bits */
-#nav-loggedout { display: none; align-items: center; }
-.btn-login, .btn-register {
-  border: none; cursor: pointer;
-  font-family:'Barlow',sans-serif; font-size: 13px; font-weight: 700;
-  letter-spacing: 0.5px; padding: 8px 18px; border-radius: 6px;
-  transition: all .2s;
-}
-.btn-login { background: transparent; color: var(--text-muted); margin-right: 8px; }
-.btn-login:hover { color: var(--blue); }
-.btn-register {
-  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-  color: var(--bg); font-weight: 800;
-}
-.btn-register:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(255,214,0,0.35); }
-</style>
+    .sidebar-head {
+      padding: 22px 24px 16px;
+      border-bottom: 1px solid var(--border);
+    }
 
-<link rel="stylesheet" href="Assets/css/app.css">
+    .sidebar-head .sh-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: 0.5px;
+    }
+
+    .sidebar-head .sh-email {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .sidebar-head .sh-wallet {
+      margin-top: 12px;
+      background: rgba(255, 214, 0, 0.08);
+      border: 1px solid rgba(255, 214, 0, 0.25);
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+
+    .sidebar-head .sh-wallet .lbl {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: var(--gold-dark);
+    }
+
+    .sidebar-head .sh-wallet .val {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--gold);
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 12px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .sb-item {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: var(--text-muted);
+      font-family: 'Barlow', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: all .15s;
+    }
+
+    .sb-item .icon {
+      font-size: 18px;
+      opacity: 0.85;
+    }
+
+    .sb-item:hover {
+      background: rgba(69, 184, 229, 0.08);
+      color: var(--blue);
+    }
+
+    .sb-item.active {
+      background: linear-gradient(90deg, rgba(69, 184, 229, 0.18), rgba(69, 184, 229, 0.02));
+      color: var(--blue);
+      box-shadow: inset 3px 0 0 var(--blue);
+    }
+
+    .sidebar-foot {
+      padding: 16px 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    .sb-signout {
+      width: 100%;
+      background: transparent;
+      border: 1px solid rgba(255, 107, 107, 0.4);
+      color: #ff8b8b;
+      font-family: 'Barlow', sans-serif;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .sb-signout:hover {
+      background: rgba(255, 107, 107, 0.1);
+    }
+
+    /* ══ SHELL ══ */
+    .play-shell {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 96px 24px 48px;
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    /* welcome strip */
+    .welcome-strip {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+
+    .ws-card {
+      background: linear-gradient(160deg, var(--card2), var(--card));
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ws-card .ws-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .ws-card .ws-value {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 32px;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .ws-card .ws-sub {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .ws-welcome .ws-value {
+      color: #fff;
+    }
+
+    .ws-welcome .ws-value span {
+      color: var(--gold);
+    }
+
+    .ws-wallet {
+      border-color: rgba(255, 214, 0, 0.35);
+    }
+
+    .ws-wallet .ws-value {
+      color: var(--gold);
+      text-shadow: 0 0 18px rgba(255, 214, 0, 0.35);
+    }
+
+    .ws-wallet .ws-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .ws-wallet .ws-btn {
+      border: none;
+      cursor: pointer;
+      font-family: 'Barlow', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      padding: 7px 14px;
+      border-radius: 999px;
+      transition: all .15s;
+    }
+
+    .ws-wallet .ws-btn.topup {
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      color: var(--bg);
+    }
+
+    .ws-wallet .ws-btn.wd {
+      background: transparent;
+      color: var(--gold);
+      border: 1px solid rgba(255, 214, 0, 0.5);
+    }
+
+    .ws-wallet .ws-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .ws-countdown .ws-value {
+      color: var(--blue);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* section title */
+    .section-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #fff;
+      margin-bottom: 18px;
+    }
+
+    .section-title span {
+      color: var(--gold);
+    }
+
+    .section-title .sub {
+      display: block;
+      font-family: 'Barlow', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0;
+      text-transform: none;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* games grid */
+    .play-games {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 44px;
+    }
+
+    .play-game {
+      background: linear-gradient(180deg, var(--card2), var(--card));
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+      overflow: hidden;
+      transition: transform .25s, border-color .25s, box-shadow .25s;
+      cursor: pointer;
+    }
+
+    .play-game:hover {
+      transform: translateY(-4px);
+      border-color: var(--blue);
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.45), 0 0 40px rgba(69, 184, 229, 0.15);
+    }
+
+    .play-game::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      background: radial-gradient(circle at 80% 0%, var(--_glow, transparent), transparent 55%);
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .pg-d2 {
+      --_glow: rgba(69, 184, 229, 0.4);
+    }
+
+    .pg-d3 {
+      --_glow: rgba(255, 214, 0, 0.4);
+    }
+
+    .pg-pairs {
+      --_glow: rgba(69, 229, 180, 0.4);
+    }
+
+    .pg-tag {
+      align-self: flex-start;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 999px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .pg-d2 .pg-tag {
+      background: rgba(69, 184, 229, 0.15);
+      color: var(--blue);
+      border: 1px solid rgba(69, 184, 229, 0.4);
+    }
+
+    .pg-d3 .pg-tag {
+      background: rgba(255, 214, 0, 0.15);
+      color: var(--gold);
+      border: 1px solid rgba(255, 214, 0, 0.4);
+    }
+
+    .pg-pairs .pg-tag {
+      background: rgba(69, 229, 180, 0.15);
+      color: var(--green);
+      border: 1px solid rgba(69, 229, 180, 0.4);
+    }
+
+    .pg-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 30px;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: 0.5px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .pg-d2 .pg-name {
+      color: var(--blue);
+    }
+
+    .pg-d3 .pg-name {
+      color: var(--gold);
+    }
+
+    .pg-pairs .pg-name {
+      color: var(--green);
+    }
+
+    .pg-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      position: relative;
+      z-index: 1;
+    }
+
+    .pg-balls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .pg-ball {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 20px;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    .pg-d2 .pg-ball {
+      background: linear-gradient(135deg, #2A8FBA, #1A6090);
+      box-shadow: 0 6px 20px rgba(69, 184, 229, 0.4);
+    }
+
+    .pg-d3 .pg-ball {
+      background: linear-gradient(135deg, #C09000, #906800);
+      box-shadow: 0 6px 20px rgba(255, 214, 0, 0.4);
+    }
+
+    .pg-pairs .pg-ball {
+      background: linear-gradient(135deg, #20A080, #107060);
+      box-shadow: 0 6px 20px rgba(69, 229, 180, 0.4);
+    }
+
+    .pg-ball.q {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-dim);
+      box-shadow: none;
+      border: 2px dashed var(--border);
+    }
+
+    .pg-dash {
+      color: var(--text-dim);
+      font-weight: 800;
+    }
+
+    .pg-meta {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      position: relative;
+      z-index: 1;
+    }
+
+    .pg-meta-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .pg-meta-lbl {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .pg-meta-val {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .pg-d2 .pg-meta-val {
+      color: var(--blue);
+    }
+
+    .pg-d3 .pg-meta-val {
+      color: var(--gold);
+    }
+
+    .pg-pairs .pg-meta-val {
+      color: var(--green);
+    }
+
+    .pg-cta {
+      margin-top: 8px;
+      border: none;
+      cursor: pointer;
+      font-family: 'Barlow', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 14px;
+      border-radius: 10px;
+      transition: transform .15s, box-shadow .15s;
+      position: relative;
+      z-index: 1;
+    }
+
+    .pg-d2 .pg-cta {
+      background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+      color: #fff;
+    }
+
+    .pg-d3 .pg-cta {
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      color: var(--bg);
+    }
+
+    .pg-pairs .pg-cta {
+      background: linear-gradient(135deg, var(--green), #20A080);
+      color: var(--bg);
+    }
+
+    .pg-cta:hover {
+      transform: translateY(-2px);
+    }
+
+    /* tables */
+    .pr-table-wrap {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .pr-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .pr-table th,
+    .pr-table td {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .pr-table th {
+      background: rgba(0, 0, 0, 0.3);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .pr-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .pr-table td {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .pr-num {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      color: var(--gold);
+      letter-spacing: 1px;
+    }
+
+    .pr-empty {
+      text-align: center;
+      color: var(--text-dim);
+      padding: 32px 16px !important;
+    }
+
+    .pr-badge {
+      display: inline-block;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.4px;
+      padding: 3px 9px;
+      border-radius: 999px;
+    }
+
+    .st-pending {
+      background: rgba(69, 184, 229, 0.15);
+      color: var(--blue);
+      border: 1px solid rgba(69, 184, 229, 0.4);
+    }
+
+    .st-won {
+      background: rgba(69, 229, 180, 0.15);
+      color: var(--green);
+      border: 1px solid rgba(69, 229, 180, 0.4);
+    }
+
+    .st-lost {
+      background: rgba(255, 107, 107, 0.12);
+      color: #ff6b6b;
+      border: 1px solid rgba(255, 107, 107, 0.35);
+    }
+
+    .st-voided {
+      background: rgba(122, 122, 122, 0.15);
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+    }
+
+    .pr-footer {
+      display: flex;
+      justify-content: flex-end;
+      padding: 10px 16px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .pr-footer a {
+      font-family: 'Barlow', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: var(--blue);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .pr-footer a:hover {
+      color: var(--gold);
+    }
+
+    /* ══ LIVE DRAW VIEW ══ */
+    .ld-wrap {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 20px;
+    }
+
+    .ld-main,
+    .ld-side {
+      background: linear-gradient(180deg, var(--card2), var(--card));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    .ld-stage {
+      aspect-ratio: 16/9;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255, 214, 0, 0.15), transparent 55%),
+        radial-gradient(circle at 70% 70%, rgba(69, 184, 229, 0.15), transparent 55%),
+        #000;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: #fff;
+    }
+
+    .ld-stage .live-pill {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: #d73e3e;
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .ld-stage .live-pill::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #fff;
+      animation: pulse-dot 1.4s infinite;
+    }
+
+    .ld-stage h3 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+    }
+
+    .ld-stage p {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+    }
+
+    .ld-countdown-big {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 56px;
+      font-weight: 900;
+      color: var(--gold);
+      font-variant-numeric: tabular-nums;
+      text-shadow: 0 0 24px rgba(255, 214, 0, 0.4);
+    }
+
+    .ld-sched {
+      margin-top: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .ld-sched-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .ld-sched-row.next {
+      border-color: var(--gold);
+      background: rgba(255, 214, 0, 0.06);
+    }
+
+    .ld-sched-time {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .ld-sched-status {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .ld-sched-row.next .ld-sched-status {
+      color: var(--gold);
+    }
+
+    .ld-side h3 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+
+    .ld-result-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ld-result-row:last-child {
+      border-bottom: none;
+    }
+
+    .ld-result-label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .ld-result-label strong {
+      display: block;
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .ld-result-nums {
+      display: flex;
+      gap: 6px;
+    }
+
+    .ld-result-nums .n {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      color: var(--bg);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    /* ══ HISTORY VIEW (inline; mirrors modal layout) ══ */
+    .view-tabs {
+      display: inline-flex;
+      gap: 4px;
+      padding: 4px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 18px;
+    }
+
+    .view-tab {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-family: 'Barlow', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: all .15s;
+    }
+
+    .view-tab.active {
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .amt-credit {
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .amt-debit {
+      color: #ff8b6b;
+      font-weight: 700;
+    }
+
+    /* ══ AUTOMATION VIEW ══ */
+    .auto-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1.4fr;
+      gap: 20px;
+    }
+
+    .auto-card {
+      background: linear-gradient(180deg, var(--card2), var(--card));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px 24px;
+    }
+
+    .auto-card h3 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #fff;
+      margin-bottom: 16px;
+    }
+
+    .auto-form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .auto-form label {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-family: 'Barlow', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .auto-form input,
+    .auto-form select {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: 'Barlow', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      padding: 12px 14px;
+      border-radius: 8px;
+    }
+
+    .auto-form input:focus,
+    .auto-form select:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(69, 184, 229, 0.15);
+    }
+
+    .auto-form .hint {
+      font-size: 11px;
+      color: var(--text-dim);
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .auto-times {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .auto-time {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      font-family: 'Barlow', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      transition: all .15s;
+      user-select: none;
+    }
+
+    .auto-time input {
+      display: none;
+    }
+
+    .auto-time:hover {
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    .auto-time.on {
+      background: rgba(69, 184, 229, 0.15);
+      border-color: var(--blue);
+      color: #fff;
+      box-shadow: inset 0 0 0 1px var(--blue);
+    }
+
+    .auto-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    .auto-list-empty {
+      text-align: center;
+      color: var(--text-dim);
+      padding: 32px 16px;
+      font-size: 13px;
+    }
+
+    .auto-item {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .auto-item.paused {
+      opacity: 0.55;
+    }
+
+    .auto-item .ai-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .auto-item .ai-game {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .auto-item .ai-nums {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--gold);
+      letter-spacing: 1.5px;
+    }
+
+    .auto-item .ai-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .auto-item .ai-stake {
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .auto-item .ai-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .auto-item .ai-btn {
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      font-family: 'Barlow', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .auto-item .ai-btn:hover {
+      color: var(--blue);
+      border-color: var(--blue);
+    }
+
+    .auto-item .ai-btn.del:hover {
+      color: #ff8b8b;
+      border-color: rgba(255, 107, 107, 0.4);
+    }
+
+    .auto-note {
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: rgba(69, 184, 229, 0.06);
+      border: 1px solid rgba(69, 184, 229, 0.2);
+      border-radius: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .btn-submit-full {
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      color: var(--bg);
+      border: none;
+      cursor: pointer;
+      font-family: 'Barlow', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      padding: 13px;
+      border-radius: 8px;
+      transition: all .15s;
+    }
+
+    .btn-submit-full:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 28px rgba(255, 214, 0, 0.35);
+    }
+
+    .btn-submit-full:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .auto-err {
+      color: #ff6b6b;
+      font-size: 12px;
+      font-weight: 600;
+      min-height: 16px;
+    }
+
+    /* responsive */
+    @media (max-width: 1000px) {
+      .welcome-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .play-games {
+        grid-template-columns: 1fr;
+      }
+
+      .ld-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .auto-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* guard */
+    .play-guard {
+      position: fixed;
+      inset: 64px 0 0 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      z-index: 10;
+    }
+
+    .play-guard .gc {
+      max-width: 420px;
+      text-align: center;
+      background: linear-gradient(180deg, var(--card2), var(--card));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px 28px;
+    }
+
+    .play-guard .gc h2 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 28px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .play-guard .gc h2 span {
+      color: var(--gold);
+    }
+
+    .play-guard .gc p {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 22px;
+    }
+
+    .play-guard .gc .row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .play-guard .gc button {
+      border: none;
+      cursor: pointer;
+      font-family: 'Barlow', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      padding: 12px 22px;
+      border-radius: 8px;
+      transition: transform .15s, box-shadow .15s;
+    }
+
+    .play-guard .gc .btn-a {
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      color: var(--bg);
+    }
+
+    .play-guard .gc .btn-b {
+      background: transparent;
+      color: var(--blue);
+      border: 1px solid var(--blue);
+    }
+
+    .play-guard .gc button:hover {
+      transform: translateY(-1px);
+    }
+
+    /* logged-in nav bits */
+    #nav-loggedout {
+      display: none;
+      align-items: center;
+    }
+
+    .btn-login,
+    .btn-register {
+      border: none;
+      cursor: pointer;
+      font-family: 'Barlow', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 8px 18px;
+      border-radius: 6px;
+      transition: all .2s;
+    }
+
+    .btn-login {
+      background: transparent;
+      color: var(--text-muted);
+      margin-right: 8px;
+    }
+
+    .btn-login:hover {
+      color: var(--blue);
+    }
+
+    .btn-register {
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      color: var(--bg);
+      font-weight: 800;
+    }
+
+    .btn-register:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(255, 214, 0, 0.35);
+    }
+  </style>
+
+  <link rel="stylesheet" href="Assets/css/app.css">
 </head>
+
 <body>
 
-<!-- ══ NAVBAR ══ -->
-<nav class="navbar">
-  <button class="hamburger" id="btn-hamburger" aria-label="Open menu"><span></span></button>
-  <a href="index.html" class="nav-logo">
-    <div class="nav-logo-flag">🇳🇷</div>
-    <div class="nav-logo-text">
-      <span class="top">Lucky 21</span>
-      <span class="bottom">Official Lottery</span>
+  <!-- ══ NAVBAR ══ -->
+  <nav class="navbar">
+    <button class="hamburger" id="btn-hamburger" aria-label="Open menu"><span></span></button>
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-flag">🇳🇷</div>
+      <div class="nav-logo-text">
+        <span class="top">Lucky 21</span>
+        <span class="bottom">Official Lottery</span>
+      </div>
+    </a>
+    <div class="nav-spacer"></div>
+    <div class="nav-live">DRAW LIVE — 7:00 PM</div>
+    <span class="mode-badge" id="stl-mode-badge">DEMO MODE</span>
+
+    <!-- Logged-out state -->
+    <div id="nav-loggedout" style="display:flex; align-items:center;">
+      <button class="btn-login" id="btn-login">Log In</button>
+      <button class="btn-register" id="btn-register">Register Now</button>
     </div>
-  </a>
-  <div class="nav-spacer"></div>
-  <div class="nav-live">DRAW LIVE — 7:00 PM</div>
-  <span class="mode-badge" id="stl-mode-badge">DEMO MODE</span>
 
-  <!-- Logged-out state -->
-  <div id="nav-loggedout" style="display:flex; align-items:center;">
-    <button class="btn-login" id="btn-login">Log In</button>
-    <button class="btn-register" id="btn-register">Register Now</button>
-  </div>
-
-  <!-- Logged-in nav block — hidden to favor sidebar, but kept so
+    <!-- Logged-in nav block — hidden to favor sidebar, but kept so
        shared app.js bindings (btn-topup, btn-withdraw, btn-history,
        btn-logout, wallet-amount, user-email, user-avatar) still exist. -->
-  <div id="nav-loggedin" style="display:none;">
-    <div class="wallet-pill">
-      <div>
-        <div class="w-label">Wallet</div>
-        <div class="w-amt" id="wallet-amount">$0.00</div>
+    <div id="nav-loggedin" style="display:none;">
+      <div class="wallet-pill">
+        <div>
+          <div class="w-label">Wallet</div>
+          <div class="w-amt" id="wallet-amount">$0.00</div>
+        </div>
+        <button class="w-btn topup" id="btn-topup">+ Top Up</button>
+        <button class="w-btn wd" id="btn-withdraw">Withdraw</button>
       </div>
-      <button class="w-btn topup" id="btn-topup">+ Top Up</button>
-      <button class="w-btn wd" id="btn-withdraw">Withdraw</button>
-    </div>
-    <div class="user-chip">
-      <div class="user-avatar" id="user-avatar">U</div>
-      <span class="user-email" id="user-email">user@example.com</span>
-      <div class="u-menu">
-        <button id="btn-history">Bet &amp; Wallet History</button>
-        <button id="btn-logout">Sign Out</button>
+      <div class="user-chip">
+        <div class="user-avatar" id="user-avatar">U</div>
+        <span class="user-email" id="user-email">user@example.com</span>
+        <div class="u-menu">
+          <button id="btn-history">Bet &amp; Wallet History</button>
+          <button id="btn-logout">Sign Out</button>
+        </div>
       </div>
     </div>
-  </div>
-</nav>
-
-<!-- ══ SIDEBAR ══ -->
-<div class="sidebar-backdrop" id="sidebar-backdrop"></div>
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-head">
-    <div class="sh-name" id="sb-name">Player</div>
-    <div class="sh-email" id="sb-email">user@example.com</div>
-    <div class="sh-wallet">
-      <span class="lbl">Wallet</span>
-      <span class="val" id="sb-wallet">$0.00</span>
-    </div>
-  </div>
-  <nav class="sidebar-nav">
-    <button class="sb-item active" data-view="play">
-      <span class="icon">🎯</span> Play
-    </button>
-    <button class="sb-item" data-view="live">
-      <span class="icon">📺</span> Live Draw
-    </button>
-    <button class="sb-item" data-view="history">
-      <span class="icon">🧾</span> History
-    </button>
-    <button class="sb-item" data-view="automation">
-      <span class="icon">⚙️</span> Automation
-    </button>
   </nav>
-  <div class="sidebar-foot">
-    <button class="sb-signout" id="sb-signout">Sign Out</button>
-  </div>
-</aside>
 
-<!-- ══ AUTH GUARD ══ -->
-<div class="play-guard" id="play-guard">
-  <div class="gc">
-    <h2>Sign in to <span>play</span></h2>
-    <p>Log in or create an account to place bets on Nauru's official daily draws.</p>
-    <div class="row">
-      <button class="btn-a" onclick="STL.openAuth('login')">Log In</button>
-      <button class="btn-b" onclick="STL.openAuth('signup')">Create Account</button>
+  <!-- ══ SIDEBAR ══ -->
+  <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <div class="sh-name" id="sb-name">Player</div>
+      <div class="sh-email" id="sb-email">user@example.com</div>
+      <div class="sh-wallet">
+        <span class="lbl">Wallet</span>
+        <span class="val" id="sb-wallet">$0.00</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="sb-item active" data-view="play">
+        <span class="icon">🎯</span> Play
+      </button>
+      <button class="sb-item" data-view="live">
+        <span class="icon">📺</span> Live Draw
+      </button>
+      <button class="sb-item" data-view="history">
+        <span class="icon">🧾</span> History
+      </button>
+      <button class="sb-item" data-view="automation">
+        <span class="icon">⚙️</span> Automation
+      </button>
+    </nav>
+    <div class="sidebar-foot">
+      <button class="sb-signout" id="sb-signout">Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- ══ AUTH GUARD ══ -->
+  <div class="play-guard" id="play-guard">
+    <div class="gc">
+      <h2>Sign in to <span>play</span></h2>
+      <p>Log in or create an account to place bets on Nauru's official daily draws.</p>
+      <div class="row">
+        <button class="btn-a" onclick="STL.openAuth('login')">Log In</button>
+        <button class="btn-b" onclick="STL.openAuth('signup')">Create Account</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- ══ SHELL ══ -->
-<main class="play-shell" id="play-shell" style="display:none;">
+  <!-- ══ SHELL ══ -->
+  <main class="play-shell" id="play-shell" style="display:none;">
 
-  <!-- ── PLAY VIEW ── -->
-  <section class="view active" data-view="play">
-    <section class="welcome-strip">
-      <div class="ws-card ws-welcome">
-        <span class="ws-label">Welcome back</span>
-        <div class="ws-value" id="welcome-name">Player</div>
-        <span class="ws-sub" id="welcome-email">user@example.com</span>
-      </div>
-      <div class="ws-card ws-wallet">
-        <span class="ws-label">Wallet Balance</span>
-        <div class="ws-value" id="welcome-balance">$0.00</div>
-        <div class="ws-actions">
-          <button class="ws-btn topup" onclick="STL.openWallet('topup')">+ Top Up</button>
-          <button class="ws-btn wd" onclick="STL.openWallet('withdraw')">Withdraw</button>
+    <!-- ── PLAY VIEW ── -->
+    <section class="view active" data-view="play">
+      <section class="welcome-strip">
+        <div class="ws-card ws-welcome">
+          <span class="ws-label">Welcome back</span>
+          <div class="ws-value" id="welcome-name">Player</div>
+          <span class="ws-sub" id="welcome-email">user@example.com</span>
         </div>
-      </div>
-      <div class="ws-card ws-countdown">
-        <span class="ws-label">Next Draw In</span>
-        <div class="ws-value" id="welcome-countdown">--:--:--</div>
-        <span class="ws-sub" id="welcome-nextdraw">Next draw · 10:00 AM PWT</span>
-      </div>
-    </section>
+        <div class="ws-card ws-wallet">
+          <span class="ws-label">Wallet Balance</span>
+          <div class="ws-value" id="welcome-balance">$0.00</div>
+          <div class="ws-actions">
+            <button class="ws-btn topup" onclick="STL.openWallet('topup')">+ Top Up</button>
+            <button class="ws-btn wd" onclick="STL.openWallet('withdraw')">Withdraw</button>
+          </div>
+        </div>
+        <div class="ws-card ws-countdown">
+          <span class="ws-label">Next Draw In</span>
+          <div class="ws-value" id="welcome-countdown">--:--:--</div>
+          <span class="ws-sub" id="welcome-nextdraw">Next draw · 10:00 AM PWT</span>
+        </div>
+      </section>
 
-    <h2 class="section-title">Choose a <span>Game</span>
-      <span class="sub">Tap a game to pick your numbers and place a bet</span>
-    </h2>
-    <div class="play-games">
+      <h2 class="section-title">Choose a <span>Game</span>
+        <span class="sub">Tap a game to pick your numbers and place a bet</span>
+      </h2>
+      <div class="play-games">
 
-      <div class="play-game pg-d2" data-game="digits2">
-        <span class="pg-tag">Most Popular</span>
-        <div class="pg-name">Nauru Digits 2</div>
-        <div class="pg-sub">Pick 2 digits from 0–9 in exact order. Fast, simple, win up to 70×.</div>
-        <div class="pg-balls">
-          <div class="pg-ball">7</div><div class="pg-dash">—</div><div class="pg-ball q">?</div>
+        <div class="play-game pg-d2" data-game="digits2">
+          <span class="pg-tag">Most Popular</span>
+          <div class="pg-name">Nauru Digits 2</div>
+          <div class="pg-sub">Pick 2 digits from 0–9 in exact order. Fast, simple, win up to 40×.</div>
+          <div class="pg-balls">
+            <div class="pg-ball">7</div>
+            <div class="pg-dash">—</div>
+            <div class="pg-ball q">?</div>
+          </div>
+          <div class="pg-meta">
+            <div class="pg-meta-cell"><span class="pg-meta-lbl">Min Bet</span><span class="pg-meta-val">$0.25</span>
+            </div>
+            <div class="pg-meta-cell"><span class="pg-meta-lbl">Multiplier</span><span class="pg-meta-val">40×</span>
+            </div>
+            <div class="pg-meta-cell"><span class="pg-meta-lbl">Max Prize</span><span class="pg-meta-val">$3,500</span>
+            </div>
+          </div>
+          <button class="pg-cta">Play Digits 2</button>
         </div>
-        <div class="pg-meta">
-          <div class="pg-meta-cell"><span class="pg-meta-lbl">Min Bet</span><span class="pg-meta-val">$0.25</span></div>
-          <div class="pg-meta-cell"><span class="pg-meta-lbl">Multiplier</span><span class="pg-meta-val">70×</span></div>
-          <div class="pg-meta-cell"><span class="pg-meta-lbl">Max Prize</span><span class="pg-meta-val">$3,500</span></div>
-        </div>
-        <button class="pg-cta">Play Digits 2</button>
-      </div>
 
-      <div class="play-game pg-d3" data-game="digits3">
-        <span class="pg-tag">Biggest Prize</span>
-        <div class="pg-name">Nauru Digits 3</div>
-        <div class="pg-sub">Match 3 digits in exact order for massive 400× payouts.</div>
-        <div class="pg-balls">
-          <div class="pg-ball">4</div><div class="pg-dash">—</div><div class="pg-ball">8</div><div class="pg-dash">—</div><div class="pg-ball q">?</div>
+        <div class="play-game pg-d3" data-game="digits3">
+          <span class="pg-tag">Biggest Prize</span>
+          <div class="pg-name">Nauru Digits 3</div>
+          <div class="pg-sub">Match 3 digits in exact order for massive 400× payouts.</div>
+          <div class="pg-balls">
+            <div class="pg-ball">4</div>
+            <div class="pg-dash">—</div>
+            <div class="pg-ball">8</div>
+            <div class="pg-dash">—</div>
+            <div class="pg-ball q">?</div>
+          </div>
+          <div class="pg-meta">
+            <div class="pg-meta-cell"><span class="pg-meta-lbl">Min Bet</span><span class="pg-meta-val">$0.25</span>
+            </div>
+            <div class="pg-meta-cell"><span class="pg-meta-lbl">Multiplier</span><span class="pg-meta-val">400×</span>
+            </div>
+            <div class="pg-meta-cell"><span class="pg-meta-lbl">Max Prize</span><span class="pg-meta-val">$20,000</span>
+            </div>
+          </div>
+          <button class="pg-cta">Play Digits 3</button>
         </div>
-        <div class="pg-meta">
-          <div class="pg-meta-cell"><span class="pg-meta-lbl">Min Bet</span><span class="pg-meta-val">$0.25</span></div>
-          <div class="pg-meta-cell"><span class="pg-meta-lbl">Multiplier</span><span class="pg-meta-val">400×</span></div>
-          <div class="pg-meta-cell"><span class="pg-meta-lbl">Max Prize</span><span class="pg-meta-val">$20,000</span></div>
-        </div>
-        <button class="pg-cta">Play Digits 3</button>
-      </div>
 
-      <div class="play-game pg-pairs" data-game="pairs">
-        <span class="pg-tag">Classic Pick</span>
-        <div class="pg-name">Nauru Pairs</div>
-        <div class="pg-sub">Choose 2 numbers from 1–40 in exact order. Every draw feels fresh.</div>
-        <div class="pg-balls">
-          <div class="pg-ball">22</div><div class="pg-dash">—</div><div class="pg-ball q">?</div>
-        </div>
-        <div class="pg-meta">
-          <div class="pg-meta-cell"><span class="pg-meta-lbl">Min Bet</span><span class="pg-meta-val">$0.50</span></div>
-          <div class="pg-meta-cell"><span class="pg-meta-lbl">Multiplier</span><span class="pg-meta-val">400×</span></div>
-          <div class="pg-meta-cell"><span class="pg-meta-lbl">Max Prize</span><span class="pg-meta-val">$20,000</span></div>
-        </div>
-        <button class="pg-cta">Play Pairs</button>
-      </div>
-    </div>
-
-    <h2 class="section-title">Your Recent <span>Bets</span></h2>
-    <div class="pr-table-wrap">
-      <table class="pr-table">
-        <thead>
-          <tr>
-            <th>Placed</th><th>Draw</th><th>Game</th><th>Numbers</th><th>Stake</th><th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="recent-bets-body">
-          <tr><td colspan="6" class="pr-empty">Loading…</td></tr>
-        </tbody>
-      </table>
-      <div class="pr-footer"><a id="view-all-history">View full bet & wallet history →</a></div>
-    </div>
-  </section>
-
-  <!-- ── LIVE DRAW VIEW ── -->
-  <section class="view" data-view="live">
-    <h2 class="section-title">Live <span>Draw</span>
-      <span class="sub">Watch the daily draws live — 10:00 AM, 3:00 PM, 8:00 PM PWT</span>
-    </h2>
-    <div class="ld-wrap">
-      <div class="ld-main">
-        <div class="ld-stage">
-          <span class="live-pill">Offline</span>
-          <h3>Live stream coming soon</h3>
-          <p>Next draw in</p>
-          <div class="ld-countdown-big" id="ld-countdown">--:--:--</div>
-        </div>
-        <div class="ld-sched" id="ld-sched"></div>
-      </div>
-      <div class="ld-side">
-        <h3>Latest Results</h3>
-        <div class="ld-result-row">
-          <div class="ld-result-label">8:00 PM — Yesterday<strong>Nauru Digits 2</strong></div>
-          <div class="ld-result-nums"><div class="n">7</div><div class="n">4</div></div>
-        </div>
-        <div class="ld-result-row">
-          <div class="ld-result-label">3:00 PM — Yesterday<strong>Nauru Digits 2</strong></div>
-          <div class="ld-result-nums"><div class="n">0</div><div class="n">6</div></div>
-        </div>
-        <div class="ld-result-row">
-          <div class="ld-result-label">10:00 AM — Yesterday<strong>Nauru Digits 2</strong></div>
-          <div class="ld-result-nums"><div class="n">3</div><div class="n">1</div></div>
-        </div>
-        <div class="ld-result-row">
-          <div class="ld-result-label">8:00 PM — Yesterday<strong>Nauru Digits 3</strong></div>
-          <div class="ld-result-nums"><div class="n">3</div><div class="n">8</div><div class="n">1</div></div>
+        <div class="play-game pg-pairs" data-game="pairs">
+          <span class="pg-tag">Classic Pick</span>
+          <div class="pg-name">Nauru Pairs</div>
+          <div class="pg-sub">Choose 2 numbers from 1–40 in exact order. Every draw feels fresh.</div>
+          <div class="pg-balls">
+            <div class="pg-ball">22</div>
+            <div class="pg-dash">—</div>
+            <div class="pg-ball q">?</div>
+          </div>
+          <div class="pg-meta">
+            <div class="pg-meta-cell"><span class="pg-meta-lbl">Min Bet</span><span class="pg-meta-val">$0.50</span>
+            </div>
+            <div class="pg-meta-cell"><span class="pg-meta-lbl">Multiplier</span><span class="pg-meta-val">400×</span>
+            </div>
+            <div class="pg-meta-cell"><span class="pg-meta-lbl">Max Prize</span><span class="pg-meta-val">$20,000</span>
+            </div>
+          </div>
+          <button class="pg-cta">Play Pairs</button>
         </div>
       </div>
-    </div>
-  </section>
 
-  <!-- ── HISTORY VIEW ── -->
-  <section class="view" data-view="history">
-    <h2 class="section-title">Account <span>History</span>
-      <span class="sub">Every bet and every wallet movement</span>
-    </h2>
-    <div class="view-tabs">
-      <button class="view-tab active" data-htab="bets">Bets</button>
-      <button class="view-tab" data-htab="wallet">Wallet Transactions</button>
-    </div>
-
-    <div id="view-hist-bets">
+      <h2 class="section-title">Your Recent <span>Bets</span></h2>
       <div class="pr-table-wrap">
         <table class="pr-table">
           <thead>
             <tr>
-              <th>Placed</th><th>Draw</th><th>Game</th><th>Numbers</th><th>Stake</th>
-              <th>Winning</th><th>Payout</th><th>Status</th>
+              <th>Placed</th>
+              <th>Draw</th>
+              <th>Game</th>
+              <th>Numbers</th>
+              <th>Stake</th>
+              <th>Status</th>
             </tr>
           </thead>
-          <tbody id="view-hist-bets-body"></tbody>
+          <tbody id="recent-bets-body">
+            <tr>
+              <td colspan="6" class="pr-empty">Loading…</td>
+            </tr>
+          </tbody>
         </table>
+        <div class="pr-footer"><a id="view-all-history">View full bet & wallet history →</a></div>
       </div>
-    </div>
+    </section>
 
-    <div id="view-hist-wallet" style="display:none;">
-      <div class="pr-table-wrap">
-        <table class="pr-table">
-          <thead>
-            <tr><th>Date</th><th>Description</th><th>Amount</th><th>Balance After</th></tr>
-          </thead>
-          <tbody id="view-hist-wallet-body"></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── AUTOMATION VIEW ── -->
-  <section class="view" data-view="automation">
-    <h2 class="section-title">Bet <span>Automation</span>
-      <span class="sub">Schedule recurring daily bets — we place them for you at each draw</span>
-    </h2>
-
-    <div class="auto-grid">
-      <!-- Create -->
-      <div class="auto-card">
-        <h3>New Automation</h3>
-        <form class="auto-form" id="auto-form">
-          <label>Game
-            <select id="auto-game" required>
-              <option value="digits2">Nauru Digits 2 · pick 2 (0–9) · 70×</option>
-              <option value="digits3">Nauru Digits 3 · pick 3 (0–9) · 400×</option>
-              <option value="pairs">Nauru Pairs · pick 2 (1–40) · 400×</option>
-            </select>
-          </label>
-
-          <label>Numbers
-            <input type="text" id="auto-numbers" placeholder="e.g. 7-4 or 3-8-1" required>
-            <span class="hint">Separate with dashes (—). Must match the game's digit count.</span>
-          </label>
-
-          <label>Stake per draw (USD)
-            <input type="number" id="auto-stake" min="0.25" step="0.25" placeholder="0.25" required>
-            <span class="hint">Deducted from your wallet at each scheduled draw.</span>
-          </label>
-
-          <label>Daily draw times</label>
-          <div class="auto-times">
-            <label class="auto-time"><input type="checkbox" value="10:00" checked>10:00 AM</label>
-            <label class="auto-time on"><input type="checkbox" value="15:00" checked>3:00 PM</label>
-            <label class="auto-time"><input type="checkbox" value="20:00">8:00 PM</label>
+    <!-- ── LIVE DRAW VIEW ── -->
+    <section class="view" data-view="live">
+      <h2 class="section-title">Live <span>Draw</span>
+        <span class="sub">Watch the daily draws live — 10:00 AM, 3:00 PM, 8:00 PM PWT</span>
+      </h2>
+      <div class="ld-wrap">
+        <div class="ld-main">
+          <div class="ld-stage">
+            <span class="live-pill">Offline</span>
+            <h3>Live stream coming soon</h3>
+            <p>Next draw in</p>
+            <div class="ld-countdown-big" id="ld-countdown">--:--:--</div>
           </div>
+          <div class="ld-sched" id="ld-sched"></div>
+        </div>
+        <div class="ld-side">
+          <h3>Latest Results</h3>
+          <div class="ld-result-row">
+            <div class="ld-result-label">8:00 PM — Yesterday<strong>Nauru Digits 2</strong></div>
+            <div class="ld-result-nums">
+              <div class="n">7</div>
+              <div class="n">4</div>
+            </div>
+          </div>
+          <div class="ld-result-row">
+            <div class="ld-result-label">3:00 PM — Yesterday<strong>Nauru Digits 2</strong></div>
+            <div class="ld-result-nums">
+              <div class="n">0</div>
+              <div class="n">6</div>
+            </div>
+          </div>
+          <div class="ld-result-row">
+            <div class="ld-result-label">10:00 AM — Yesterday<strong>Nauru Digits 2</strong></div>
+            <div class="ld-result-nums">
+              <div class="n">3</div>
+              <div class="n">1</div>
+            </div>
+          </div>
+          <div class="ld-result-row">
+            <div class="ld-result-label">8:00 PM — Yesterday<strong>Nauru Digits 3</strong></div>
+            <div class="ld-result-nums">
+              <div class="n">3</div>
+              <div class="n">8</div>
+              <div class="n">1</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-          <div class="auto-err" id="auto-err"></div>
-          <button type="submit" class="btn-submit-full" id="auto-submit">Create Automation</button>
-          <div class="auto-note">
-            <strong>How it works:</strong> we save your rule and place a bet at each checked draw time automatically, as long as your wallet has enough balance. You can pause or delete any rule below.
+    <!-- ── HISTORY VIEW ── -->
+    <section class="view" data-view="history">
+      <h2 class="section-title">Account <span>History</span>
+        <span class="sub">Every bet and every wallet movement</span>
+      </h2>
+      <div class="view-tabs">
+        <button class="view-tab active" data-htab="bets">Bets</button>
+        <button class="view-tab" data-htab="wallet">Wallet Transactions</button>
+      </div>
+
+      <div id="view-hist-bets">
+        <div class="pr-table-wrap">
+          <table class="pr-table">
+            <thead>
+              <tr>
+                <th>Placed</th>
+                <th>Draw</th>
+                <th>Game</th>
+                <th>Numbers</th>
+                <th>Stake</th>
+                <th>Winning</th>
+                <th>Payout</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="view-hist-bets-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="view-hist-wallet" style="display:none;">
+        <div class="pr-table-wrap">
+          <table class="pr-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>Balance After</th>
+              </tr>
+            </thead>
+            <tbody id="view-hist-wallet-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── AUTOMATION VIEW ── -->
+    <section class="view" data-view="automation">
+      <h2 class="section-title">Bet <span>Automation</span>
+        <span class="sub">Schedule recurring daily bets — we place them for you at each draw</span>
+      </h2>
+
+      <div class="auto-grid">
+        <!-- Create -->
+        <div class="auto-card">
+          <h3>New Automation</h3>
+          <form class="auto-form" id="auto-form">
+            <label>Game
+              <select id="auto-game" required>
+                <option value="digits2">Nauru Digits 2 · pick 2 (0–9) · 40×</option>
+                <option value="digits3">Nauru Digits 3 · pick 3 (0–9) · 400×</option>
+                <option value="pairs">Nauru Pairs · pick 2 (1–40) · 400×</option>
+              </select>
+            </label>
+
+            <label>Numbers
+              <input type="text" id="auto-numbers" placeholder="e.g. 7-4 or 3-8-1" required>
+              <span class="hint">Separate with dashes (—). Must match the game's digit count.</span>
+            </label>
+
+            <label>Stake per draw (USD)
+              <input type="number" id="auto-stake" min="0.25" step="0.25" placeholder="0.25" required>
+              <span class="hint">Deducted from your wallet at each scheduled draw.</span>
+            </label>
+
+            <label>Daily draw times</label>
+            <div class="auto-times">
+              <label class="auto-time"><input type="checkbox" value="10:00" checked>10:00 AM</label>
+              <label class="auto-time on"><input type="checkbox" value="15:00" checked>3:00 PM</label>
+              <label class="auto-time"><input type="checkbox" value="20:00">8:00 PM</label>
+            </div>
+
+            <div class="auto-err" id="auto-err"></div>
+            <button type="submit" class="btn-submit-full" id="auto-submit">Create Automation</button>
+            <div class="auto-note">
+              <strong>How it works:</strong> we save your rule and place a bet at each checked draw time automatically,
+              as long as your wallet has enough balance. You can pause or delete any rule below.
+            </div>
+          </form>
+        </div>
+
+        <!-- List -->
+        <div class="auto-card">
+          <h3>Your Automations</h3>
+          <div class="auto-list" id="auto-list">
+            <div class="auto-list-empty">Loading…</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══ MODALS (unchanged) ═══ -->
+  <div class="stl-modal" id="auth-modal">
+    <div class="stl-modal-card">
+      <div class="modal-head">
+        <div class="modal-title">Welcome to <span>Lucky 21</span></div>
+        <button class="modal-close" data-close="auth-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-tab="login">Log In</button>
+          <button class="auth-tab" data-tab="signup">Sign Up</button>
+        </div>
+        <form class="stl-form" id="auth-login-form" style="display:flex;">
+          <label>Email <input type="email" id="li-email" required autocomplete="email"></label>
+          <label>Password <input type="password" id="li-password" required autocomplete="current-password"></label>
+          <div class="stl-error" id="auth-error"></div>
+          <button type="submit" class="btn-primary-full" id="li-submit">Log In</button>
+        </form>
+        <form class="stl-form" id="auth-signup-form" style="display:none;">
+          <label>Full Name <input type="text" id="su-name" required autocomplete="name"></label>
+          <label>Email <input type="email" id="su-email" required autocomplete="email"></label>
+          <label>Password
+            <input type="password" id="su-password" required autocomplete="new-password" minlength="6">
+            <span class="hint">At least 6 characters</span>
+          </label>
+          <button type="submit" class="btn-primary-full" id="su-submit">Create Account</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="stl-modal" id="wallet-modal">
+    <div class="stl-modal-card">
+      <div class="modal-head">
+        <div class="modal-title" id="wallet-title">Top Up Wallet</div>
+        <button class="modal-close" data-close="wallet-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="wallet-current">
+          <div class="lbl">Current Balance</div>
+          <div class="val" id="wallet-current">$0.00</div>
+        </div>
+        <form class="stl-form" id="wallet-form">
+          <label>Payment Method</label>
+          <div class="method-grid">
+            <button type="button" class="method-btn active" data-method="debit"><span class="m-icon">💳</span>Debit
+              Card</button>
+            <button type="button" class="method-btn" data-method="credit"><span class="m-icon">💰</span>Credit
+              Card</button>
+            <button type="button" class="method-btn" data-method="pw_cash"><span class="m-icon">🏝️</span>PW
+              Cash</button>
+          </div>
+          <label>Amount (USD)
+            <input type="number" id="wallet-amount-input" min="1" step="0.01" placeholder="0.00" required>
+            <div class="quick-row">
+              <button type="button" class="quick-amt" data-v="10">$10</button>
+              <button type="button" class="quick-amt" data-v="25">$25</button>
+              <button type="button" class="quick-amt" data-v="50">$50</button>
+              <button type="button" class="quick-amt" data-v="100">$100</button>
+              <button type="button" class="quick-amt" data-v="500">$500</button>
+            </div>
+          </label>
+          <div class="stl-error" id="wallet-error"></div>
+          <button type="submit" class="btn-primary-full" id="wallet-submit">Top Up Now</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="stl-modal" id="bet-modal">
+    <div class="stl-modal-card betcard">
+      <div class="modal-head">
+        <div class="modal-title" id="bet-title">Place Bet</div>
+        <button class="modal-close" data-close="bet-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="bet-meta-row" id="bet-meta"></div>
+        <div class="bet-picks-display" id="bet-picks"></div>
+        <div class="bet-picker" id="bet-picker"></div>
+        <form class="stl-form" id="bet-form">
+          <div class="bet-cal-wrap">
+            <span class="bet-cal-label">Draw dates<span class="bet-cal-hint">tap multiple to repeat the
+                bet</span></span>
+            <div class="bet-cal" id="bet-cal"></div>
+            <div class="bet-cal-summary" id="bet-cal-summary">Tap one or more dates above.</div>
+          </div>
+          <div class="bet-info-grid">
+            <label style="margin:0;">Stake (USD / draw)
+              <input type="number" id="bet-stake" min="0.25" step="0.25" required>
+            </label>
+            <label style="margin:0;">Draw slot
+              <select id="bet-draw-slot" required>
+                <option value="10">10:00 AM</option>
+                <option value="15">3:00 PM</option>
+                <option value="20">8:00 PM</option>
+              </select>
+            </label>
+          </div>
+          <div class="bet-info-grid">
+            <div class="bet-info-cell">
+              <div class="k">Potential Win / Draw</div>
+              <div class="v" id="bet-payout">$0.00</div>
+            </div>
+            <div class="bet-info-cell">
+              <div class="k">Total Stake</div>
+              <div class="v" id="bet-total">$0.00</div>
+            </div>
+          </div>
+          <div class="stl-error" id="bet-error"></div>
+          <div class="bet-actions-row">
+            <button type="button" class="btn-secondary" id="bet-clear">Clear</button>
+            <button type="submit" class="btn-primary-full" id="bet-submit" disabled>Place Bet</button>
           </div>
         </form>
       </div>
-
-      <!-- List -->
-      <div class="auto-card">
-        <h3>Your Automations</h3>
-        <div class="auto-list" id="auto-list">
-          <div class="auto-list-empty">Loading…</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-</main>
-
-<!-- ═══ MODALS (unchanged) ═══ -->
-<div class="stl-modal" id="auth-modal">
-  <div class="stl-modal-card">
-    <div class="modal-head">
-      <div class="modal-title">Welcome to <span>Lucky 21</span></div>
-      <button class="modal-close" data-close="auth-modal">&times;</button>
-    </div>
-    <div class="modal-body">
-      <div class="auth-tabs">
-        <button class="auth-tab active" data-tab="login">Log In</button>
-        <button class="auth-tab" data-tab="signup">Sign Up</button>
-      </div>
-      <form class="stl-form" id="auth-login-form" style="display:flex;">
-        <label>Email <input type="email" id="li-email" required autocomplete="email"></label>
-        <label>Password <input type="password" id="li-password" required autocomplete="current-password"></label>
-        <div class="stl-error" id="auth-error"></div>
-        <button type="submit" class="btn-primary-full" id="li-submit">Log In</button>
-      </form>
-      <form class="stl-form" id="auth-signup-form" style="display:none;">
-        <label>Full Name <input type="text" id="su-name" required autocomplete="name"></label>
-        <label>Email <input type="email" id="su-email" required autocomplete="email"></label>
-        <label>Password
-          <input type="password" id="su-password" required autocomplete="new-password" minlength="6">
-          <span class="hint">At least 6 characters</span>
-        </label>
-        <button type="submit" class="btn-primary-full" id="su-submit">Create Account</button>
-      </form>
     </div>
   </div>
-</div>
 
-<div class="stl-modal" id="wallet-modal">
-  <div class="stl-modal-card">
-    <div class="modal-head">
-      <div class="modal-title" id="wallet-title">Top Up Wallet</div>
-      <button class="modal-close" data-close="wallet-modal">&times;</button>
-    </div>
-    <div class="modal-body">
-      <div class="wallet-current">
-        <div class="lbl">Current Balance</div>
-        <div class="val" id="wallet-current">$0.00</div>
+  <!-- legacy history modal still present but the in-page History view takes over -->
+  <div class="stl-modal" id="history-modal">
+    <div class="stl-modal-card wide">
+      <div class="modal-head">
+        <div class="modal-title">Account <span>History</span></div>
+        <button class="modal-close" data-close="history-modal">&times;</button>
       </div>
-      <form class="stl-form" id="wallet-form">
-        <label>Payment Method</label>
-        <div class="method-grid">
-          <button type="button" class="method-btn active" data-method="debit"><span class="m-icon">💳</span>Debit Card</button>
-          <button type="button" class="method-btn" data-method="credit"><span class="m-icon">💰</span>Credit Card</button>
-          <button type="button" class="method-btn" data-method="pw_cash"><span class="m-icon">🏝️</span>PW Cash</button>
+      <div class="modal-body">
+        <div class="hist-tabs">
+          <button class="hist-tab active" data-tab="bets">Bet History</button>
+          <button class="hist-tab" data-tab="wallet">Wallet Transactions</button>
         </div>
-        <label>Amount (USD)
-          <input type="number" id="wallet-amount-input" min="1" step="0.01" placeholder="0.00" required>
-          <div class="quick-row">
-            <button type="button" class="quick-amt" data-v="10">$10</button>
-            <button type="button" class="quick-amt" data-v="25">$25</button>
-            <button type="button" class="quick-amt" data-v="50">$50</button>
-            <button type="button" class="quick-amt" data-v="100">$100</button>
-            <button type="button" class="quick-amt" data-v="500">$500</button>
-          </div>
-        </label>
-        <div class="stl-error" id="wallet-error"></div>
-        <button type="submit" class="btn-primary-full" id="wallet-submit">Top Up Now</button>
-      </form>
-    </div>
-  </div>
-</div>
-
-<div class="stl-modal" id="bet-modal">
-  <div class="stl-modal-card betcard">
-    <div class="modal-head">
-      <div class="modal-title" id="bet-title">Place Bet</div>
-      <button class="modal-close" data-close="bet-modal">&times;</button>
-    </div>
-    <div class="modal-body">
-      <div class="bet-meta-row" id="bet-meta"></div>
-      <div class="bet-picks-display" id="bet-picks"></div>
-      <div class="bet-picker" id="bet-picker"></div>
-      <form class="stl-form" id="bet-form">
-        <div class="bet-cal-wrap">
-          <span class="bet-cal-label">Draw dates<span class="bet-cal-hint">tap multiple to repeat the bet</span></span>
-          <div class="bet-cal" id="bet-cal"></div>
-          <div class="bet-cal-summary" id="bet-cal-summary">Tap one or more dates above.</div>
-        </div>
-        <div class="bet-info-grid">
-          <label style="margin:0;">Stake (USD / draw)
-            <input type="number" id="bet-stake" min="0.25" step="0.25" required>
-          </label>
-          <label style="margin:0;">Draw slot
-            <select id="bet-draw-slot" required>
-              <option value="10">10:00 AM</option>
-              <option value="15">3:00 PM</option>
-              <option value="20">8:00 PM</option>
-            </select>
-          </label>
-        </div>
-        <div class="bet-info-grid">
-          <div class="bet-info-cell">
-            <div class="k">Potential Win / Draw</div>
-            <div class="v" id="bet-payout">$0.00</div>
-          </div>
-          <div class="bet-info-cell">
-            <div class="k">Total Stake</div>
-            <div class="v" id="bet-total">$0.00</div>
+        <div id="hist-bets">
+          <div class="hist-table-wrap">
+            <table class="hist-table">
+              <thead>
+                <tr>
+                  <th>Placed</th>
+                  <th>Draw</th>
+                  <th>Game</th>
+                  <th>Numbers</th>
+                  <th>Stake</th>
+                  <th>Winning</th>
+                  <th>Payout</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="hist-bets-body"></tbody>
+            </table>
           </div>
         </div>
-        <div class="stl-error" id="bet-error"></div>
-        <div class="bet-actions-row">
-          <button type="button" class="btn-secondary" id="bet-clear">Clear</button>
-          <button type="submit" class="btn-primary-full" id="bet-submit" disabled>Place Bet</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- legacy history modal still present but the in-page History view takes over -->
-<div class="stl-modal" id="history-modal">
-  <div class="stl-modal-card wide">
-    <div class="modal-head">
-      <div class="modal-title">Account <span>History</span></div>
-      <button class="modal-close" data-close="history-modal">&times;</button>
-    </div>
-    <div class="modal-body">
-      <div class="hist-tabs">
-        <button class="hist-tab active" data-tab="bets">Bet History</button>
-        <button class="hist-tab" data-tab="wallet">Wallet Transactions</button>
-      </div>
-      <div id="hist-bets">
-        <div class="hist-table-wrap">
-          <table class="hist-table">
-            <thead><tr><th>Placed</th><th>Draw</th><th>Game</th><th>Numbers</th><th>Stake</th><th>Winning</th><th>Payout</th><th>Status</th></tr></thead>
-            <tbody id="hist-bets-body"></tbody>
-          </table>
-        </div>
-      </div>
-      <div id="hist-wallet" style="display:none;">
-        <div class="hist-table-wrap">
-          <table class="hist-table">
-            <thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Balance After</th></tr></thead>
-            <tbody id="hist-wallet-body"></tbody>
-          </table>
+        <div id="hist-wallet" style="display:none;">
+          <div class="hist-table-wrap">
+            <table class="hist-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Description</th>
+                  <th>Amount</th>
+                  <th>Balance After</th>
+                </tr>
+              </thead>
+              <tbody id="hist-wallet-body"></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- ═══ SUPABASE + APP ═══ -->
-<script>
-  window.STL_SUPABASE_URL = 'https://wgkpnjrpdfqoaagkftjm.supabase.co';
-  window.STL_SUPABASE_ANON_KEY = 'sb_publishable_WtVCaotX_QZJSplVe3gyTQ_mHEQy8Yw';
-  window.STL_PAGE = 'play';
-</script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="Assets/js/app.js"></script>
+  <!-- ═══ SUPABASE + APP ═══ -->
+  <script>
+    window.STL_SUPABASE_URL = 'https://wgkpnjrpdfqoaagkftjm.supabase.co';
+    window.STL_SUPABASE_ANON_KEY = 'sb_publishable_WtVCaotX_QZJSplVe3gyTQ_mHEQy8Yw';
+    window.STL_PAGE = 'play';
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="Assets/js/app.js"></script>
 
 </body>
+
 </html>

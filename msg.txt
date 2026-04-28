@@ -1,0 +1,6 @@
+Revamp branding to Nauru Lucky 21 and incorporate new concept paper
+
+- Transitioned Palau to Nauru / Lucky 21
+- Added compiled presentation PDF for the Nauru design
+
+Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>

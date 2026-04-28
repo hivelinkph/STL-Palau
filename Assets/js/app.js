@@ -15,9 +15,9 @@ window.STL_ADMIN_EMAIL = ADMIN_EMAIL;
 
 // ═══ GAME CATALOG ══════════════════════════════════════════
 const GAMES = {
-  digits2: { id:'digits2', name:'Nauru Digits 2', digits:2, range:[0,9], min:0.25, mult:70,  max:3500  },
-  digits3: { id:'digits3', name:'Nauru Digits 3', digits:3, range:[0,9], min:0.25, mult:400, max:20000 },
-  pairs:   { id:'pairs',   name:'Nauru Pairs',    digits:2, range:[1,40],min:0.50, mult:400, max:20000 },
+  digits2: { id: 'digits2', name: 'Nauru Digits 2', digits: 2, range: [0, 9], min: 0.25, mult: 40, max: 3500 },
+  digits3: { id: 'digits3', name: 'Nauru Digits 3', digits: 3, range: [0, 9], min: 0.25, mult: 400, max: 20000 },
+  pairs: { id: 'pairs', name: 'Nauru Pairs', digits: 2, range: [1, 40], min: 0.50, mult: 400, max: 20000 },
 };
 
 // ═══ BACKEND ABSTRACTION ═══════════════════════════════════
@@ -70,13 +70,13 @@ function supabaseBackend() {
       if (error) throw error;
       return data;
     },
-    async listBets(limit=50) {
-      const { data, error } = await sb.from('bets').select('*').order('created_at', { ascending:false }).limit(limit);
+    async listBets(limit = 50) {
+      const { data, error } = await sb.from('bets').select('*').order('created_at', { ascending: false }).limit(limit);
       if (error) throw error;
       return data;
     },
-    async listWalletTx(limit=50) {
-      const { data, error } = await sb.from('wallet_transactions').select('*').order('created_at', { ascending:false }).limit(limit);
+    async listWalletTx(limit = 50) {
+      const { data, error } = await sb.from('wallet_transactions').select('*').order('created_at', { ascending: false }).limit(limit);
       if (error) throw error;
       return data;
     },
@@ -97,9 +97,9 @@ function localBackend() {
     wtx: 'stl_wallet_tx',
     bets: 'stl_bets',
   };
-  const read = (k, def=[]) => JSON.parse(localStorage.getItem(k) || JSON.stringify(def));
+  const read = (k, def = []) => JSON.parse(localStorage.getItem(k) || JSON.stringify(def));
   const write = (k, v) => localStorage.setItem(k, JSON.stringify(v));
-  const uid = () => 'u_' + Math.random().toString(36).slice(2,10) + Date.now().toString(36);
+  const uid = () => 'u_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
   const listeners = [];
 
   const getProfiles = () => read(K.profiles, {});
@@ -148,8 +148,8 @@ function localBackend() {
       setProfile(s.id, p);
       const tx = read(K.wtx, []);
       tx.unshift({
-        id: uid(), user_id: s.id, type:'topup', method,
-        amount, direction:'credit', status:'completed',
+        id: uid(), user_id: s.id, type: 'topup', method,
+        amount, direction: 'credit', status: 'completed',
         balance_after: p.wallet_balance, created_at: new Date().toISOString()
       });
       write(K.wtx, tx);
@@ -164,8 +164,8 @@ function localBackend() {
       setProfile(s.id, p);
       const tx = read(K.wtx, []);
       tx.unshift({
-        id: uid(), user_id: s.id, type:'withdraw', method,
-        amount, direction:'debit', status:'completed',
+        id: uid(), user_id: s.id, type: 'withdraw', method,
+        amount, direction: 'debit', status: 'completed',
         balance_after: p.wallet_balance, created_at: new Date().toISOString()
       });
       write(K.wtx, tx);
@@ -182,24 +182,24 @@ function localBackend() {
       const bets = read(K.bets, []);
       bets.unshift({
         id: betId, user_id: s.id, game, numbers, bet_type: betType,
-        stake, draw_time: drawTime, status:'pending', payout: 0,
+        stake, draw_time: drawTime, status: 'pending', payout: 0,
         created_at: new Date().toISOString()
       });
       write(K.bets, bets);
       const tx = read(K.wtx, []);
       tx.unshift({
-        id: uid(), user_id: s.id, type:'bet', amount: stake, direction:'debit',
-        status:'completed', reference: betId, balance_after: p.wallet_balance,
+        id: uid(), user_id: s.id, type: 'bet', amount: stake, direction: 'debit',
+        status: 'completed', reference: betId, balance_after: p.wallet_balance,
         created_at: new Date().toISOString()
       });
       write(K.wtx, tx);
       return betId;
     },
-    async listBets(limit=50) {
+    async listBets(limit = 50) {
       const s = read(K.session, null); if (!s) return [];
       return read(K.bets, []).filter(b => b.user_id === s.id).slice(0, limit);
     },
-    async listWalletTx(limit=50) {
+    async listWalletTx(limit = 50) {
       const s = read(K.session, null); if (!s) return [];
       return read(K.wtx, []).filter(t => t.user_id === s.id).slice(0, limit);
     },
@@ -210,12 +210,12 @@ function localBackend() {
 // ═══ HELPERS ═══════════════════════════════════════════════
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
-const fmtMoney = n => '$' + Number(n||0).toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 });
+const fmtMoney = n => '$' + Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const fmtDate = iso => {
   const d = new Date(iso);
-  return d.toLocaleString('en-US', { month:'short', day:'numeric', hour:'numeric', minute:'2-digit' });
+  return d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
 };
-function toast(msg, type='info') {
+function toast(msg, type = 'info') {
   const t = document.createElement('div');
   t.className = `stl-toast stl-toast-${type}`;
   t.textContent = msg;
@@ -229,8 +229,8 @@ const SLOT_LABELS = { 10: '10:00 AM', 15: '3:00 PM', 20: '8:00 PM' };
 // Nauru = UTC+9, no DST — avoid Intl.DateTimeFormat quirks by using fixed offset.
 function palauNowParts() {
   const fmt = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Pacific/Nauru', year:'numeric', month:'2-digit', day:'2-digit',
-    hour:'2-digit', minute:'2-digit', hour12: false,
+    timeZone: 'Pacific/Nauru', year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', hour12: false,
   });
   const parts = {};
   fmt.formatToParts(new Date()).forEach(p => parts[p.type] = p.value);
@@ -248,8 +248,8 @@ function drawTimeFromParts(ymd, slotHour) {
 function fmtDrawSlot(iso) {
   const d = new Date(iso);
   return d.toLocaleString('en-US', {
-    timeZone: 'Pacific/Nauru', month:'short', day:'numeric',
-    hour:'numeric', minute:'2-digit', hour12: true,
+    timeZone: 'Pacific/Nauru', month: 'short', day: 'numeric',
+    hour: 'numeric', minute: '2-digit', hour12: true,
   });
 }
 function nextDrawTime() {
@@ -282,7 +282,7 @@ function closeAllModals() {
 function showAuthTab(tab) {
   $$('.auth-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
   $('#auth-signup-form').style.display = tab === 'signup' ? 'flex' : 'none';
-  $('#auth-login-form').style.display  = tab === 'login'  ? 'flex' : 'none';
+  $('#auth-login-form').style.display = tab === 'login' ? 'flex' : 'none';
   $('#auth-error').textContent = '';
 }
 
@@ -427,7 +427,7 @@ function updateNextDrawLabel() {
   const h = Math.floor(diff / 3600000);
   const m = Math.floor((diff % 3600000) / 60000);
   const s = Math.floor((diff % 60000) / 1000);
-  el.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  el.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   if (sub) {
     const t = new Date(target);
     const hh = t.getHours();
@@ -488,7 +488,7 @@ async function handleWalletSubmit(e) {
 }
 
 function methodLabel(m) {
-  return { debit:'Debit Card', credit:'Credit Card', pw_cash:'PW Cash' }[m] || m;
+  return { debit: 'Debit Card', credit: 'Credit Card', pw_cash: 'PW Cash' }[m] || m;
 }
 
 // ═══ BETTING ═══════════════════════════════════════════════
@@ -572,12 +572,12 @@ function renderBetCalendar() {
   const canPrev = (betCalY > minY) || (betCalY === minY && betCalM > minM);
   const canNext = (betCalY < maxY) || (betCalY === maxY && betCalM < maxM);
 
-  const dowRow = ['S','M','T','W','T','F','S']
+  const dowRow = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
     .map(l => `<div class="bet-cal-dow">${l}</div>`).join('');
   const cells = [];
   for (let i = 0; i < firstDow; i++) cells.push('<div></div>');
   for (let day = 1; day <= daysInMonth; day++) {
-    const ymd = `${betCalY}-${String(betCalM).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const ymd = `${betCalY}-${String(betCalM).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     const isPast = ymdCompare(ymd, today) < 0;
     const isTooFar = ymdCompare(ymd, maxYmd) > 0;
     const isToday = ymd === today;
@@ -644,7 +644,7 @@ function renderPicker() {
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'pick-ball';
-    b.textContent = g.digits === 2 && g.range[1] <= 9 ? n : String(n).padStart(2,'0');
+    b.textContent = g.digits === 2 && g.range[1] <= 9 ? n : String(n).padStart(2, '0');
     b.dataset.n = n;
     b.onclick = () => togglePick(n);
     grid.appendChild(b);
@@ -665,8 +665,8 @@ function renderPicks() {
   for (let i = 0; i < g.digits; i++) {
     const v = betPicks[i];
     const has = v !== undefined;
-    const txt = has ? (g.digits === 2 && g.range[1] <= 9 ? v : String(v).padStart(2,'0')) : '?';
-    slots.push(`<div class="pick-slot ${has?'filled':''}">${txt}</div>`);
+    const txt = has ? (g.digits === 2 && g.range[1] <= 9 ? v : String(v).padStart(2, '0')) : '?';
+    slots.push(`<div class="pick-slot ${has ? 'filled' : ''}">${txt}</div>`);
   }
   box.innerHTML = slots.join('<span class="pick-sep">—</span>');
   $$('.pick-ball').forEach(b => {
@@ -724,7 +724,7 @@ async function handleBetSubmit(e) {
     return;
   }
 
-  const numbers = betPicks.map(n => g.digits === 2 && g.range[1] <= 9 ? n : String(n).padStart(2,'0')).join('-');
+  const numbers = betPicks.map(n => g.digits === 2 && g.range[1] <= 9 ? n : String(n).padStart(2, '0')).join('-');
   $('#bet-submit').disabled = true;
   let placed = 0;
   let lastError = null;
@@ -782,7 +782,7 @@ async function renderHistory() {
     const st = b.status;
     const statusBadge = `<span class="hist-badge st-${st}">${st.toUpperCase()}</span>`;
     const result = b.winning_numbers ? b.winning_numbers : '—';
-    const payout = Number(b.payout||0) > 0 ? fmtMoney(b.payout) : '—';
+    const payout = Number(b.payout || 0) > 0 ? fmtMoney(b.payout) : '—';
     return `<tr>
       <td>${fmtDate(b.created_at)}</td>
       <td>${fmtDrawSlot(b.draw_time)}</td>
@@ -801,9 +801,9 @@ async function renderHistory() {
     const sign = t.direction === 'credit' ? '+' : '−';
     const cls = t.direction === 'credit' ? 'amt-credit' : 'amt-debit';
     const label = t.type === 'topup' ? `Top Up · ${methodLabel(t.method)}`
-               : t.type === 'withdraw' ? `Withdraw · ${methodLabel(t.method)}`
-               : t.type === 'bet' ? 'Bet Placed'
-               : t.type === 'payout' ? 'Winnings' : t.type;
+      : t.type === 'withdraw' ? `Withdraw · ${methodLabel(t.method)}`
+        : t.type === 'bet' ? 'Bet Placed'
+          : t.type === 'payout' ? 'Winnings' : t.type;
     return `<tr>
       <td>${fmtDate(t.created_at)}</td>
       <td>${label}</td>
@@ -816,7 +816,7 @@ async function renderHistory() {
 }
 
 // ═══ AUTH MODAL OPENER ═════════════════════════════════════
-function openAuth(tab='login') {
+function openAuth(tab = 'login') {
   showAuthTab(tab);
   $('#auth-error').textContent = '';
   openModal('auth-modal');
@@ -862,8 +862,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const btn = card.querySelector('.btn-play');
     if (!btn) return;
     const gameId = card.classList.contains('card-d2') ? 'digits2'
-                 : card.classList.contains('card-d3') ? 'digits3'
-                 : card.classList.contains('card-pairs') ? 'pairs' : null;
+      : card.classList.contains('card-d3') ? 'digits3'
+        : card.classList.contains('card-pairs') ? 'pairs' : null;
     if (gameId) btn.onclick = () => openBet(gameId);
   });
 
@@ -881,7 +881,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const heroPrimary = document.querySelector('.btn-hero-primary');
   if (heroPrimary) heroPrimary.onclick = () => {
     if (currentProfile) { window.location.href = 'play.html'; return; }
-    document.getElementById('games')?.scrollIntoView({ behavior:'smooth' });
+    document.getElementById('games')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   // "View full history" link on play.html
