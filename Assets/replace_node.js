@@ -30,6 +30,9 @@ const doReplacements = () => {
             // Handle the flag character explicitly as some editors might encode it differently
             content = content.replace(/&#127477;&#127484;/g, '&#127475;&#127479;');
 
+            // URL Replacements
+            content = content.replace(/stl-palau\.vercel\.app/g, 'stl-nauru.vercel.app');
+
             fs.writeFileSync(f, content, 'utf8');
             console.log('Updated', f);
         } catch (e) {

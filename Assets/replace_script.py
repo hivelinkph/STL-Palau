@@ -19,6 +19,7 @@ for f in files:
         content = content.replace('Palau', 'Nauru')
         content = content.replace('Small Town Lottery', 'Nauru Lottery')
         content = content.replace('🇵🇼', '🇳🇷')
+        content = content.replace('stl-palau.vercel.app', 'stl-nauru.vercel.app')
         
         # CSS variable replacements across HTML and CSS
         content = content.replace('--blue:       #45B8E5;', '--blue:       #002B7F;')
