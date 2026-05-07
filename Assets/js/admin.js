@@ -52,7 +52,7 @@
   let currentTrackId = null;
   let musicVolume = 0.6;
   let micVolume = 1.0;
-  let mixMusicToBroadcast = false;
+  let mixMusicToBroadcast = true;
   let adminMusicMuted = false;
   let musicPlaybackMode = null;  // 'direct' | 'graph'
   let monitorGain = null;        // controls admin local hearing (not broadcast)
@@ -175,7 +175,8 @@
     if (!isNaN(mv)) musicVolume = mv;
     const miv = parseFloat(localStorage.getItem(MIC_VOL_KEY));
     if (!isNaN(miv)) micVolume = miv;
-    mixMusicToBroadcast = localStorage.getItem(MIX_KEY) === '1';
+    const mixStored = localStorage.getItem(MIX_KEY);
+    mixMusicToBroadcast = mixStored === null ? true : mixStored === '1';
     adminMusicMuted = localStorage.getItem(MUS_MUTE_KEY) === '1';
     // Cached tracks for instant render before Supabase fetch completes
     try {
