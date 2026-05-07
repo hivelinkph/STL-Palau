@@ -2909,6 +2909,361 @@
         align-items: flex-start;
       }
     }
+
+    /* ════════════════════════════════════════════════════
+       LIVE DRAW CHROME — full overlay UI shown in live mode
+       ════════════════════════════════════════════════════ */
+    .ld-chrome {
+      display: none;
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      pointer-events: none;
+      font-family: 'Barlow Condensed', sans-serif;
+    }
+    .live-feed.is-live .ld-chrome { display: block; }
+    .live-feed.is-live .feed-top,
+    .live-feed.is-live .feed-results { display: none !important; }
+
+    /* Top header bar */
+    .ld-top {
+      position: absolute; top: 0; left: 0; right: 0;
+      min-height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 78px 8px 16px;
+      gap: 14px;
+      background: linear-gradient(180deg, rgba(6, 18, 32, 0.95) 0%, rgba(6, 18, 32, 0.5) 100%);
+      border-bottom: 1px solid rgba(255, 214, 74, 0.2);
+      pointer-events: auto;
+      z-index: 4;
+    }
+    .ld-top-brand { display: flex; align-items: center; gap: 12px; }
+    .ld-live-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 11px; border-radius: 6px;
+      background: linear-gradient(180deg, #E11D2C 0%, #8B0000 100%);
+      color: #fff; font-weight: 900; font-size: 13px; letter-spacing: 2.5px;
+      border: 1px solid rgba(255, 120, 120, 0.55);
+      box-shadow: 0 0 14px rgba(255, 50, 50, 0.55);
+      text-transform: uppercase; line-height: 1;
+    }
+    .ld-live-pill::before {
+      content: ''; width: 7px; height: 7px; border-radius: 50%;
+      background: #fff; animation: ldBlink 1.2s infinite;
+    }
+    @keyframes ldBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+
+    .ld-title-block { display: flex; flex-direction: column; line-height: 1; gap: 3px; }
+    .ld-title {
+      font-weight: 900; font-size: 22px; letter-spacing: 3px;
+      background: linear-gradient(180deg, #FFF6C8 0%, #FFD84A 50%, #E89B0F 100%);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent; color: transparent;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.7));
+      text-transform: uppercase;
+    }
+    .ld-title::before { content: '★ '; color: #FFD84A; -webkit-text-fill-color: #FFD84A; }
+    .ld-tagline {
+      font-size: 10px; letter-spacing: 4px; color: #FFD84A;
+      text-transform: uppercase; opacity: 0.85;
+    }
+
+    .ld-top-meta { display: flex; align-items: center; gap: 10px; }
+    .ld-meta-item {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 11px; border-radius: 6px;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff; font-size: 13px; letter-spacing: 1.5px; font-weight: 600;
+    }
+    .ld-meta-icon { color: #FFD84A; font-size: 13px; }
+    .ld-meta-draw {
+      color: #061220;
+      background: linear-gradient(180deg, #FFD84A 0%, #E89B0F 100%);
+      border-color: rgba(255, 255, 255, 0.3);
+      font-weight: 900; letter-spacing: 2px;
+    }
+    .ld-meta-draw .ld-meta-icon { color: #061220; }
+
+    /* Left panel: DRAWING NOW */
+    .ld-left {
+      position: absolute; top: 64px; bottom: 84px; left: 0;
+      width: 230px;
+      background: linear-gradient(180deg, rgba(6, 18, 32, 0.92) 0%, rgba(6, 18, 32, 0.78) 100%);
+      border-right: 1px solid rgba(255, 214, 74, 0.18);
+      padding: 14px;
+      display: flex; flex-direction: column; gap: 12px;
+      pointer-events: auto;
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 3;
+    }
+    .ld-chrome.left-hidden .ld-left { transform: translateX(-100%); }
+
+    .ld-section-title {
+      font-weight: 900; font-size: 16px; letter-spacing: 4px;
+      color: #FFD84A; text-align: center;
+      padding: 6px 0;
+      border-top: 1px solid rgba(255, 214, 74, 0.25);
+      border-bottom: 1px solid rgba(255, 214, 74, 0.25);
+      text-shadow: 0 0 10px rgba(255, 214, 74, 0.4);
+      text-transform: uppercase;
+    }
+    .ld-game { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 4px 0; }
+    .ld-game-label {
+      font-weight: 900; font-size: 17px; letter-spacing: 5px;
+      color: #FFD84A; text-transform: uppercase;
+      text-shadow: 0 0 8px rgba(255, 196, 60, 0.55);
+    }
+    .ld-balls { display: flex; gap: 8px; justify-content: center; flex-wrap: nowrap; }
+    .ld-ball {
+      position: relative; width: 50px; height: 50px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 900; font-size: 26px; line-height: 1;
+      border: 2px solid rgba(255, 255, 255, 0.22);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.75);
+      box-shadow:
+        inset -6px -7px 12px rgba(0, 0, 0, 0.45),
+        inset 4px 5px 10px rgba(255, 255, 255, 0.35),
+        0 6px 14px rgba(0, 0, 0, 0.55);
+      background: radial-gradient(circle at 30% 25%, #FFF6C8 0%, #FFD84A 28%, #E89B0F 65%, #8C5A00 100%);
+    }
+    .ld-ball:nth-child(3n+2) {
+      background: radial-gradient(circle at 30% 25%, #FFE5E0 0%, #FF6B6B 28%, #D11A1A 65%, #5C0000 100%);
+    }
+    .ld-ball:nth-child(3n+3) {
+      background: radial-gradient(circle at 30% 25%, #DCEEFF 0%, #4FB3FF 28%, #1456C7 65%, #06204A 100%);
+    }
+    .ld-ball::before {
+      content: ''; position: absolute; top: 9%; left: 18%;
+      width: 40%; height: 28%; border-radius: 50%;
+      background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 70%);
+      pointer-events: none;
+    }
+    .ld-ball.pending {
+      background: radial-gradient(circle at 30% 25%, #2A3A5A 0%, #142036 60%, #050A14 100%) !important;
+      color: #6BC0F0;
+      text-shadow: 0 0 10px rgba(80, 180, 240, 0.6);
+    }
+
+    /* Right panel: RECENT RESULTS */
+    .ld-right {
+      position: absolute; top: 64px; bottom: 84px; right: 0;
+      width: 270px;
+      background: linear-gradient(180deg, rgba(6, 18, 32, 0.92) 0%, rgba(6, 18, 32, 0.78) 100%);
+      border-left: 1px solid rgba(255, 214, 74, 0.18);
+      padding: 14px 12px 56px;
+      display: flex; flex-direction: column; gap: 10px;
+      pointer-events: auto;
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+      z-index: 3;
+    }
+    .ld-chrome.right-hidden .ld-right { transform: translateX(100%); }
+
+    .ld-rr-list { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; flex: 1; padding-right: 4px; }
+    .ld-rr-list::-webkit-scrollbar { width: 4px; }
+    .ld-rr-list::-webkit-scrollbar-thumb { background: rgba(255, 214, 74, 0.3); border-radius: 4px; }
+    .ld-rr-row {
+      background: rgba(8, 14, 28, 0.55);
+      border: 1px solid rgba(255, 214, 74, 0.12);
+      border-radius: 8px;
+      padding: 8px 10px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .ld-rr-meta { display: flex; justify-content: space-between; font-size: 11px; letter-spacing: 1.4px; color: #B7C2D6; }
+    .ld-rr-date { color: #FFD84A; font-weight: 900; }
+    .ld-rr-num { color: #FFD84A; font-weight: 700; }
+    .ld-rr-balls { display: flex; gap: 5px; flex-wrap: nowrap; }
+    .ld-rr-ball {
+      position: relative; width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 900; font-size: 15px; line-height: 1;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+      box-shadow: inset -3px -4px 7px rgba(0, 0, 0, 0.4), inset 2px 3px 6px rgba(255, 255, 255, 0.25);
+      background: radial-gradient(circle at 30% 25%, #FFF6C8 0%, #FFD84A 30%, #E89B0F 70%, #8C5A00 100%);
+    }
+    .ld-rr-ball.c-red { background: radial-gradient(circle at 30% 25%, #FFE5E0 0%, #FF6B6B 30%, #D11A1A 70%, #5C0000 100%); }
+    .ld-rr-ball.c-blue { background: radial-gradient(circle at 30% 25%, #DCEEFF 0%, #4FB3FF 30%, #1456C7 70%, #06204A 100%); }
+    .ld-rr-empty {
+      padding: 18px 10px; text-align: center; font-size: 12px; color: #6F7E96;
+      letter-spacing: 1.5px; text-transform: uppercase;
+    }
+    .ld-rr-cta {
+      position: absolute; left: 12px; right: 12px; bottom: 12px;
+      text-align: center; font-weight: 900; font-size: 12px; letter-spacing: 2px;
+      color: #FFD84A; padding: 9px;
+      border: 1px solid rgba(255, 214, 74, 0.4); border-radius: 6px;
+      background: rgba(255, 214, 74, 0.06);
+      cursor: pointer; text-decoration: none;
+      text-transform: uppercase;
+      transition: background 0.2s, color 0.2s;
+    }
+    .ld-rr-cta:hover { background: rgba(255, 214, 74, 0.18); }
+
+    /* Center countdown */
+    .ld-countdown {
+      position: absolute; bottom: 96px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      background: rgba(8, 14, 28, 0.78);
+      padding: 8px 18px; border-radius: 12px;
+      border: 1px solid rgba(255, 214, 74, 0.32);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5), 0 0 24px rgba(255, 214, 74, 0.12);
+      pointer-events: none;
+      z-index: 4;
+    }
+    .ld-countdown-label { font-size: 10px; letter-spacing: 4px; color: #FFD84A; text-transform: uppercase; }
+    .ld-countdown-time { display: flex; gap: 6px; align-items: center; }
+    .ld-countdown-cell { display: flex; flex-direction: column; align-items: center; min-width: 42px; }
+    .ld-countdown-num {
+      font-weight: 900; font-size: 30px; line-height: 1;
+      background: linear-gradient(180deg, #FFF6C8 0%, #FFD84A 50%, #E89B0F 100%);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent; color: transparent;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.7));
+    }
+    .ld-countdown-unit { font-size: 9px; letter-spacing: 2px; color: #B7C2D6; text-transform: uppercase; }
+    .ld-countdown-sep { color: #FFD84A; font-size: 22px; font-weight: 900; align-self: flex-start; padding-top: 2px; }
+
+    /* Bottom panel */
+    .ld-bottom {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      min-height: 84px;
+      background: linear-gradient(0deg, rgba(6, 18, 32, 0.95) 0%, rgba(6, 18, 32, 0.5) 100%);
+      border-top: 1px solid rgba(255, 214, 74, 0.18);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 18px; gap: 14px;
+      pointer-events: auto;
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 3;
+    }
+    .ld-chrome.bottom-hidden .ld-bottom { transform: translateY(100%); }
+    .ld-cta-card {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 14px; border-radius: 10px;
+      background: rgba(8, 14, 28, 0.7);
+      border: 1px solid rgba(255, 214, 74, 0.3);
+      color: #fff;
+    }
+    .ld-cta-icon { font-size: 22px; color: #FFD84A; line-height: 1; }
+    .ld-cta-text { display: flex; flex-direction: column; line-height: 1.15; }
+    .ld-cta-title { font-weight: 900; font-size: 14px; letter-spacing: 1.5px; color: #FFD84A; text-transform: uppercase; }
+    .ld-cta-sub { font-size: 11px; letter-spacing: 1px; color: #B7C2D6; }
+    .ld-cta-btn {
+      margin-left: 12px; padding: 9px 14px; border-radius: 8px;
+      background: linear-gradient(180deg, #FFD84A 0%, #E89B0F 100%);
+      color: #061220; font-weight: 900; font-size: 13px; letter-spacing: 1.5px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      cursor: pointer; text-decoration: none; text-transform: uppercase;
+      box-shadow: 0 4px 14px rgba(255, 196, 60, 0.35);
+      transition: transform 0.15s ease;
+    }
+    .ld-cta-btn:hover { transform: translateY(-1px); }
+
+    /* Toggle handles for the three panels */
+    .ld-toggle {
+      position: absolute; z-index: 7; pointer-events: auto;
+      background: rgba(8, 14, 28, 0.85);
+      border: 1px solid rgba(255, 214, 74, 0.35);
+      color: #FFD84A; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 900; line-height: 1;
+      transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                  right 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                  bottom 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                  background 0.2s;
+      padding: 0;
+    }
+    .ld-toggle:hover { background: rgba(255, 214, 74, 0.18); color: #fff; }
+    .ld-toggle-left {
+      width: 24px; height: 56px;
+      top: 50%; left: 230px; transform: translateY(-50%);
+      border-radius: 0 8px 8px 0; border-left: 0;
+    }
+    .ld-chrome.left-hidden .ld-toggle-left { left: 0; }
+    .ld-toggle-right {
+      width: 24px; height: 56px;
+      top: 50%; right: 270px; transform: translateY(-50%);
+      border-radius: 8px 0 0 8px; border-right: 0;
+    }
+    .ld-chrome.right-hidden .ld-toggle-right { right: 0; }
+    .ld-toggle-bottom {
+      width: 56px; height: 24px;
+      bottom: 84px; left: 50%; transform: translateX(-50%);
+      border-radius: 8px 8px 0 0; border-bottom: 0;
+    }
+    .ld-chrome.bottom-hidden .ld-toggle-bottom { bottom: 0; }
+
+    /* When in live mode, raise the existing fullscreen + mute buttons above chrome
+       and reposition them so they don't fight with the top bar content. */
+    .live-feed.is-live .feed-fullscreen { top: 12px; right: 14px; width: 38px; height: 38px; font-size: 18px; z-index: 8; }
+    .live-feed.is-live #feed-mute-btn { top: 12px !important; right: 60px !important; bottom: auto !important; width: 38px !important; height: 38px !important; font-size: 16px !important; z-index: 8; }
+
+    /* Mobile / narrow live-draw chrome */
+    @media (max-width: 720px) {
+      .ld-top { padding: 6px 78px 6px 10px; min-height: 48px; gap: 8px; }
+      .ld-title { font-size: 16px; letter-spacing: 2px; }
+      .ld-tagline { display: none; }
+      .ld-live-pill { font-size: 11px; padding: 3px 8px; letter-spacing: 1.5px; }
+      .ld-meta-item { font-size: 11px; padding: 4px 8px; gap: 4px; }
+      .ld-top-meta { gap: 6px; }
+      .ld-meta-time, .ld-meta-date span:not(.ld-meta-icon) { display: inline; }
+
+      .ld-left { width: 152px; top: 54px; bottom: 70px; padding: 8px; gap: 8px; }
+      .ld-section-title { font-size: 12px; letter-spacing: 2.5px; padding: 4px 0; }
+      .ld-game-label { font-size: 13px; letter-spacing: 3px; }
+      .ld-balls { gap: 5px; }
+      .ld-ball { width: 36px; height: 36px; font-size: 19px; border-width: 1.5px; }
+
+      .ld-right { width: 168px; top: 54px; bottom: 70px; padding: 8px 8px 50px; gap: 6px; }
+      .ld-rr-row { padding: 6px 8px; gap: 4px; }
+      .ld-rr-meta { font-size: 9px; letter-spacing: 1px; }
+      .ld-rr-ball { width: 22px; height: 22px; font-size: 12px; }
+      .ld-rr-cta { font-size: 10px; padding: 6px; left: 8px; right: 8px; bottom: 8px; }
+
+      .ld-bottom { min-height: 70px; padding: 8px 10px; gap: 8px; }
+      .ld-cta-card { padding: 6px 10px; gap: 7px; }
+      .ld-cta-title { font-size: 12px; letter-spacing: 1px; }
+      .ld-cta-sub { font-size: 10px; }
+      .ld-cta-btn { font-size: 11px; padding: 7px 10px; margin-left: 6px; }
+      .ld-cta-icon { font-size: 18px; }
+
+      .ld-countdown { bottom: 82px; padding: 6px 12px; }
+      .ld-countdown-num { font-size: 22px; }
+      .ld-countdown-cell { min-width: 30px; }
+      .ld-countdown-label { font-size: 9px; letter-spacing: 2px; }
+
+      .ld-toggle-left { width: 20px; height: 46px; left: 152px; }
+      .ld-toggle-right { width: 20px; height: 46px; right: 168px; }
+      .ld-toggle-bottom { width: 46px; height: 20px; bottom: 70px; }
+
+      .live-feed.is-live .feed-fullscreen { top: 8px; right: 8px; width: 32px; height: 32px; font-size: 15px; }
+      .live-feed.is-live #feed-mute-btn { top: 8px !important; right: 46px !important; width: 32px !important; height: 32px !important; font-size: 14px !important; }
+    }
+
+    /* Fullscreen scaling */
+    .live-feed:fullscreen .ld-top,
+    .live-feed:-webkit-full-screen .ld-top { min-height: 70px; padding: 10px 90px 10px 22px; }
+    .live-feed:fullscreen .ld-title,
+    .live-feed:-webkit-full-screen .ld-title { font-size: 28px; letter-spacing: 4px; }
+    .live-feed:fullscreen .ld-left,
+    .live-feed:-webkit-full-screen .ld-left { width: 290px; top: 78px; bottom: 110px; }
+    .live-feed:fullscreen .ld-right,
+    .live-feed:-webkit-full-screen .ld-right { width: 340px; top: 78px; bottom: 110px; padding-bottom: 64px; }
+    .live-feed:fullscreen .ld-ball,
+    .live-feed:-webkit-full-screen .ld-ball { width: 64px; height: 64px; font-size: 32px; }
+    .live-feed:fullscreen .ld-bottom,
+    .live-feed:-webkit-full-screen .ld-bottom { min-height: 110px; padding: 14px 28px; }
+    .live-feed:fullscreen .ld-toggle-left,
+    .live-feed:-webkit-full-screen .ld-toggle-left { left: 290px; }
+    .live-feed:fullscreen .ld-toggle-right,
+    .live-feed:-webkit-full-screen .ld-toggle-right { right: 340px; }
+    .live-feed:fullscreen .ld-toggle-bottom,
+    .live-feed:-webkit-full-screen .ld-toggle-bottom { bottom: 110px; }
+    .live-feed:fullscreen .ld-countdown,
+    .live-feed:-webkit-full-screen .ld-countdown { bottom: 122px; padding: 10px 22px; }
+    .live-feed:fullscreen .ld-countdown-num,
+    .live-feed:-webkit-full-screen .ld-countdown-num { font-size: 38px; }
   </style>
   <link rel="stylesheet" href="Assets/css/app.css">
 </head>
@@ -3189,28 +3544,94 @@
           </div>
         </div>
 
-        <div class="feed-results" id="feed-results">
-          <div class="fr-game">
-            <div class="fr-label">Digit 2</div>
-            <div class="fr-balls" data-game="d2">
-              <div class="fr-ball pending">?</div>
-              <div class="fr-ball pending">?</div>
+        <!-- Live-mode chrome (panels + toggles + countdown) -->
+        <div class="ld-chrome" id="ld-chrome">
+          <!-- Top header -->
+          <div class="ld-top">
+            <div class="ld-top-brand">
+              <span class="ld-live-pill">Live</span>
+              <div class="ld-title-block">
+                <span class="ld-title">STL Live Draw</span>
+                <span class="ld-tagline">Your Luck, Live Here.</span>
+              </div>
+            </div>
+            <div class="ld-top-meta">
+              <span class="ld-meta-item ld-meta-date">
+                <span class="ld-meta-icon">📅</span><span id="ld-date">—</span>
+              </span>
+              <span class="ld-meta-item ld-meta-time">
+                <span class="ld-meta-icon">🕐</span><span id="ld-time">—</span>
+              </span>
+              <span class="ld-meta-item ld-meta-draw">
+                <span class="ld-meta-icon">#</span><span id="ld-draw-num">—</span>
+              </span>
             </div>
           </div>
-          <div class="fr-draw">
-            <div class="fr-draw-label">Draw</div>
-            <div class="fr-draw-date" id="fr-draw-date">—</div>
-            <div class="fr-draw-day" id="fr-draw-day">—</div>
-            <div class="fr-draw-time" id="fr-draw-time">—</div>
-          </div>
-          <div class="fr-game">
-            <div class="fr-label">Digit 3</div>
-            <div class="fr-balls" data-game="d3">
-              <div class="fr-ball pending">?</div>
-              <div class="fr-ball pending">?</div>
-              <div class="fr-ball pending">?</div>
+
+          <!-- Left panel: Drawing now -->
+          <aside class="ld-left">
+            <div class="ld-section-title">Drawing Now</div>
+            <div class="ld-game">
+              <div class="ld-game-label">Digit 2</div>
+              <div class="ld-balls" data-game="d2">
+                <div class="ld-ball pending">?</div>
+                <div class="ld-ball pending">?</div>
+              </div>
+            </div>
+            <div class="ld-game">
+              <div class="ld-game-label">Digit 3</div>
+              <div class="ld-balls" data-game="d3">
+                <div class="ld-ball pending">?</div>
+                <div class="ld-ball pending">?</div>
+                <div class="ld-ball pending">?</div>
+              </div>
+            </div>
+          </aside>
+
+          <!-- Right panel: Recent results -->
+          <aside class="ld-right">
+            <div class="ld-section-title">Recent Results</div>
+            <div class="ld-rr-list" id="ld-rr-list">
+              <div class="ld-rr-empty">Loading…</div>
+            </div>
+            <a class="ld-rr-cta" href="#results">View All Results &rsaquo;</a>
+          </aside>
+
+          <!-- Center countdown -->
+          <div class="ld-countdown">
+            <div class="ld-countdown-label">Next Draw In</div>
+            <div class="ld-countdown-time">
+              <div class="ld-countdown-cell"><span class="ld-countdown-num" id="ld-cd-h">00</span><span class="ld-countdown-unit">Hrs</span></div>
+              <span class="ld-countdown-sep">:</span>
+              <div class="ld-countdown-cell"><span class="ld-countdown-num" id="ld-cd-m">00</span><span class="ld-countdown-unit">Min</span></div>
+              <span class="ld-countdown-sep">:</span>
+              <div class="ld-countdown-cell"><span class="ld-countdown-num" id="ld-cd-s">00</span><span class="ld-countdown-unit">Sec</span></div>
             </div>
           </div>
+
+          <!-- Bottom panel -->
+          <div class="ld-bottom">
+            <div class="ld-cta-card">
+              <span class="ld-cta-icon">🏆</span>
+              <span class="ld-cta-text">
+                <span class="ld-cta-title">Be a Winner Today!</span>
+                <span class="ld-cta-sub">Stay tuned for tomorrow's draw!</span>
+              </span>
+            </div>
+            <div class="ld-cta-card" style="margin-left:auto">
+              <span class="ld-cta-icon">🎟️</span>
+              <span class="ld-cta-text">
+                <span class="ld-cta-title">Place Your Bets!</span>
+                <span class="ld-cta-sub">Pick your numbers and play.</span>
+              </span>
+              <a class="ld-cta-btn" href="play.html">Play Now</a>
+            </div>
+          </div>
+
+          <!-- Toggle handles -->
+          <button type="button" class="ld-toggle ld-toggle-left" data-ld-toggle="left" aria-label="Toggle left panel">‹</button>
+          <button type="button" class="ld-toggle ld-toggle-right" data-ld-toggle="right" aria-label="Toggle right panel">›</button>
+          <button type="button" class="ld-toggle ld-toggle-bottom" data-ld-toggle="bottom" aria-label="Toggle bottom panel">⌄</button>
         </div>
       </div>
     </div>
@@ -3819,43 +4240,176 @@
   <script src="Assets/js/viewer.js"></script>
 
   <script>
-    // Live-feed DRAW info — next Nauru draw at 10:00 / 15:00 / 19:00 (UTC+12, no DST)
+    // ─────────────────────────────────────────────────────────────
+    // Live-Draw chrome controller: header date/time/draw#,
+    // countdown to next slot, recent results panel, panel toggles.
+    // ─────────────────────────────────────────────────────────────
     (function () {
-      const SLOTS = [10, 15, 19];
+      const SLOTS = [10, 15, 19]; // Nauru local-hour draw slots (UTC+12, no DST)
       const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
-      const DAYS = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
 
-      function nauruNow() {
-        // Pacific/Nauru = UTC+12, no DST. Shift then read UTC.
-        return new Date(Date.now() + 12 * 3600 * 1000);
+      function nauruNow() { return new Date(Date.now() + 12 * 3600 * 1000); }
+
+      function nextSlot(now) {
+        const h = now.getUTCHours();
+        const m = now.getUTCMinutes();
+        const s = now.getUTCSeconds();
+        const dayMidnight = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+        for (const slotH of SLOTS) {
+          if (h < slotH || (h === slotH && m === 0 && s === 0)) {
+            return new Date(dayMidnight + slotH * 3600 * 1000);
+          }
+        }
+        return new Date(dayMidnight + 86400000 + SLOTS[0] * 3600 * 1000);
       }
 
-      function nextDraw() {
-        const n = nauruNow();
-        const h = n.getUTCHours();
-        let slotH = SLOTS.find(s => h < s);
-        let day = new Date(Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate()));
-        if (slotH == null) { slotH = SLOTS[0]; day.setUTCDate(day.getUTCDate() + 1); }
-        const date = `${MONTHS[day.getUTCMonth()]} ${String(day.getUTCDate()).padStart(2, '0')}`;
-        const dayName = DAYS[day.getUTCDay()];
-        const hour12 = ((slotH + 11) % 12) + 1;
-        const time = `${hour12}:00 ${slotH < 12 ? 'AM' : 'PM'}`;
-        return { date, day: dayName, time };
+      // Slot index 0/1/2 within the day for a given Nauru-shifted Date
+      function slotIndex(d) {
+        const h = d.getUTCHours();
+        const i = SLOTS.indexOf(h);
+        return i < 0 ? 0 : i;
       }
 
-      function render() {
-        const dEl = document.getElementById('fr-draw-date');
-        const wEl = document.getElementById('fr-draw-day');
-        const tEl = document.getElementById('fr-draw-time');
-        if (!dEl || !wEl || !tEl) return;
-        const { date, day, time } = nextDraw();
-        dEl.textContent = date;
-        wEl.textContent = day;
-        tEl.textContent = time;
+      // Stable ascending draw number: days since 2025-01-01 (Nauru) * 3 + slot + 30000
+      function drawNumber(d) {
+        const epoch = Date.UTC(2025, 0, 1);
+        const day = Math.floor((Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - epoch) / 86400000);
+        return 30000 + day * 3 + slotIndex(d);
       }
 
-      render();
-      setInterval(render, 30000);
+      function fmtDate(d) {
+        return `${MONTHS[d.getUTCMonth()]} ${String(d.getUTCDate()).padStart(2, '0')}, ${d.getUTCFullYear()}`;
+      }
+      function fmtTime(slotH) {
+        const h12 = ((slotH + 11) % 12) + 1;
+        return `${h12}:00 ${slotH < 12 ? 'AM' : 'PM'}`;
+      }
+      function fmtTimeFromDate(d) { return fmtTime(d.getUTCHours()); }
+
+      // ── Header (date / time / draw#) ──
+      function renderHeader() {
+        const next = nextSlot(nauruNow());
+        const dEl = document.getElementById('ld-date');
+        const tEl = document.getElementById('ld-time');
+        const nEl = document.getElementById('ld-draw-num');
+        if (dEl) dEl.textContent = fmtDate(next);
+        if (tEl) tEl.textContent = fmtTimeFromDate(next);
+        if (nEl) nEl.textContent = String(drawNumber(next));
+      }
+
+      // ── Countdown ──
+      function renderCountdown() {
+        const target = nextSlot(nauruNow()).getTime() - 12 * 3600 * 1000; // back to UTC
+        const remaining = Math.max(0, target - Date.now());
+        const totalSec = Math.floor(remaining / 1000);
+        const h = Math.floor(totalSec / 3600);
+        const m = Math.floor((totalSec % 3600) / 60);
+        const s = totalSec % 60;
+        const pad = n => String(n).padStart(2, '0');
+        const hEl = document.getElementById('ld-cd-h');
+        const mEl = document.getElementById('ld-cd-m');
+        const sEl = document.getElementById('ld-cd-s');
+        if (hEl) hEl.textContent = pad(h);
+        if (mEl) mEl.textContent = pad(m);
+        if (sEl) sEl.textContent = pad(s);
+      }
+
+      renderHeader();
+      renderCountdown();
+      setInterval(() => { renderCountdown(); }, 1000);
+      setInterval(() => { renderHeader(); }, 30000);
+
+      // ── Panel toggles ──
+      const chrome = document.getElementById('ld-chrome');
+      if (chrome) {
+        const arrows = {
+          left:   { open: '‹', closed: '›' },
+          right:  { open: '›', closed: '‹' },
+          bottom: { open: '⌄', closed: '⌃' },
+        };
+        chrome.querySelectorAll('[data-ld-toggle]').forEach(btn => {
+          const which = btn.dataset.ldToggle;
+          btn.addEventListener('click', () => {
+            const cls = which + '-hidden';
+            chrome.classList.toggle(cls);
+            const closed = chrome.classList.contains(cls);
+            btn.textContent = closed ? arrows[which].closed : arrows[which].open;
+          });
+        });
+      }
+
+      // ── Recent results (right panel) ──
+      // Groups draw_results by draw_time and renders the latest 3 sessions.
+      const URL_ = window.STL_SUPABASE_URL;
+      const KEY_ = window.STL_SUPABASE_ANON_KEY;
+      const sb = (URL_ && KEY_ && window.supabase) ? window.supabase.createClient(URL_, KEY_) : null;
+
+      function ballClass(idx, totalBefore) {
+        const c = (idx + totalBefore) % 3;
+        return c === 0 ? '' : (c === 1 ? 'c-red' : 'c-blue');
+      }
+
+      function renderRecent(rows) {
+        const list = document.getElementById('ld-rr-list');
+        if (!list) return;
+        // Group by exact draw_time
+        const groups = new Map();
+        for (const r of rows || []) {
+          const k = r.draw_time;
+          if (!groups.has(k)) groups.set(k, { time: k, d2: null, d3: null });
+          const g = groups.get(k);
+          if (r.game === 'd2') g.d2 = r.numbers;
+          else if (r.game === 'd3') g.d3 = r.numbers;
+        }
+        const sessions = Array.from(groups.values())
+          .sort((a, b) => new Date(b.time) - new Date(a.time))
+          .slice(0, 4);
+        if (!sessions.length) {
+          list.innerHTML = `<div class="ld-rr-empty">No results yet</div>`;
+          return;
+        }
+        list.innerHTML = sessions.map(s => {
+          // Shift the draw_time to Nauru local for display
+          const local = new Date(new Date(s.time).getTime() + 12 * 3600 * 1000);
+          const date = fmtDate(local);
+          const num = drawNumber(local);
+          const d2 = (s.d2 || '').replace(/\D/g, '').slice(0, 2);
+          const d3 = (s.d3 || '').replace(/\D/g, '').slice(0, 3);
+          const balls = (d2 + d3).split('').map((digit, i) => {
+            const cls = ballClass(i, 0);
+            return `<div class="ld-rr-ball ${cls}">${digit}</div>`;
+          }).join('');
+          return `
+            <div class="ld-rr-row">
+              <div class="ld-rr-meta">
+                <span class="ld-rr-date">${date}</span>
+                <span class="ld-rr-num">#${num}</span>
+              </div>
+              <div class="ld-rr-balls">${balls || '<span class="ld-rr-empty" style="padding:2px 0;">awaiting results</span>'}</div>
+            </div>`;
+        }).join('');
+      }
+
+      async function loadRecent() {
+        if (!sb) return;
+        try {
+          const { data, error } = await sb
+            .from('draw_results')
+            .select('draw_time, game, numbers')
+            .in('game', ['d2', 'd3'])
+            .order('draw_time', { ascending: false })
+            .limit(20);
+          if (!error) renderRecent(data);
+        } catch (_) {}
+      }
+      loadRecent();
+      if (sb) {
+        sb.channel('ld-recent')
+          .on('postgres_changes',
+              { event: '*', schema: 'public', table: 'draw_results' },
+              () => loadRecent())
+          .subscribe();
+      }
     })();
   </script>
 

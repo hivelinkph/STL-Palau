@@ -285,19 +285,22 @@
   const BALL_EXPECT = { d2: 2, d3: 3, pairs: 2 };
 
   function renderResult(game, numbers) {
-    const holder = document.querySelector(`.fr-balls[data-game="${game}"]`);
-    if (!holder) return;
-    const balls = holder.querySelectorAll('.fr-ball');
-    const expected = BALL_EXPECT[game] || balls.length;
-    const digits = (numbers || '').replace(/\D/g, '').slice(0, expected);
-    balls.forEach((b, i) => {
-      if (digits[i] != null) {
-        b.textContent = digits[i];
-        b.classList.remove('pending');
-      } else {
-        b.textContent = '?';
-        b.classList.add('pending');
-      }
+    const holders = document.querySelectorAll(`[data-game="${game}"]`);
+    if (!holders.length) return;
+    holders.forEach(holder => {
+      const balls = holder.querySelectorAll('.fr-ball, .ld-ball');
+      if (!balls.length) return;
+      const expected = BALL_EXPECT[game] || balls.length;
+      const digits = (numbers || '').replace(/\D/g, '').slice(0, expected);
+      balls.forEach((b, i) => {
+        if (digits[i] != null) {
+          b.textContent = digits[i];
+          b.classList.remove('pending');
+        } else {
+          b.textContent = '?';
+          b.classList.add('pending');
+        }
+      });
     });
   }
 
