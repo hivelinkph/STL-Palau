@@ -593,7 +593,7 @@
       background: linear-gradient(0deg, rgba(6, 18, 32, 0.95) 0%, rgba(6, 18, 32, 0.55) 70%, transparent 100%);
       z-index: 4;
       justify-content: space-around;
-      align-items: flex-end;
+      align-items: stretch;
       gap: 24px;
       pointer-events: none;
     }
@@ -622,6 +622,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: space-between;
       gap: 18px;
       flex: 1;
       min-width: 0;
@@ -644,15 +645,17 @@
       filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 12px rgba(255, 196, 60, 0.5));
     }
 
-    /* DRAW info column — center column between Digit 2 and Digit 3 */
+    /* DRAW info column — top edge aligns with digit labels, bottom with balls */
     .fr-draw {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
-      flex: 1;
-      min-width: 0;
-      padding: 14px 18px 16px;
+      justify-content: space-between;
+      gap: 4px;
+      flex: 0 1 auto;
+      min-width: 180px;
+      max-width: 260px;
+      padding: 8px 18px;
       border-radius: 14px;
       border: 1px solid rgba(255, 214, 74, 0.32);
       background: linear-gradient(180deg, rgba(20, 32, 56, 0.55) 0%, rgba(8, 14, 28, 0.85) 100%);
@@ -831,9 +834,11 @@
       }
 
       .fr-draw {
-        padding: 8px 10px 10px;
-        gap: 5px;
+        padding: 5px 10px;
+        gap: 2px;
         border-radius: 10px;
+        min-width: 100px;
+        max-width: 140px;
       }
       .fr-draw-label {
         font-size: 9px;
@@ -882,9 +887,11 @@
       }
 
       .fr-draw {
-        padding: 8px 10px 10px;
-        gap: 5px;
+        padding: 5px 10px;
+        gap: 2px;
         border-radius: 10px;
+        min-width: 100px;
+        max-width: 140px;
       }
       .fr-draw-label {
         font-size: 9px;
@@ -969,9 +976,11 @@
 
     .live-feed:fullscreen .fr-draw,
     .live-feed:-webkit-full-screen .fr-draw {
-      padding: 22px 28px 24px;
-      gap: 12px;
+      padding: 14px 28px;
+      gap: 6px;
       border-radius: 18px;
+      min-width: 280px;
+      max-width: 380px;
     }
     .live-feed:fullscreen .fr-draw-label,
     .live-feed:-webkit-full-screen .fr-draw-label {
@@ -1039,9 +1048,11 @@
 
       .live-feed:fullscreen .fr-draw,
       .live-feed:-webkit-full-screen .fr-draw {
-        padding: 10px 14px 12px;
-        gap: 6px;
+        padding: 6px 14px;
+        gap: 3px;
         border-radius: 12px;
+        min-width: 140px;
+        max-width: 200px;
       }
       .live-feed:fullscreen .fr-draw-label,
       .live-feed:-webkit-full-screen .fr-draw-label {
