@@ -2988,7 +2988,7 @@
     /* Left panel: DRAWING NOW */
     .ld-left {
       position: absolute; top: 64px; bottom: 84px; left: 0;
-      width: 230px;
+      width: 168px;
       background: linear-gradient(180deg, rgba(6, 18, 32, 0.92) 0%, rgba(6, 18, 32, 0.78) 100%);
       border-right: 1px solid rgba(255, 214, 74, 0.18);
       padding: 14px;
@@ -3014,7 +3014,7 @@
       color: #FFD84A; text-transform: uppercase;
       text-shadow: 0 0 8px rgba(255, 196, 60, 0.55);
     }
-    .ld-balls { display: flex; gap: 8px; justify-content: center; flex-wrap: nowrap; }
+    .ld-balls { display: flex; flex-direction: column; gap: 8px; align-items: center; }
     .ld-ball {
       position: relative; width: 50px; height: 50px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
@@ -3072,7 +3072,7 @@
     }
     .ld-rr-meta { display: flex; justify-content: space-between; font-size: 11px; letter-spacing: 1.4px; color: #B7C2D6; }
     .ld-rr-date { color: #FFD84A; font-weight: 900; }
-    .ld-rr-num { color: #FFD84A; font-weight: 700; }
+    .ld-rr-time { color: #FFD84A; font-weight: 700; }
     .ld-rr-balls { display: flex; gap: 5px; flex-wrap: nowrap; }
     .ld-rr-ball {
       position: relative; width: 28px; height: 28px; border-radius: 50%;
@@ -3177,7 +3177,7 @@
     .ld-toggle:hover { background: rgba(255, 214, 74, 0.18); color: #fff; }
     .ld-toggle-left {
       width: 24px; height: 56px;
-      top: 50%; left: 230px; transform: translateY(-50%);
+      top: 50%; left: 168px; transform: translateY(-50%);
       border-radius: 0 8px 8px 0; border-left: 0;
     }
     .ld-chrome.left-hidden .ld-toggle-left { left: 0; }
@@ -3209,7 +3209,7 @@
       .ld-top-meta { gap: 6px; }
       .ld-meta-time, .ld-meta-date span:not(.ld-meta-icon) { display: inline; }
 
-      .ld-left { width: 152px; top: 54px; bottom: 70px; padding: 8px; gap: 8px; }
+      .ld-left { width: 116px; top: 54px; bottom: 70px; padding: 8px; gap: 8px; }
       .ld-section-title { font-size: 12px; letter-spacing: 2.5px; padding: 4px 0; }
       .ld-game-label { font-size: 13px; letter-spacing: 3px; }
       .ld-balls { gap: 5px; }
@@ -3233,7 +3233,7 @@
       .ld-countdown-cell { min-width: 30px; }
       .ld-countdown-label { font-size: 9px; letter-spacing: 2px; }
 
-      .ld-toggle-left { width: 20px; height: 46px; left: 152px; }
+      .ld-toggle-left { width: 20px; height: 46px; left: 116px; }
       .ld-toggle-right { width: 20px; height: 46px; right: 168px; }
       .ld-toggle-bottom { width: 46px; height: 20px; bottom: 70px; }
 
@@ -3247,7 +3247,7 @@
     .live-feed:fullscreen .ld-title,
     .live-feed:-webkit-full-screen .ld-title { font-size: 28px; letter-spacing: 4px; }
     .live-feed:fullscreen .ld-left,
-    .live-feed:-webkit-full-screen .ld-left { width: 290px; top: 78px; bottom: 110px; }
+    .live-feed:-webkit-full-screen .ld-left { width: 200px; top: 78px; bottom: 110px; }
     .live-feed:fullscreen .ld-right,
     .live-feed:-webkit-full-screen .ld-right { width: 340px; top: 78px; bottom: 110px; padding-bottom: 64px; }
     .live-feed:fullscreen .ld-ball,
@@ -3255,7 +3255,7 @@
     .live-feed:fullscreen .ld-bottom,
     .live-feed:-webkit-full-screen .ld-bottom { min-height: 110px; padding: 14px 28px; }
     .live-feed:fullscreen .ld-toggle-left,
-    .live-feed:-webkit-full-screen .ld-toggle-left { left: 290px; }
+    .live-feed:-webkit-full-screen .ld-toggle-left { left: 200px; }
     .live-feed:fullscreen .ld-toggle-right,
     .live-feed:-webkit-full-screen .ld-toggle-right { right: 340px; }
     .live-feed:fullscreen .ld-toggle-bottom,
@@ -4372,7 +4372,7 @@
           // Shift the draw_time to Nauru local for display
           const local = new Date(new Date(s.time).getTime() + 12 * 3600 * 1000);
           const date = fmtDate(local);
-          const num = drawNumber(local);
+          const slotTime = fmtTimeFromDate(local);
           const d2 = (s.d2 || '').replace(/\D/g, '').slice(0, 2);
           const d3 = (s.d3 || '').replace(/\D/g, '').slice(0, 3);
           const balls = (d2 + d3).split('').map((digit, i) => {
@@ -4383,7 +4383,7 @@
             <div class="ld-rr-row">
               <div class="ld-rr-meta">
                 <span class="ld-rr-date">${date}</span>
-                <span class="ld-rr-num">#${num}</span>
+                <span class="ld-rr-time">${slotTime}</span>
               </div>
               <div class="ld-rr-balls">${balls || '<span class="ld-rr-empty" style="padding:2px 0;">awaiting results</span>'}</div>
             </div>`;
