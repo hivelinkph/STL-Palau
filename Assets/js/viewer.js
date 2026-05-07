@@ -352,9 +352,13 @@
     if (overlay._hideTimer) clearTimeout(overlay._hideTimer);
     if (overlay._removeTimer) clearTimeout(overlay._removeTimer);
     overlay.src = dataUrl;
+    // Hide live-draw chrome (top / left / right / bottom + countdown + toggles)
+    // while the graphic is showing, then bring it back as the graphic fades out.
+    feed.classList.add('graphic-active');
     requestAnimationFrame(() => { overlay.style.opacity = '1'; });
     overlay._hideTimer = setTimeout(() => {
       overlay.style.opacity = '0';
+      feed.classList.remove('graphic-active');
       overlay._removeTimer = setTimeout(() => { overlay.remove(); }, 300);
     }, Math.max(200, duration || 3000));
   }
