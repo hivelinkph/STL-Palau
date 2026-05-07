@@ -2984,22 +2984,38 @@
       text-transform: uppercase; opacity: 0.85;
     }
 
-    .ld-top-meta { display: flex; align-items: center; gap: 10px; }
-    .ld-meta-item {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 6px 11px; border-radius: 6px;
-      background: rgba(0, 0, 0, 0.45);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #fff; font-size: 13px; letter-spacing: 1.5px; font-weight: 600;
+    /* Centered casino-style date + time card */
+    .ld-top-meta {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 4;
+      pointer-events: auto;
     }
-    .ld-meta-icon { color: #FFD84A; font-size: 13px; }
-    .ld-meta-draw {
-      color: #061220;
-      background: linear-gradient(180deg, #FFD84A 0%, #E89B0F 100%);
-      border-color: rgba(255, 255, 255, 0.3);
-      font-weight: 900; letter-spacing: 2px;
+    .ld-meta-card {
+      display: inline-flex; align-items: center; gap: 12px;
+      padding: 8px 22px; border-radius: 999px;
+      background: linear-gradient(180deg, #FFE067 0%, #FFC633 35%, #E89B0F 75%, #8B5A00 100%);
+      color: #1a0f00;
+      font-weight: 900; font-size: 17px; letter-spacing: 2.5px;
+      text-transform: uppercase;
+      border: 2px solid rgba(255, 255, 255, 0.45);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.55),
+        inset 0 -2px 0 rgba(120, 60, 0, 0.4),
+        0 4px 18px rgba(0, 0, 0, 0.5),
+        0 0 28px rgba(255, 196, 60, 0.55);
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+      white-space: nowrap;
+      line-height: 1;
     }
-    .ld-meta-draw .ld-meta-icon { color: #061220; }
+    .ld-meta-icon { font-size: 16px; line-height: 1; filter: drop-shadow(0 1px 0 rgba(255,255,255,0.6)); }
+    .ld-meta-sep {
+      color: #8B0000;
+      font-size: 16px;
+      text-shadow: 0 0 6px rgba(255, 80, 80, 0.5);
+    }
 
     /* Left panel: DRAWING NOW */
     .ld-left {
@@ -3072,7 +3088,7 @@
     /* Right panel: RECENT RESULTS */
     .ld-right {
       position: absolute; top: 64px; bottom: 84px; right: 0;
-      width: 270px;
+      width: 300px;
       background: linear-gradient(180deg, rgba(6, 18, 32, 0.92) 0%, rgba(6, 18, 32, 0.78) 100%);
       border-left: 1px solid rgba(255, 214, 74, 0.18);
       padding: 14px 12px 56px;
@@ -3211,21 +3227,36 @@
     .ld-chrome.left-hidden .ld-toggle-left { left: 0; }
     .ld-toggle-right {
       width: 24px; height: 56px;
-      top: 50%; right: 270px; transform: translateY(-50%);
+      top: 50%; right: 300px; transform: translateY(-50%);
       border-radius: 8px 0 0 8px; border-right: 0;
     }
-    .ld-chrome.right-hidden .ld-toggle-right { right: 0; }
+    .ld-chrome.right-hidden .ld-toggle-right { right: 0 !important; }
+    .ld-chrome.left-hidden .ld-toggle-left { left: 0 !important; }
     .ld-toggle-bottom {
       width: 56px; height: 24px;
       bottom: 84px; left: 50%; transform: translateX(-50%);
       border-radius: 8px 8px 0 0; border-bottom: 0;
     }
-    .ld-chrome.bottom-hidden .ld-toggle-bottom { bottom: 0; }
+    .ld-chrome.bottom-hidden .ld-toggle-bottom { bottom: 0 !important; }
+
+    /* Countdown follows the bottom panel — when the bottom panel is hidden,
+       drop the countdown to the very bottom of the feed. */
+    .ld-chrome.bottom-hidden .ld-countdown {
+      bottom: 14px;
+    }
 
     /* When in live mode, raise the existing fullscreen + mute buttons above chrome
        and reposition them so they don't fight with the top bar content. */
-    .live-feed.is-live .feed-fullscreen { top: 12px; right: 14px; width: 38px; height: 38px; font-size: 18px; z-index: 8; }
-    .live-feed.is-live #feed-mute-btn { top: 12px !important; right: 60px !important; bottom: auto !important; width: 38px !important; height: 38px !important; font-size: 16px !important; z-index: 8; }
+    .live-feed.is-live .feed-fullscreen {
+      top: 12px; right: 14px; width: 38px; height: 38px; font-size: 18px;
+      z-index: 12 !important; pointer-events: auto;
+    }
+    .live-feed.is-live #feed-mute-btn {
+      top: 12px !important; right: 60px !important; bottom: auto !important;
+      left: auto !important;
+      width: 38px !important; height: 38px !important; font-size: 16px !important;
+      z-index: 12 !important; pointer-events: auto !important;
+    }
 
     /* Hide chrome while a graphic overlay is being flashed. */
     .ld-top, .ld-left, .ld-right, .ld-bottom, .ld-countdown, .ld-toggle {
@@ -3264,9 +3295,8 @@
       .ld-title { font-size: 16px; letter-spacing: 2px; }
       .ld-tagline { display: none; }
       .ld-live-pill { font-size: 11px; padding: 3px 8px; letter-spacing: 1.5px; }
-      .ld-meta-item { font-size: 11px; padding: 4px 8px; gap: 4px; }
-      .ld-top-meta { gap: 6px; }
-      .ld-meta-time, .ld-meta-date span:not(.ld-meta-icon) { display: inline; }
+      .ld-meta-card { font-size: 12px; padding: 6px 14px; gap: 7px; letter-spacing: 1.5px; }
+      .ld-meta-icon { font-size: 12px; }
 
       .ld-left { width: 116px; top: 64px; bottom: 70px; padding: 8px; gap: 8px; }
       .ld-section-title { font-size: 12px; letter-spacing: 2.5px; padding: 4px 0; }
@@ -3274,7 +3304,7 @@
       .ld-balls { gap: 5px; }
       .ld-ball { width: 36px; height: 36px; font-size: 19px; border-width: 1.5px; }
 
-      .ld-right { width: 168px; top: 54px; bottom: 70px; padding: 8px 8px 50px; gap: 6px; }
+      .ld-right { width: 188px; top: 54px; bottom: 70px; padding: 8px 8px 50px; gap: 6px; }
       .ld-rr-row { padding: 6px 8px; gap: 4px; }
       .ld-rr-meta { font-size: 9px; letter-spacing: 1px; }
       .ld-rr-ball { width: 22px; height: 22px; font-size: 12px; }
@@ -3293,7 +3323,7 @@
       .ld-countdown-label { font-size: 9px; letter-spacing: 2px; }
 
       .ld-toggle-left { width: 20px; height: 46px; left: 116px; }
-      .ld-toggle-right { width: 20px; height: 46px; right: 168px; }
+      .ld-toggle-right { width: 20px; height: 46px; right: 188px; }
       .ld-toggle-bottom { width: 46px; height: 20px; bottom: 70px; }
 
       .live-feed.is-live .feed-fullscreen { top: 8px; right: 8px; width: 32px; height: 32px; font-size: 15px; }
@@ -3314,7 +3344,7 @@
     .live-feed:fullscreen .ld-left,
     .live-feed:-webkit-full-screen .ld-left { width: 200px; top: 102px; bottom: 110px; }
     .live-feed:fullscreen .ld-right,
-    .live-feed:-webkit-full-screen .ld-right { width: 340px; top: 78px; bottom: 110px; padding-bottom: 64px; }
+    .live-feed:-webkit-full-screen .ld-right { width: 380px; top: 78px; bottom: 110px; padding-bottom: 64px; }
     .live-feed:fullscreen .ld-ball,
     .live-feed:-webkit-full-screen .ld-ball { width: 64px; height: 64px; font-size: 32px; }
     .live-feed:fullscreen .ld-bottom,
@@ -3322,7 +3352,7 @@
     .live-feed:fullscreen .ld-toggle-left,
     .live-feed:-webkit-full-screen .ld-toggle-left { left: 200px; }
     .live-feed:fullscreen .ld-toggle-right,
-    .live-feed:-webkit-full-screen .ld-toggle-right { right: 340px; }
+    .live-feed:-webkit-full-screen .ld-toggle-right { right: 380px; }
     .live-feed:fullscreen .ld-toggle-bottom,
     .live-feed:-webkit-full-screen .ld-toggle-bottom { bottom: 110px; }
     .live-feed:fullscreen .ld-countdown,
@@ -3621,15 +3651,13 @@
               </div>
             </div>
             <div class="ld-top-meta">
-              <span class="ld-meta-item ld-meta-date">
-                <span class="ld-meta-icon">📅</span><span id="ld-date">—</span>
-              </span>
-              <span class="ld-meta-item ld-meta-time">
-                <span class="ld-meta-icon">🕐</span><span id="ld-time">—</span>
-              </span>
-              <span class="ld-meta-item ld-meta-draw">
-                <span class="ld-meta-icon">#</span><span id="ld-draw-num">—</span>
-              </span>
+              <div class="ld-meta-card">
+                <span class="ld-meta-icon">📅</span>
+                <span id="ld-date">—</span>
+                <span class="ld-meta-sep">★</span>
+                <span class="ld-meta-icon">🕐</span>
+                <span id="ld-time">—</span>
+              </div>
             </div>
           </div>
 
@@ -4363,15 +4391,13 @@
         return `${MONTHS[d.getUTCMonth()]} ${String(d.getUTCDate()).padStart(2,'0')} - ${DAYS_LONG[d.getUTCDay()]} - ${fmtTimeShort(d.getUTCHours())}`;
       }
 
-      // ── Header (date / time / draw#) ──
+      // ── Header (date / time) ──
       function renderHeader() {
         const next = nextSlot(nauruNow());
         const dEl = document.getElementById('ld-date');
         const tEl = document.getElementById('ld-time');
-        const nEl = document.getElementById('ld-draw-num');
         if (dEl) dEl.textContent = fmtDate(next);
         if (tEl) tEl.textContent = fmtTimeFromDate(next);
-        if (nEl) nEl.textContent = String(drawNumber(next));
       }
 
       // ── Countdown ──
