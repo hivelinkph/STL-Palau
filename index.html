@@ -2925,22 +2925,38 @@
     .live-feed.is-live .feed-top,
     .live-feed.is-live .feed-results { display: none !important; }
 
-    /* Top header bar */
+    /* Top header bar — thin gradient strip across the full width */
     .ld-top {
       position: absolute; top: 0; left: 0; right: 0;
       min-height: 56px;
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex; align-items: center; justify-content: flex-end;
       padding: 8px 78px 8px 16px;
       gap: 14px;
-      background: linear-gradient(180deg, rgba(6, 18, 32, 0.95) 0%, rgba(6, 18, 32, 0.5) 100%);
+      background: linear-gradient(180deg, rgba(6, 18, 32, 0.95) 0%, rgba(6, 18, 32, 0.55) 100%);
       border-bottom: 1px solid rgba(255, 214, 74, 0.2);
-      pointer-events: auto;
+      pointer-events: none;
       z-index: 4;
     }
-    .ld-top-brand { display: flex; align-items: center; gap: 12px; }
+    .ld-top > * { pointer-events: auto; }
+
+    /* Curved brand banner — sits at the top-left and hangs below the top strip */
+    .ld-top-brand {
+      position: absolute;
+      top: 0; left: 0;
+      display: flex; align-items: center; gap: 14px;
+      padding: 12px 70px 14px 16px;
+      min-height: 76px;
+      background: linear-gradient(180deg, rgba(20, 36, 64, 0.98) 0%, rgba(8, 18, 36, 0.98) 100%);
+      border-right: 2px solid rgba(255, 214, 74, 0.55);
+      border-bottom: 2px solid rgba(255, 214, 74, 0.55);
+      border-radius: 0 0 90px 0;
+      box-shadow: 0 6px 22px rgba(0, 0, 0, 0.55), 0 0 28px rgba(255, 214, 74, 0.1);
+      pointer-events: auto;
+      z-index: 5;
+    }
     .ld-live-pill {
       display: inline-flex; align-items: center; gap: 6px;
-      padding: 5px 11px; border-radius: 6px;
+      padding: 5px 11px; border-radius: 8px;
       background: linear-gradient(180deg, #E11D2C 0%, #8B0000 100%);
       color: #fff; font-weight: 900; font-size: 13px; letter-spacing: 2.5px;
       border: 1px solid rgba(255, 120, 120, 0.55);
@@ -2987,7 +3003,7 @@
 
     /* Left panel: DRAWING NOW */
     .ld-left {
-      position: absolute; top: 64px; bottom: 84px; left: 0;
+      position: absolute; top: 84px; bottom: 84px; left: 0;
       width: 168px;
       background: linear-gradient(180deg, rgba(6, 18, 32, 0.92) 0%, rgba(6, 18, 32, 0.78) 100%);
       border-right: 1px solid rgba(255, 214, 74, 0.18);
@@ -3008,6 +3024,14 @@
       text-shadow: 0 0 10px rgba(255, 214, 74, 0.4);
       text-transform: uppercase;
     }
+    .ld-section-title-stack {
+      display: flex; flex-direction: column; align-items: center;
+      line-height: 1.0;
+      gap: 2px;
+      padding: 8px 0;
+    }
+    .ld-section-title-stack span:first-child { font-size: 17px; }
+    .ld-section-title-stack span:last-child { font-size: 17px; }
     .ld-game { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 4px 0; }
     .ld-game-label {
       font-weight: 900; font-size: 17px; letter-spacing: 5px;
@@ -3070,9 +3094,13 @@
       padding: 8px 10px;
       display: flex; flex-direction: column; gap: 6px;
     }
-    .ld-rr-meta { display: flex; justify-content: space-between; font-size: 11px; letter-spacing: 1.4px; color: #B7C2D6; }
-    .ld-rr-date { color: #FFD84A; font-weight: 900; }
-    .ld-rr-time { color: #FFD84A; font-weight: 700; }
+    .ld-rr-meta {
+      text-align: center;
+      font-size: 11px; letter-spacing: 1.6px;
+      color: #FFD84A; font-weight: 900;
+      text-shadow: 0 0 8px rgba(255, 196, 60, 0.4);
+      text-transform: uppercase;
+    }
     .ld-rr-balls { display: flex; gap: 5px; flex-wrap: nowrap; }
     .ld-rr-ball {
       position: relative; width: 28px; height: 28px; border-radius: 50%;
@@ -3209,6 +3237,7 @@
                   background 0.2s;
     }
     .live-feed.graphic-active .ld-top,
+    .live-feed.graphic-active .ld-top-brand,
     .live-feed.graphic-active .ld-left,
     .live-feed.graphic-active .ld-right,
     .live-feed.graphic-active .ld-bottom,
@@ -3219,10 +3248,19 @@
       opacity: 0;
       pointer-events: none;
     }
+    .ld-top-brand {
+      transition: opacity 0.25s ease;
+    }
 
     /* Mobile / narrow live-draw chrome */
     @media (max-width: 720px) {
       .ld-top { padding: 6px 78px 6px 10px; min-height: 48px; gap: 8px; }
+      .ld-top-brand {
+        gap: 8px;
+        padding: 8px 36px 10px 10px;
+        min-height: 56px;
+        border-radius: 0 0 50px 0;
+      }
       .ld-title { font-size: 16px; letter-spacing: 2px; }
       .ld-tagline { display: none; }
       .ld-live-pill { font-size: 11px; padding: 3px 8px; letter-spacing: 1.5px; }
@@ -3230,7 +3268,7 @@
       .ld-top-meta { gap: 6px; }
       .ld-meta-time, .ld-meta-date span:not(.ld-meta-icon) { display: inline; }
 
-      .ld-left { width: 116px; top: 54px; bottom: 70px; padding: 8px; gap: 8px; }
+      .ld-left { width: 116px; top: 64px; bottom: 70px; padding: 8px; gap: 8px; }
       .ld-section-title { font-size: 12px; letter-spacing: 2.5px; padding: 4px 0; }
       .ld-game-label { font-size: 13px; letter-spacing: 3px; }
       .ld-balls { gap: 5px; }
@@ -3265,10 +3303,16 @@
     /* Fullscreen scaling */
     .live-feed:fullscreen .ld-top,
     .live-feed:-webkit-full-screen .ld-top { min-height: 70px; padding: 10px 90px 10px 22px; }
+    .live-feed:fullscreen .ld-top-brand,
+    .live-feed:-webkit-full-screen .ld-top-brand {
+      padding: 16px 90px 18px 22px; min-height: 96px;
+      border-radius: 0 0 120px 0;
+      gap: 18px;
+    }
     .live-feed:fullscreen .ld-title,
     .live-feed:-webkit-full-screen .ld-title { font-size: 28px; letter-spacing: 4px; }
     .live-feed:fullscreen .ld-left,
-    .live-feed:-webkit-full-screen .ld-left { width: 200px; top: 78px; bottom: 110px; }
+    .live-feed:-webkit-full-screen .ld-left { width: 200px; top: 102px; bottom: 110px; }
     .live-feed:fullscreen .ld-right,
     .live-feed:-webkit-full-screen .ld-right { width: 340px; top: 78px; bottom: 110px; padding-bottom: 64px; }
     .live-feed:fullscreen .ld-ball,
@@ -3611,7 +3655,10 @@
 
           <!-- Right panel: Recent results -->
           <aside class="ld-right">
-            <div class="ld-section-title">Recent Results</div>
+            <div class="ld-section-title ld-section-title-stack">
+              <span>Recent</span>
+              <span>Results</span>
+            </div>
             <div class="ld-rr-list" id="ld-rr-list">
               <div class="ld-rr-empty">Loading…</div>
             </div>
@@ -4268,6 +4315,7 @@
     (function () {
       const SLOTS = [10, 15, 19]; // Nauru local-hour draw slots (UTC+12, no DST)
       const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+      const DAYS_LONG = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
 
       function nauruNow() { return new Date(Date.now() + 12 * 3600 * 1000); }
 
@@ -4306,6 +4354,14 @@
         return `${h12}:00 ${slotH < 12 ? 'AM' : 'PM'}`;
       }
       function fmtTimeFromDate(d) { return fmtTime(d.getUTCHours()); }
+      function fmtTimeShort(slotH) {
+        const h12 = ((slotH + 11) % 12) + 1;
+        return `${h12}${slotH < 12 ? 'AM' : 'PM'}`;
+      }
+      function fmtRecentMeta(d) {
+        // "MAY 07 - THURSDAY - 3PM"
+        return `${MONTHS[d.getUTCMonth()]} ${String(d.getUTCDate()).padStart(2,'0')} - ${DAYS_LONG[d.getUTCDay()]} - ${fmtTimeShort(d.getUTCHours())}`;
+      }
 
       // ── Header (date / time / draw#) ──
       function renderHeader() {
@@ -4392,8 +4448,7 @@
         list.innerHTML = sessions.map(s => {
           // Shift the draw_time to Nauru local for display
           const local = new Date(new Date(s.time).getTime() + 12 * 3600 * 1000);
-          const date = fmtDate(local);
-          const slotTime = fmtTimeFromDate(local);
+          const meta = fmtRecentMeta(local);
           const d2 = (s.d2 || '').replace(/\D/g, '').slice(0, 2);
           const d3 = (s.d3 || '').replace(/\D/g, '').slice(0, 3);
           const balls = (d2 + d3).split('').map((digit, i) => {
@@ -4402,10 +4457,7 @@
           }).join('');
           return `
             <div class="ld-rr-row">
-              <div class="ld-rr-meta">
-                <span class="ld-rr-date">${date}</span>
-                <span class="ld-rr-time">${slotTime}</span>
-              </div>
+              <div class="ld-rr-meta">${meta}</div>
               <div class="ld-rr-balls">${balls || '<span class="ld-rr-empty" style="padding:2px 0;">awaiting results</span>'}</div>
             </div>`;
         }).join('');
