@@ -2920,6 +2920,8 @@
       z-index: 5;
       pointer-events: none;
       font-family: 'Barlow Condensed', sans-serif;
+      --ld-left-w: 168px;
+      --ld-right-w: 232px;
     }
     .live-feed.is-live .ld-chrome { display: block; }
     .live-feed.is-live .feed-top,
@@ -2984,7 +2986,7 @@
       text-transform: uppercase; opacity: 0.85;
     }
 
-    /* Centered casino-style date + time card */
+    /* Centered casino-marquee date + time card */
     .ld-top-meta {
       position: absolute;
       top: 50%;
@@ -2994,33 +2996,63 @@
       pointer-events: auto;
     }
     .ld-meta-card {
-      display: inline-flex; align-items: center; gap: 12px;
-      padding: 8px 22px; border-radius: 999px;
-      background: linear-gradient(180deg, #FFE067 0%, #FFC633 35%, #E89B0F 75%, #8B5A00 100%);
-      color: #1a0f00;
-      font-weight: 900; font-size: 17px; letter-spacing: 2.5px;
+      position: relative;
+      display: inline-flex; align-items: center; gap: 14px;
+      padding: 11px 28px; border-radius: 4px;
+      background: linear-gradient(180deg,
+        #5e4112 0%,
+        #4a3208 28%,
+        #3a2607 55%,
+        #261a04 80%,
+        #1a1100 100%);
+      color: #fff;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900; font-size: 24px; letter-spacing: 2.5px;
       text-transform: uppercase;
-      border: 2px solid rgba(255, 255, 255, 0.45);
+      border: 1px solid #c79a35;
       box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.55),
-        inset 0 -2px 0 rgba(120, 60, 0, 0.4),
-        0 4px 18px rgba(0, 0, 0, 0.5),
-        0 0 28px rgba(255, 196, 60, 0.55);
-      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+        inset 0 1px 0 rgba(255, 220, 130, 0.45),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.85),
+        0 6px 22px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(0, 0, 0, 0.4);
+      text-shadow:
+        0 2px 3px rgba(0, 0, 0, 0.85),
+        0 0 14px rgba(255, 200, 80, 0.3);
       white-space: nowrap;
       line-height: 1;
+      overflow: hidden;
     }
-    .ld-meta-icon { font-size: 16px; line-height: 1; filter: drop-shadow(0 1px 0 rgba(255,255,255,0.6)); }
+    /* Subtle gold-dust glow along the bottom edge (matches the header.jpg shimmer) */
+    .ld-meta-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 60% 32% at 30% 100%, rgba(255, 200, 80, 0.30) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 32% at 75% 100%, rgba(255, 215, 110, 0.25) 0%, transparent 70%);
+      border-radius: inherit;
+    }
+    .ld-meta-icon {
+      width: 20px; height: 20px;
+      fill: none; stroke: #fff; stroke-width: 2.4;
+      stroke-linecap: round; stroke-linejoin: round;
+      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.8));
+      flex-shrink: 0;
+    }
     .ld-meta-sep {
-      color: #8B0000;
-      font-size: 16px;
-      text-shadow: 0 0 6px rgba(255, 80, 80, 0.5);
+      color: rgba(212, 168, 60, 0.7);
+      font-weight: 400; font-size: 22px; line-height: 1;
+      padding: 0 2px;
+      text-shadow: 0 0 6px rgba(212, 168, 60, 0.4);
     }
+    .ld-meta-card > span:not(.ld-meta-sep) { position: relative; z-index: 1; }
+    .ld-meta-card > .ld-meta-icon { position: relative; z-index: 1; }
 
     /* Left panel: DRAWING NOW */
     .ld-left {
-      position: absolute; top: 84px; bottom: 84px; left: 0;
-      width: 168px;
+      position: absolute; top: 84px; bottom: 42px; left: 0;
+      width: var(--ld-left-w);
       background: linear-gradient(180deg, rgba(6, 18, 32, 0.92) 0%, rgba(6, 18, 32, 0.78) 100%);
       border-right: 1px solid rgba(255, 214, 74, 0.18);
       padding: 14px;
@@ -3087,12 +3119,12 @@
 
     /* Right panel: RECENT RESULTS */
     .ld-right {
-      position: absolute; top: 64px; bottom: 84px; right: 0;
-      width: 300px;
+      position: absolute; top: 64px; bottom: 42px; right: 0;
+      width: var(--ld-right-w);
       background: linear-gradient(180deg, rgba(6, 18, 32, 0.92) 0%, rgba(6, 18, 32, 0.78) 100%);
       border-left: 1px solid rgba(255, 214, 74, 0.18);
-      padding: 14px 12px 56px;
-      display: flex; flex-direction: column; gap: 10px;
+      padding: 10px 10px 52px;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
       pointer-events: auto;
       transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
       overflow: hidden;
@@ -3100,15 +3132,16 @@
     }
     .ld-chrome.right-hidden .ld-right { transform: translateX(100%); }
 
-    .ld-rr-list { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; flex: 1; padding-right: 4px; }
+    .ld-rr-list { display: flex; flex-direction: column; align-items: center; gap: 6px; overflow-y: auto; flex: 1; width: 100%; padding-right: 4px; }
     .ld-rr-list::-webkit-scrollbar { width: 4px; }
     .ld-rr-list::-webkit-scrollbar-thumb { background: rgba(255, 214, 74, 0.3); border-radius: 4px; }
     .ld-rr-row {
       background: rgba(8, 14, 28, 0.55);
       border: 1px solid rgba(255, 214, 74, 0.12);
       border-radius: 8px;
-      padding: 8px 10px;
-      display: flex; flex-direction: column; gap: 6px;
+      padding: 6px 8px;
+      width: 100%;
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
     }
     .ld-rr-meta {
       text-align: center;
@@ -3116,12 +3149,13 @@
       color: #FFD84A; font-weight: 900;
       text-shadow: 0 0 8px rgba(255, 196, 60, 0.4);
       text-transform: uppercase;
+      white-space: nowrap;
     }
-    .ld-rr-balls { display: flex; gap: 5px; flex-wrap: nowrap; }
+    .ld-rr-balls { display: flex; justify-content: center; gap: 6px; flex-wrap: nowrap; }
     .ld-rr-ball {
-      position: relative; width: 28px; height: 28px; border-radius: 50%;
+      position: relative; width: 34px; height: 34px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      color: #fff; font-weight: 900; font-size: 15px; line-height: 1;
+      color: #fff; font-weight: 900; font-size: 18px; line-height: 1;
       border: 1px solid rgba(255, 255, 255, 0.18);
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
       box-shadow: inset -3px -4px 7px rgba(0, 0, 0, 0.4), inset 2px 3px 6px rgba(255, 255, 255, 0.25);
@@ -3145,64 +3179,77 @@
     }
     .ld-rr-cta:hover { background: rgba(255, 214, 74, 0.18); }
 
-    /* Center countdown */
-    .ld-countdown {
-      position: absolute; bottom: 96px; left: 50%; transform: translateX(-50%);
-      display: flex; flex-direction: column; align-items: center; gap: 4px;
-      background: rgba(8, 14, 28, 0.78);
-      padding: 8px 18px; border-radius: 12px;
-      border: 1px solid rgba(255, 214, 74, 0.32);
-      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5), 0 0 24px rgba(255, 214, 74, 0.12);
-      pointer-events: none;
-      z-index: 4;
-    }
-    .ld-countdown-label { font-size: 10px; letter-spacing: 4px; color: #FFD84A; text-transform: uppercase; }
-    .ld-countdown-time { display: flex; gap: 6px; align-items: center; }
-    .ld-countdown-cell { display: flex; flex-direction: column; align-items: center; min-width: 42px; }
-    .ld-countdown-num {
-      font-weight: 900; font-size: 30px; line-height: 1;
-      background: linear-gradient(180deg, #FFF6C8 0%, #FFD84A 50%, #E89B0F 100%);
-      -webkit-background-clip: text; background-clip: text;
-      -webkit-text-fill-color: transparent; color: transparent;
-      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.7));
-    }
-    .ld-countdown-unit { font-size: 9px; letter-spacing: 2px; color: #B7C2D6; text-transform: uppercase; }
-    .ld-countdown-sep { color: #FFD84A; font-size: 22px; font-weight: 900; align-self: flex-start; padding-top: 2px; }
-
-    /* Bottom panel */
+    /* Bottom panel — slim 3-column: countdown · viewers · place bet */
     .ld-bottom {
       position: absolute; bottom: 0; left: 0; right: 0;
-      min-height: 84px;
+      min-height: 42px;
       background: linear-gradient(0deg, rgba(6, 18, 32, 0.95) 0%, rgba(6, 18, 32, 0.5) 100%);
       border-top: 1px solid rgba(255, 214, 74, 0.18);
       display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 18px; gap: 14px;
+      padding: 5px 14px; gap: 12px;
       pointer-events: auto;
       transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
       z-index: 3;
     }
     .ld-chrome.bottom-hidden .ld-bottom { transform: translateY(100%); }
-    .ld-cta-card {
-      display: flex; align-items: center; gap: 10px;
-      padding: 8px 14px; border-radius: 10px;
+
+    .ld-cd-inline {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 5px 12px; border-radius: 8px;
       background: rgba(8, 14, 28, 0.7);
       border: 1px solid rgba(255, 214, 74, 0.3);
-      color: #fff;
+      white-space: nowrap;
     }
-    .ld-cta-icon { font-size: 22px; color: #FFD84A; line-height: 1; }
-    .ld-cta-text { display: flex; flex-direction: column; line-height: 1.15; }
-    .ld-cta-title { font-weight: 900; font-size: 14px; letter-spacing: 1.5px; color: #FFD84A; text-transform: uppercase; }
-    .ld-cta-sub { font-size: 11px; letter-spacing: 1px; color: #B7C2D6; }
+    .ld-cd-inline-label {
+      font-size: 10px; letter-spacing: 2.5px; color: #FFD84A;
+      text-transform: uppercase; font-weight: 900;
+    }
+    .ld-cd-inline-time {
+      display: inline-flex; align-items: center; gap: 3px;
+      font-weight: 900; line-height: 1;
+      background: linear-gradient(180deg, #FFF6C8 0%, #FFD84A 50%, #E89B0F 100%);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent; color: transparent;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.7));
+      font-variant-numeric: tabular-nums;
+    }
+    .ld-cd-inline-num { font-size: 18px; min-width: 22px; text-align: center; }
+    .ld-cd-inline-sep { font-size: 16px; opacity: 0.85; }
+
+    .ld-viewers {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 5px 14px; border-radius: 8px;
+      background: rgba(8, 14, 28, 0.7);
+      border: 1px solid rgba(255, 214, 74, 0.3);
+      color: #B7C2D6; font-weight: 900; font-size: 11px;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      white-space: nowrap; line-height: 1;
+    }
+    .ld-viewers-icon {
+      font-size: 16px; line-height: 1; color: #FFD84A;
+      filter: drop-shadow(0 0 6px rgba(255, 214, 74, 0.6));
+    }
+    .ld-viewers-num {
+      color: #fff; font-size: 16px; letter-spacing: 1px;
+      text-shadow: 0 0 8px rgba(255, 214, 74, 0.45);
+      font-variant-numeric: tabular-nums;
+    }
+    .ld-viewers-label { font-size: 10px; opacity: 0.85; }
+
     .ld-cta-btn {
-      margin-left: 12px; padding: 9px 14px; border-radius: 8px;
+      padding: 7px 18px; border-radius: 8px;
       background: linear-gradient(180deg, #FFD84A 0%, #E89B0F 100%);
-      color: #061220; font-weight: 900; font-size: 13px; letter-spacing: 1.5px;
+      color: #061220; font-weight: 900; font-size: 13px; letter-spacing: 2px;
       border: 1px solid rgba(255, 255, 255, 0.3);
       cursor: pointer; text-decoration: none; text-transform: uppercase;
-      box-shadow: 0 4px 14px rgba(255, 196, 60, 0.35);
-      transition: transform 0.15s ease;
+      box-shadow: 0 4px 14px rgba(255, 196, 60, 0.4);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      white-space: nowrap; line-height: 1;
     }
-    .ld-cta-btn:hover { transform: translateY(-1px); }
+    .ld-cta-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(255, 196, 60, 0.55);
+    }
 
     /* Toggle handles for the three panels */
     .ld-toggle {
@@ -3221,29 +3268,23 @@
     .ld-toggle:hover { background: rgba(255, 214, 74, 0.18); color: #fff; }
     .ld-toggle-left {
       width: 24px; height: 56px;
-      top: 50%; left: 168px; transform: translateY(-50%);
+      top: 50%; left: var(--ld-left-w); transform: translateY(-50%);
       border-radius: 0 8px 8px 0; border-left: 0;
     }
     .ld-chrome.left-hidden .ld-toggle-left { left: 0; }
     .ld-toggle-right {
       width: 24px; height: 56px;
-      top: 50%; right: 300px; transform: translateY(-50%);
+      top: 50%; right: var(--ld-right-w); transform: translateY(-50%);
       border-radius: 8px 0 0 8px; border-right: 0;
     }
     .ld-chrome.right-hidden .ld-toggle-right { right: 0 !important; }
     .ld-chrome.left-hidden .ld-toggle-left { left: 0 !important; }
     .ld-toggle-bottom {
       width: 56px; height: 24px;
-      bottom: 84px; left: 50%; transform: translateX(-50%);
+      bottom: 42px; left: 50%; transform: translateX(-50%);
       border-radius: 8px 8px 0 0; border-bottom: 0;
     }
     .ld-chrome.bottom-hidden .ld-toggle-bottom { bottom: 0 !important; }
-
-    /* Countdown follows the bottom panel — when the bottom panel is hidden,
-       drop the countdown to the very bottom of the feed. */
-    .ld-chrome.bottom-hidden .ld-countdown {
-      bottom: 14px;
-    }
 
     /* When in live mode, raise the existing fullscreen + mute buttons above chrome
        and reposition them so they don't fight with the top bar content. */
@@ -3259,7 +3300,7 @@
     }
 
     /* Hide chrome while a graphic overlay is being flashed. */
-    .ld-top, .ld-left, .ld-right, .ld-bottom, .ld-countdown, .ld-toggle {
+    .ld-top, .ld-left, .ld-right, .ld-bottom, .ld-toggle {
       transition: opacity 0.25s ease,
                   transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
                   left 0.35s cubic-bezier(0.4, 0, 0.2, 1),
@@ -3272,7 +3313,6 @@
     .live-feed.graphic-active .ld-left,
     .live-feed.graphic-active .ld-right,
     .live-feed.graphic-active .ld-bottom,
-    .live-feed.graphic-active .ld-countdown,
     .live-feed.graphic-active .ld-toggle,
     .live-feed.graphic-active .feed-fullscreen,
     .live-feed.graphic-active #feed-mute-btn {
@@ -3283,54 +3323,90 @@
       transition: opacity 0.25s ease;
     }
 
-    /* Mobile / narrow live-draw chrome */
-    @media (max-width: 720px) {
-      .ld-top { padding: 6px 78px 6px 10px; min-height: 48px; gap: 8px; }
+    /* Mobile / narrow live-draw chrome — autofit panels so the live draw stays visible.
+       Also matches landscape phones (short height) so fullscreen on a phone doesn't
+       fall through to the desktop rules. */
+    @media (max-width: 720px), (max-height: 500px) {
+      .ld-chrome { --ld-left-w: 96px; --ld-right-w: 134px; }
+      .ld-top { padding: 5px 64px 5px 8px; min-height: 44px; gap: 6px; }
       .ld-top-brand {
-        gap: 8px;
-        padding: 8px 36px 10px 10px;
-        min-height: 56px;
+        gap: 7px;
+        padding: 7px 24px 9px 9px;
+        min-height: 52px;
         border-radius: 0 0 50px 0;
       }
-      .ld-title { font-size: 16px; letter-spacing: 2px; }
-      .ld-tagline { display: none; }
-      .ld-live-pill { font-size: 11px; padding: 3px 8px; letter-spacing: 1.5px; }
-      .ld-meta-card { font-size: 12px; padding: 6px 14px; gap: 7px; letter-spacing: 1.5px; }
-      .ld-meta-icon { font-size: 12px; }
+      .ld-title { font-size: 14px; letter-spacing: 1.8px; }
+      .ld-tagline { font-size: 8px; letter-spacing: 2.5px; }
+      .ld-live-pill { font-size: 9px; padding: 3px 6px; letter-spacing: 1.5px; }
+      .ld-live-pill::before { width: 5px; height: 5px; }
+      .ld-meta-card {
+        font-size: 14px; padding: 6px 14px; gap: 9px; letter-spacing: 1.8px;
+        border-width: 1px; border-radius: 3px;
+        box-shadow:
+          inset 0 1px 0 rgba(255, 220, 130, 0.4),
+          inset 0 -1px 0 rgba(0, 0, 0, 0.85),
+          0 4px 14px rgba(0, 0, 0, 0.55);
+      }
+      .ld-meta-icon { width: 14px; height: 14px; stroke-width: 2.6; }
+      .ld-meta-sep { font-size: 14px; padding: 0 1px; }
 
-      .ld-left { width: 116px; top: 64px; bottom: 70px; padding: 8px; gap: 8px; }
-      .ld-section-title { font-size: 12px; letter-spacing: 2.5px; padding: 4px 0; }
-      .ld-game-label { font-size: 13px; letter-spacing: 3px; }
-      .ld-balls { gap: 5px; }
-      .ld-ball { width: 36px; height: 36px; font-size: 19px; border-width: 1.5px; }
+      .ld-left { top: 56px; bottom: 32px; padding: 7px 6px; gap: 6px; overflow-y: auto; }
+      .ld-section-title { font-size: 10px; letter-spacing: 1.8px; padding: 3px 0; }
+      .ld-game { gap: 4px; padding: 1px 0; }
+      .ld-game-label { font-size: 11px; letter-spacing: 2px; }
+      .ld-balls { flex-direction: row; gap: 4px; flex-wrap: wrap; justify-content: center; }
+      .ld-ball { width: 22px; height: 22px; font-size: 12px; border-width: 1px; }
 
-      .ld-right { width: 188px; top: 54px; bottom: 70px; padding: 8px 8px 50px; gap: 6px; }
-      .ld-rr-row { padding: 6px 8px; gap: 4px; }
-      .ld-rr-meta { font-size: 9px; letter-spacing: 1px; }
-      .ld-rr-ball { width: 22px; height: 22px; font-size: 12px; }
-      .ld-rr-cta { font-size: 10px; padding: 6px; left: 8px; right: 8px; bottom: 8px; }
+      .ld-right { top: 52px; bottom: 32px; padding: 6px 6px 38px; gap: 5px; }
+      .ld-section-title-stack { padding: 5px 0; gap: 1px; }
+      .ld-section-title-stack span:first-child,
+      .ld-section-title-stack span:last-child { font-size: 11px; }
+      .ld-rr-list { gap: 4px; }
+      .ld-rr-row { padding: 4px 5px; gap: 2px; }
+      .ld-rr-meta { font-size: 8px; letter-spacing: 0.6px; white-space: normal; line-height: 1.2; }
+      .ld-rr-ball { width: 20px; height: 20px; font-size: 11px; border-width: 1px; }
+      .ld-rr-balls { gap: 3px; flex-wrap: wrap; }
+      .ld-rr-cta { font-size: 8px; padding: 5px; left: 5px; right: 5px; bottom: 5px; letter-spacing: 1px; }
 
-      .ld-bottom { min-height: 70px; padding: 8px 10px; gap: 8px; }
-      .ld-cta-card { padding: 6px 10px; gap: 7px; }
-      .ld-cta-title { font-size: 12px; letter-spacing: 1px; }
-      .ld-cta-sub { font-size: 10px; }
-      .ld-cta-btn { font-size: 11px; padding: 7px 10px; margin-left: 6px; }
-      .ld-cta-icon { font-size: 18px; }
+      .ld-bottom { min-height: 32px; padding: 3px 7px; gap: 5px; }
+      .ld-cd-inline { padding: 3px 7px; gap: 5px; border-radius: 6px; }
+      .ld-cd-inline-label { font-size: 8px; letter-spacing: 1.2px; }
+      .ld-cd-inline-num { font-size: 12px; min-width: 16px; }
+      .ld-cd-inline-sep { font-size: 11px; }
+      .ld-viewers { padding: 3px 7px; gap: 4px; border-radius: 6px; }
+      .ld-viewers-icon { font-size: 12px; }
+      .ld-viewers-num { font-size: 12px; }
+      .ld-viewers-label { display: none; }
+      .ld-cta-btn { font-size: 10px; padding: 5px 10px; letter-spacing: 1.3px; border-radius: 6px; }
 
-      .ld-countdown { bottom: 82px; padding: 6px 12px; }
-      .ld-countdown-num { font-size: 22px; }
-      .ld-countdown-cell { min-width: 30px; }
-      .ld-countdown-label { font-size: 9px; letter-spacing: 2px; }
+      .ld-toggle-left { width: 16px; height: 40px; }
+      .ld-toggle-right { width: 16px; height: 40px; }
+      .ld-toggle-bottom { width: 40px; height: 16px; bottom: 32px; }
 
-      .ld-toggle-left { width: 20px; height: 46px; left: 116px; }
-      .ld-toggle-right { width: 20px; height: 46px; right: 188px; }
-      .ld-toggle-bottom { width: 46px; height: 20px; bottom: 70px; }
-
-      .live-feed.is-live .feed-fullscreen { top: 8px; right: 8px; width: 32px; height: 32px; font-size: 15px; }
-      .live-feed.is-live #feed-mute-btn { top: 8px !important; right: 46px !important; width: 32px !important; height: 32px !important; font-size: 14px !important; }
+      .live-feed.is-live .feed-fullscreen { top: 6px; right: 6px; width: 28px; height: 28px; font-size: 13px; }
+      .live-feed.is-live #feed-mute-btn { top: 6px !important; right: 40px !important; width: 28px !important; height: 28px !important; font-size: 12px !important; }
     }
 
-    /* Fullscreen scaling */
+    /* Very narrow phones (≤ 380px) — squeeze further so the video stays unobstructed */
+    @media (max-width: 380px) {
+      .ld-chrome { --ld-left-w: 84px; --ld-right-w: 116px; }
+      .ld-ball { width: 26px; height: 26px; font-size: 14px; }
+      .ld-rr-ball { width: 18px; height: 18px; font-size: 10px; }
+      .ld-game-label { font-size: 10px; letter-spacing: 1.5px; }
+      .ld-section-title { font-size: 9px; letter-spacing: 1.5px; }
+      .ld-section-title-stack span:first-child,
+      .ld-section-title-stack span:last-child { font-size: 10px; }
+      .ld-meta-card { font-size: 11px; padding: 4px 10px; gap: 6px; letter-spacing: 1.4px; }
+      .ld-meta-icon { width: 12px; height: 12px; stroke-width: 2.8; }
+      .ld-meta-sep { font-size: 12px; }
+    }
+
+    /* Fullscreen scaling — autofit panels with bigger balls */
+    .live-feed:fullscreen .ld-chrome,
+    .live-feed:-webkit-full-screen .ld-chrome {
+      --ld-left-w: 176px;
+      --ld-right-w: 288px;
+    }
     .live-feed:fullscreen .ld-top,
     .live-feed:-webkit-full-screen .ld-top { min-height: 70px; padding: 10px 90px 10px 22px; }
     .live-feed:fullscreen .ld-top-brand,
@@ -3342,23 +3418,83 @@
     .live-feed:fullscreen .ld-title,
     .live-feed:-webkit-full-screen .ld-title { font-size: 28px; letter-spacing: 4px; }
     .live-feed:fullscreen .ld-left,
-    .live-feed:-webkit-full-screen .ld-left { width: 200px; top: 102px; bottom: 110px; }
+    .live-feed:-webkit-full-screen .ld-left { top: 102px; bottom: 56px; }
     .live-feed:fullscreen .ld-right,
-    .live-feed:-webkit-full-screen .ld-right { width: 380px; top: 78px; bottom: 110px; padding-bottom: 64px; }
+    .live-feed:-webkit-full-screen .ld-right { top: 78px; bottom: 56px; padding-bottom: 64px; }
     .live-feed:fullscreen .ld-ball,
     .live-feed:-webkit-full-screen .ld-ball { width: 64px; height: 64px; font-size: 32px; }
+    .live-feed:fullscreen .ld-rr-ball,
+    .live-feed:-webkit-full-screen .ld-rr-ball { width: 42px; height: 42px; font-size: 22px; }
+    .live-feed:fullscreen .ld-rr-balls,
+    .live-feed:-webkit-full-screen .ld-rr-balls { gap: 8px; }
+    .live-feed:fullscreen .ld-rr-meta,
+    .live-feed:-webkit-full-screen .ld-rr-meta { font-size: 13px; letter-spacing: 2px; }
     .live-feed:fullscreen .ld-bottom,
-    .live-feed:-webkit-full-screen .ld-bottom { min-height: 110px; padding: 14px 28px; }
-    .live-feed:fullscreen .ld-toggle-left,
-    .live-feed:-webkit-full-screen .ld-toggle-left { left: 200px; }
-    .live-feed:fullscreen .ld-toggle-right,
-    .live-feed:-webkit-full-screen .ld-toggle-right { right: 380px; }
+    .live-feed:-webkit-full-screen .ld-bottom { min-height: 56px; padding: 7px 28px; }
+    .live-feed:fullscreen .ld-cd-inline-num,
+    .live-feed:-webkit-full-screen .ld-cd-inline-num { font-size: 22px; min-width: 26px; }
+    .live-feed:fullscreen .ld-cd-inline-label,
+    .live-feed:-webkit-full-screen .ld-cd-inline-label { font-size: 12px; letter-spacing: 3px; }
+    .live-feed:fullscreen .ld-viewers-num,
+    .live-feed:-webkit-full-screen .ld-viewers-num { font-size: 20px; }
+    .live-feed:fullscreen .ld-viewers-icon,
+    .live-feed:-webkit-full-screen .ld-viewers-icon { font-size: 22px; }
+    .live-feed:fullscreen .ld-viewers-label,
+    .live-feed:-webkit-full-screen .ld-viewers-label { font-size: 12px; letter-spacing: 2px; }
+    .live-feed:fullscreen .ld-cta-btn,
+    .live-feed:-webkit-full-screen .ld-cta-btn { padding: 10px 24px; font-size: 16px; letter-spacing: 2.5px; }
     .live-feed:fullscreen .ld-toggle-bottom,
-    .live-feed:-webkit-full-screen .ld-toggle-bottom { bottom: 110px; }
-    .live-feed:fullscreen .ld-countdown,
-    .live-feed:-webkit-full-screen .ld-countdown { bottom: 122px; padding: 10px 22px; }
-    .live-feed:fullscreen .ld-countdown-num,
-    .live-feed:-webkit-full-screen .ld-countdown-num { font-size: 38px; }
+    .live-feed:-webkit-full-screen .ld-toggle-bottom { bottom: 56px; }
+
+    /* Mobile fullscreen — keep panels at mobile-autofit sizes (don't scale up).
+       Also matches landscape phones in fullscreen via max-height. */
+    @media (max-width: 720px), (max-height: 500px) {
+      .live-feed:fullscreen .ld-chrome,
+      .live-feed:-webkit-full-screen .ld-chrome { --ld-left-w: 110px; --ld-right-w: 152px; }
+      .live-feed:fullscreen .ld-top,
+      .live-feed:-webkit-full-screen .ld-top { min-height: 50px; padding: 6px 70px 6px 10px; }
+      .live-feed:fullscreen .ld-top-brand,
+      .live-feed:-webkit-full-screen .ld-top-brand {
+        padding: 8px 30px 10px 11px; min-height: 60px;
+        border-radius: 0 0 60px 0; gap: 8px;
+      }
+      .live-feed:fullscreen .ld-title,
+      .live-feed:-webkit-full-screen .ld-title { font-size: 16px; letter-spacing: 2px; }
+      .live-feed:fullscreen .ld-left,
+      .live-feed:-webkit-full-screen .ld-left { top: 64px; bottom: 36px; padding: 8px; gap: 8px; overflow-y: auto; }
+      .live-feed:fullscreen .ld-right,
+      .live-feed:-webkit-full-screen .ld-right { top: 60px; bottom: 36px; padding: 7px 7px 42px; gap: 6px; }
+      .live-feed:fullscreen .ld-balls,
+      .live-feed:-webkit-full-screen .ld-balls { flex-direction: row; gap: 5px; flex-wrap: wrap; justify-content: center; }
+      .live-feed:fullscreen .ld-ball,
+      .live-feed:-webkit-full-screen .ld-ball { width: 26px; height: 26px; font-size: 14px; }
+      .live-feed:fullscreen .ld-rr-ball,
+      .live-feed:-webkit-full-screen .ld-rr-ball { width: 24px; height: 24px; font-size: 13px; }
+      .live-feed:fullscreen .ld-rr-balls,
+      .live-feed:-webkit-full-screen .ld-rr-balls { gap: 4px; flex-wrap: wrap; }
+      .live-feed:fullscreen .ld-rr-meta,
+      .live-feed:-webkit-full-screen .ld-rr-meta { font-size: 9px; letter-spacing: 0.8px; white-space: normal; }
+      .live-feed:fullscreen .ld-bottom,
+      .live-feed:-webkit-full-screen .ld-bottom { min-height: 36px; padding: 4px 10px; gap: 8px; }
+      .live-feed:fullscreen .ld-cd-inline,
+      .live-feed:-webkit-full-screen .ld-cd-inline { padding: 4px 10px; gap: 7px; }
+      .live-feed:fullscreen .ld-cd-inline-label,
+      .live-feed:-webkit-full-screen .ld-cd-inline-label { font-size: 9px; letter-spacing: 1.8px; }
+      .live-feed:fullscreen .ld-cd-inline-num,
+      .live-feed:-webkit-full-screen .ld-cd-inline-num { font-size: 14px; min-width: 18px; }
+      .live-feed:fullscreen .ld-viewers,
+      .live-feed:-webkit-full-screen .ld-viewers { padding: 4px 10px; gap: 6px; }
+      .live-feed:fullscreen .ld-viewers-icon,
+      .live-feed:-webkit-full-screen .ld-viewers-icon { font-size: 13px; }
+      .live-feed:fullscreen .ld-viewers-num,
+      .live-feed:-webkit-full-screen .ld-viewers-num { font-size: 13px; }
+      .live-feed:fullscreen .ld-viewers-label,
+      .live-feed:-webkit-full-screen .ld-viewers-label { font-size: 9px; letter-spacing: 1.2px; }
+      .live-feed:fullscreen .ld-cta-btn,
+      .live-feed:-webkit-full-screen .ld-cta-btn { font-size: 11px; padding: 6px 14px; letter-spacing: 1.6px; }
+      .live-feed:fullscreen .ld-toggle-bottom,
+      .live-feed:-webkit-full-screen .ld-toggle-bottom { bottom: 36px; }
+    }
   </style>
   <link rel="stylesheet" href="Assets/css/app.css">
 </head>
@@ -3652,10 +3788,18 @@
             </div>
             <div class="ld-top-meta">
               <div class="ld-meta-card">
-                <span class="ld-meta-icon">📅</span>
+                <svg class="ld-meta-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="3" y="5" width="18" height="16" rx="2"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                  <line x1="8" y1="2" x2="8" y2="7"/>
+                  <line x1="16" y1="2" x2="16" y2="7"/>
+                </svg>
                 <span id="ld-date">—</span>
-                <span class="ld-meta-sep">★</span>
-                <span class="ld-meta-icon">🕐</span>
+                <span class="ld-meta-sep" aria-hidden="true">|</span>
+                <svg class="ld-meta-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9"/>
+                  <polyline points="12,7 12,12 16,15"/>
+                </svg>
                 <span id="ld-time">—</span>
               </div>
             </div>
@@ -3693,35 +3837,24 @@
             <a class="ld-rr-cta" href="#results">View All Results &rsaquo;</a>
           </aside>
 
-          <!-- Center countdown -->
-          <div class="ld-countdown">
-            <div class="ld-countdown-label">Next Draw In</div>
-            <div class="ld-countdown-time">
-              <div class="ld-countdown-cell"><span class="ld-countdown-num" id="ld-cd-h">00</span><span class="ld-countdown-unit">Hrs</span></div>
-              <span class="ld-countdown-sep">:</span>
-              <div class="ld-countdown-cell"><span class="ld-countdown-num" id="ld-cd-m">00</span><span class="ld-countdown-unit">Min</span></div>
-              <span class="ld-countdown-sep">:</span>
-              <div class="ld-countdown-cell"><span class="ld-countdown-num" id="ld-cd-s">00</span><span class="ld-countdown-unit">Sec</span></div>
-            </div>
-          </div>
-
-          <!-- Bottom panel -->
+          <!-- Bottom panel — slim 3-column: countdown · viewers · place bet -->
           <div class="ld-bottom">
-            <div class="ld-cta-card">
-              <span class="ld-cta-icon">🏆</span>
-              <span class="ld-cta-text">
-                <span class="ld-cta-title">Be a Winner Today!</span>
-                <span class="ld-cta-sub">Stay tuned for tomorrow's draw!</span>
+            <div class="ld-cd-inline" aria-label="Next draw countdown">
+              <span class="ld-cd-inline-label">Next Draw</span>
+              <span class="ld-cd-inline-time">
+                <span class="ld-cd-inline-num" id="ld-cd-h">00</span>
+                <span class="ld-cd-inline-sep">:</span>
+                <span class="ld-cd-inline-num" id="ld-cd-m">00</span>
+                <span class="ld-cd-inline-sep">:</span>
+                <span class="ld-cd-inline-num" id="ld-cd-s">00</span>
               </span>
             </div>
-            <div class="ld-cta-card" style="margin-left:auto">
-              <span class="ld-cta-icon">🎟️</span>
-              <span class="ld-cta-text">
-                <span class="ld-cta-title">Place Your Bets!</span>
-                <span class="ld-cta-sub">Pick your numbers and play.</span>
-              </span>
-              <a class="ld-cta-btn" href="play.html">Play Now</a>
+            <div class="ld-viewers" aria-label="Live viewers">
+              <span class="ld-viewers-icon" aria-hidden="true">👁</span>
+              <span class="ld-viewers-num" id="ld-viewers-count">—</span>
+              <span class="ld-viewers-label">watching</span>
             </div>
+            <a class="ld-cta-btn" href="play.html">Place Bet</a>
           </div>
 
           <!-- Toggle handles -->
@@ -4329,7 +4462,7 @@
   <!-- ═══ SUPABASE + APP ═══ -->
   <script>
     window.STL_SUPABASE_URL = 'https://wgkpnjrpdfqoaagkftjm.supabase.co';
-    window.STL_SUPABASE_ANON_KEY = 'sb_publishable_WtVCaotX_QZJSplVe3gyTQ_mHEQy8Yw';
+    window.STL_SUPABASE_ANON_KEY = 'sb_publishable_YeHPR6R1MjoPnhECdI-9sg_lv9r99Sh';
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="Assets/js/app.js"></script>
